@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0b0b0f">
+<title>CarScan</title>
+<style>
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+body {
+    margin: 0;
+    background: #0b0b0f;
+    color: white;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Arial, sans-serif;
+}
+.app {
+    min-height: 100vh;
+    padding-bottom: 90px;
+}
+/* HEADER */
+.header {
+    padding: 55px 20px 20px;
+}
+.header h1 {
+    margin: 0;
+    font-size: 32px;
+}
+.header p {
+    color: #8e8e98;
+    margin-top: 6px;
+}
+/* HOME */
+.home {
+    padding: 10px 20px;
+}
+.scan-box {
+    background: linear-gradient(145deg, #1c1c25, #111116);
+    border: 1px solid #292934;
+    border-radius: 24px;
+    padding: 28px 20px;
+    text-align: center;
+}
+.camera {
+    font-size: 55px;
+    margin-bottom: 10px;
+}
+.scan-box h2 {
+    margin: 5px 0;
+}
+.scan-box p {
+    color: #90909a;
+}
+.scan-button {
+    width: 100%;
+    border: 0;
+    border-radius: 16px;
+    padding: 17px;
+    margin-top: 15px;
+    font-size: 17px;
+    font-weight: 700;
+    color: white;
+    background: #3478f6;
+}
+.scan-button:active {
+    transform: scale(.98);
+}
+/* LIBRARY */
+.section {
+    padding: 25px 20px 0;
+}
+.section h2 {
+    margin-bottom: 15px;
+}
+.library {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+.car-card {
+    overflow: hidden;
+    background: #15151c;
+    border: 1px solid #25252e;
+    border-radius: 18px;
+}
+.car-card img {
+    width: 100%;
+    height: 145px;
+    object-fit: cover;
+    display: block;
+}
+.car-info {
+    padding: 12px;
+}
+.car-name {
+    font-weight: 700;
+    font-size: 16px;
+}
+.car-year {
+    color: #8d8d98;
+    font-size: 13px;
+    margin-top: 4px;
+}
+/* PROFILE */
+.profile {
+    padding: 20px;
+}
+.profile-box {
+    background: #15151c;
+    border-radius: 22px;
+    padding: 25px;
+    text-align: center;
+}
+.avatar {
+    width: 75px;
+    height: 75px;
+    margin: auto;
+    border-radius: 50%;
+    background: #3478f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+}
+/* NAV */
+.nav {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    height: 68px;
+    background: rgba(25,25,32,.94);
+    border: 1px solid #30303a;
+    border-radius: 22px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    backdrop-filter: blur(20px);
+    z-index: 10;
+}
+.nav button {
+    background: none;
+    border: 0;
+    color: #85858f;
+    font-size: 12px;
+}
+.nav button.active {
+    color: white;
+}
+.nav-icon {
+    display: block;
+    font-size: 23px;
+    margin-bottom: 2px;
+}
+/* LOGIN */
+.login {
+    padding: 70px 25px;
+}
+.login h1 {
+    font-size: 35px;
+}
+.input {
+    width: 100%;
+    padding: 16px;
+    margin-top: 12px;
+    border: 1px solid #30303a;
+    border-radius: 14px;
+    background: #15151c;
+    color: white;
+    font-size: 16px;
+}
+.hidden {
+    display: none !important;
+}
+.empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #777782;
+    padding: 40px 10px;
+}
+</style>
+</head>
+<body>
+<div class="app">
+    <!-- HOME -->
+    <div id="homePage">
+        <div class="header">
+            <h1>CarScan 🚗</h1>
+            <p>Rozpoznaj samochód ze zdjęcia</p>
+        </div>
+        <div class="home">
+            <div class="scan-box">
+                <div class="camera">📸</div>
+                <h2>Zeskanuj samochód</h2>
+                <p>
+                    Zrób zdjęcie samochodu lub wybierz je z galerii.
+                </p>
+                <button class="scan-button" onclick="openCamera()">
+                    📷 Zrób zdjęcie
+                </button>
+                <input
+                    id="photoInput"
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    hidden
+                    onchange="scanCar(event)"
+                >
+            </div>
+        </div>
+        <div class="section">
+            <h2>Ostatnie samochody</h2>
+            <div id="library" class="library"></div>
+        </div>
+    </div>
+    <!-- LIBRARY -->
+    <div id="libraryPage" class="hidden">
+        <div class="header">
+            <h1>Biblioteka 📚</h1>
+            <p>Twoje zeskanowane samochody</p>
+        </div>
+        <div class="section">
+            <div id="libraryFull" class="library"></div>
+        </div>
+    </div>
+    <!-- PROFILE -->
+    <div id="profilePage" class="hidden">
+        <div class="header">
+            <h1>Twoje konto 👤</h1>
+            <p>Zarządzaj swoim CarScan</p>
+        </div>
+        <div class="profile">
+            <div class="profile-box">
+                <div class="avatar">👤</div>
+                <h2 id="username">Gość</h2>
+                <p id="accountText">
+                    Zaloguj się, aby synchronizować samochody.
+                </p>
+                <button class="scan-button" onclick="login()">
+                    Zaloguj / Zarejestruj
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- LOGIN -->
+    <div id="loginPage" class="hidden">
+        <div class="login">
+            <h1>Witaj 👋</h1>
+            <p style="color:#888">
+                Zaloguj się do CarScan
+            </p>
+            <input
+                id="email"
+                class="input"
+                type="email"
+                placeholder="E-mail"
+            >
+            <input
+                id="password"
+                class="input"
+                type="password"
+                placeholder="Hasło"
+            >
+            <button class="scan-button" onclick="doLogin()">
+                Zaloguj
+            </button>
+            <button
+                class="scan-button"
+                style="background:#22222b"
+                onclick="register()">
+                Utwórz konto
+            </button>
+        </div>
+    </div>
+</div>
+<!-- NAV -->
+<div class="nav">
+    <button class="active" onclick="showPage('homePage', this)">
+        <span class="nav-icon">🏠</span>
+        Start
+    </button>
+    <button onclick="showPage('libraryPage', this)">
+        <span class="nav-icon">📚</span>
+        Biblioteka
+    </button>
+    <button onclick="showPage('profilePage', this)">
+        <span class="nav-icon">👤</span>
+        Konto
+    </button>
+</div>
+<script>
+let cars = JSON.parse(localStorage.getItem("carscanCars") || "[]");
+function openCamera() {
+    document.getElementById("photoInput").click();
+}
+function scanCar(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const image = e.target.result;
+        /*
+        NA RAZIE TESTOWA NAZWA.
+        W NASTĘPNYM KROKU PODŁĄCZYMY PRAWDZIWE AI.
+        */
+        const car = {
+            image: image,
+            name: "Rozpoznawanie...",
+            year: "Analizowanie zdjęcia"
+        };
+        cars.unshift(car);
+        localStorage.setItem(
+            "carscanCars",
+            JSON.stringify(cars)
+        );
+        renderLibrary();
+        alert("Zdjęcie dodane! 🚗");
+        /*
+        Tymczasowo po chwili pokazujemy przykładowy wynik.
+        */
+        setTimeout(() => {
+            car.name = "BMW M3";
+            car.year = "Przykładowy wynik AI";
+            localStorage.setItem(
+                "carscanCars",
+                JSON.stringify(cars)
+            );
+            renderLibrary();
+        }, 1500);
+    };
+    reader.readAsDataURL(file);
+}
+function renderLibrary() {
+    const containers = [
+        document.getElementById("library"),
+        document.getElementById("libraryFull")
+    ];
+    containers.forEach(container => {
+        if (!container) return;
+        container.innerHTML = "";
+        if (cars.length === 0) {
+            container.innerHTML = `
+                <div class="empty">
+                    Nie masz jeszcze żadnych samochodów 🚗
+                </div>
+            `;
+            return;
+        }
+        cars.forEach(car => {
+            const card = document.createElement("div");
+            card.className = "car-card";
+            card.innerHTML = `
+                <img src="${car.image}">
+                <div class="car-info">
+                    <div class="car-name">
+                        ${car.name}
+                    </div>
+                    <div class="car-year">
+                        ${car.year}
+                    </div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    });
+}
+function showPage(pageId, button) {
+    document
+        .querySelectorAll(".app > div")
+        .forEach(page => page.classList.add("hidden"));
+    document
+        .getElementById(pageId)
+        .classList.remove("hidden");
+    document
+        .querySelectorAll(".nav button")
+        .forEach(btn => btn.classList.remove("active"));
+    if (button) {
+        button.classList.add("active");
+    }
+}
+function login() {
+    showPage("loginPage");
+    document.querySelector(".nav").style.display = "none";
+}
+function doLogin() {
+    const email = document.getElementById("email").value;
+    if (!email) {
+        alert("Wpisz e-mail.");
+        return;
+    }
+    localStorage.setItem("carscanUser", email);
+    document.querySelector(".nav").style.display = "flex";
+    document.getElementById("username").textContent = email;
+    document.getElementById("accountText").textContent =
+        "Jesteś zalogowany.";
+    showPage("profilePage");
+}
+function register() {
+    const email = document.getElementById("email").value;
+    if (!email) {
+        alert("Wpisz e-mail.");
+        return;
+    }
+    localStorage.setItem("carscanUser", email);
+    alert("Konto utworzone! 🚗");
+    document.querySelector(".nav").style.display = "flex";
+    document.getElementById("username").textContent = email;
+    document.getElementById("accountText").textContent =
+        "Twoje konto CarScan.";
+    showPage("profilePage");
+}
+renderLibrary();
+const savedUser = localStorage.getItem("carscanUser");
+if (savedUser) {
+    document.getElementById("username").textContent = savedUser;
+    document.getElementById("accountText").textContent =
+        "Jesteś zalogowany.";
+}
+</script>
+</body>
+</html>
