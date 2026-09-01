@@ -2,422 +2,984 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#0b0b0f">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#08090d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CarScan">
 <title>CarScan</title>
 <style>
-* {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
+*{
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
 }
-body {
-    margin: 0;
-    background: #0b0b0f;
-    color: white;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Arial, sans-serif;
+html,body{
+    margin:0;
+    padding:0;
+    background:#08090d;
+    color:#fff;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
 }
-.app {
-    min-height: 100vh;
-    padding-bottom: 90px;
+body{
+    min-height:100vh;
+    overflow-x:hidden;
 }
-/* HEADER */
-.header {
-    padding: 55px 20px 20px;
+button,input{
+    font:inherit;
 }
-.header h1 {
-    margin: 0;
-    font-size: 32px;
+button{
+    cursor:pointer;
 }
-.header p {
-    color: #8e8e98;
-    margin-top: 6px;
+.app{
+    width:100%;
+    max-width:520px;
+    margin:auto;
+    min-height:100vh;
+    padding-bottom:105px;
+}
+/* TOP */
+.top{
+    padding:58px 20px 18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+.logo{
+    font-size:25px;
+    font-weight:800;
+    letter-spacing:-.8px;
+}
+.logo span{
+    color:#4f8cff;
+}
+.top-profile{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    border:1px solid #292d38;
+    background:#151821;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:20px;
+}
+/* PAGES */
+.page{
+    padding:0 18px;
+}
+.hidden{
+    display:none!important;
 }
 /* HOME */
-.home {
-    padding: 10px 20px;
+.greeting{
+    margin-top:4px;
 }
-.scan-box {
-    background: linear-gradient(145deg, #1c1c25, #111116);
-    border: 1px solid #292934;
-    border-radius: 24px;
-    padding: 28px 20px;
-    text-align: center;
+.greeting small{
+    color:#858b99;
+    font-size:14px;
 }
-.camera {
-    font-size: 55px;
-    margin-bottom: 10px;
+.greeting h1{
+    margin:5px 0 0;
+    font-size:31px;
+    letter-spacing:-1.2px;
 }
-.scan-box h2 {
-    margin: 5px 0;
+.hero{
+    margin-top:22px;
+    position:relative;
+    overflow:hidden;
+    border-radius:28px;
+    padding:25px 20px;
+    background:
+        radial-gradient(circle at 90% 10%,rgba(79,140,255,.35),transparent 35%),
+        linear-gradient(145deg,#151c2b,#0e1118);
+    border:1px solid #242b3a;
 }
-.scan-box p {
-    color: #90909a;
+.hero:after{
+    content:"";
+    position:absolute;
+    width:160px;
+    height:160px;
+    right:-80px;
+    bottom:-80px;
+    border-radius:50%;
+    background:rgba(79,140,255,.14);
 }
-.scan-button {
-    width: 100%;
-    border: 0;
-    border-radius: 16px;
-    padding: 17px;
-    margin-top: 15px;
-    font-size: 17px;
-    font-weight: 700;
-    color: white;
-    background: #3478f6;
+.hero-icon{
+    width:58px;
+    height:58px;
+    border-radius:19px;
+    background:#3478f6;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:27px;
+    margin-bottom:18px;
+    box-shadow:0 12px 30px rgba(52,120,246,.25);
 }
-.scan-button:active {
-    transform: scale(.98);
+.hero h2{
+    font-size:24px;
+    margin:0;
+    letter-spacing:-.6px;
+}
+.hero p{
+    color:#9299a8;
+    line-height:1.45;
+    margin:8px 0 20px;
+}
+.primary{
+    width:100%;
+    border:0;
+    border-radius:16px;
+    padding:16px;
+    color:#fff;
+    font-weight:750;
+    background:#3478f6;
+    box-shadow:0 10px 28px rgba(52,120,246,.22);
+}
+.primary:active{
+    transform:scale(.98);
+}
+/* STATS */
+.stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    margin-top:16px;
+}
+.stat{
+    background:#111319;
+    border:1px solid #20242e;
+    border-radius:18px;
+    padding:15px 10px;
+    text-align:center;
+}
+.stat strong{
+    display:block;
+    font-size:20px;
+}
+.stat span{
+    color:#777e8c;
+    font-size:11px;
+    margin-top:4px;
+    display:block;
+}
+/* SECTION */
+.section-head{
+    margin-top:28px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+.section-head h2{
+    margin:0;
+    font-size:20px;
+}
+.section-head button{
+    border:0;
+    background:none;
+    color:#4f8cff;
+    font-size:14px;
 }
 /* LIBRARY */
-.section {
-    padding: 25px 20px 0;
+.search{
+    margin:5px 0 17px;
+    position:relative;
 }
-.section h2 {
-    margin-bottom: 15px;
+.search input{
+    width:100%;
+    background:#12141a;
+    color:white;
+    border:1px solid #252934;
+    border-radius:15px;
+    padding:14px 15px 14px 43px;
+    outline:none;
 }
-.library {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
+.search-icon{
+    position:absolute;
+    left:15px;
+    top:12px;
+    color:#777e8c;
 }
-.car-card {
-    overflow: hidden;
-    background: #15151c;
-    border: 1px solid #25252e;
-    border-radius: 18px;
+.library{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:13px;
 }
-.car-card img {
-    width: 100%;
-    height: 145px;
-    object-fit: cover;
-    display: block;
+.card{
+    overflow:hidden;
+    border-radius:19px;
+    background:#111319;
+    border:1px solid #20242e;
+    position:relative;
 }
-.car-info {
-    padding: 12px;
+.card-img{
+    width:100%;
+    height:145px;
+    object-fit:cover;
+    display:block;
+    background:#181b23;
 }
-.car-name {
-    font-weight: 700;
-    font-size: 16px;
+.card-info{
+    padding:12px;
 }
-.car-year {
-    color: #8d8d98;
-    font-size: 13px;
-    margin-top: 4px;
+.card-name{
+    font-weight:750;
+    font-size:15px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
 }
-/* PROFILE */
-.profile {
-    padding: 20px;
+.card-meta{
+    color:#777e8c;
+    font-size:12px;
+    margin-top:4px;
 }
-.profile-box {
-    background: #15151c;
-    border-radius: 22px;
-    padding: 25px;
-    text-align: center;
+.favorite{
+    position:absolute;
+    top:9px;
+    right:9px;
+    width:32px;
+    height:32px;
+    border:0;
+    border-radius:50%;
+    background:rgba(0,0,0,.55);
+    color:white;
+    backdrop-filter:blur(8px);
 }
-.avatar {
-    width: 75px;
-    height: 75px;
-    margin: auto;
-    border-radius: 50%;
-    background: #3478f6;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 32px;
+/* EMPTY */
+.empty{
+    grid-column:1/-1;
+    padding:45px 15px;
+    text-align:center;
+    color:#747b89;
 }
-/* NAV */
-.nav {
-    position: fixed;
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
-    height: 68px;
-    background: rgba(25,25,32,.94);
-    border: 1px solid #30303a;
-    border-radius: 22px;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    backdrop-filter: blur(20px);
-    z-index: 10;
+.empty-icon{
+    font-size:45px;
+    margin-bottom:10px;
 }
-.nav button {
-    background: none;
-    border: 0;
-    color: #85858f;
-    font-size: 12px;
+/* SCANNER */
+.scanner{
+    text-align:center;
+    padding-top:20px;
 }
-.nav button.active {
-    color: white;
+.scanner h1{
+    font-size:29px;
+    margin-bottom:7px;
 }
-.nav-icon {
-    display: block;
-    font-size: 23px;
-    margin-bottom: 2px;
+.scanner p{
+    color:#858b99;
+}
+.camera-area{
+    margin-top:25px;
+    height:390px;
+    border-radius:28px;
+    border:1px solid #292f3b;
+    background:#11141b;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    position:relative;
+}
+.camera-placeholder{
+    text-align:center;
+    color:#737b89;
+}
+.camera-placeholder div{
+    font-size:60px;
+    margin-bottom:12px;
+}
+.preview{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:none;
+}
+.scan-actions{
+    margin-top:15px;
+}
+.secondary{
+    width:100%;
+    border:1px solid #2b303b;
+    background:#151820;
+    color:white;
+    border-radius:16px;
+    padding:15px;
+}
+/* ANALYSIS */
+.analysis{
+    text-align:center;
+    padding:60px 20px;
+}
+.loader{
+    width:75px;
+    height:75px;
+    margin:auto;
+    border-radius:50%;
+    border:5px solid #242a36;
+    border-top-color:#4f8cff;
+    animation:spin 1s linear infinite;
+}
+@keyframes spin{
+    to{transform:rotate(360deg)}
+}
+.analysis h2{
+    margin-top:25px;
+}
+.analysis p{
+    color:#858b99;
+}
+/* DETAIL */
+.detail-image{
+    width:100%;
+    height:310px;
+    object-fit:cover;
+    border-radius:25px;
+    border:1px solid #292e39;
+}
+.detail-title{
+    font-size:29px;
+    margin:18px 0 4px;
+}
+.detail-sub{
+    color:#7f8795;
+}
+.details-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+    margin-top:20px;
+}
+.detail-box{
+    background:#12151b;
+    border:1px solid #222732;
+    border-radius:16px;
+    padding:15px;
+}
+.detail-box small{
+    color:#727a88;
+    display:block;
+    margin-bottom:5px;
+}
+.detail-box strong{
+    font-size:15px;
+}
+/* ACCOUNT */
+.account-header{
+    text-align:center;
+    padding:25px 0;
+}
+.avatar{
+    width:82px;
+    height:82px;
+    margin:auto;
+    border-radius:50%;
+    background:linear-gradient(145deg,#3478f6,#5c9aff);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:32px;
+    box-shadow:0 15px 35px rgba(52,120,246,.2);
+}
+.account-header h1{
+    margin:13px 0 4px;
+}
+.account-header p{
+    margin:0;
+    color:#858b99;
+}
+.menu{
+    margin-top:12px;
+    background:#111319;
+    border:1px solid #222732;
+    border-radius:20px;
+    overflow:hidden;
+}
+.menu button{
+    width:100%;
+    border:0;
+    border-bottom:1px solid #222732;
+    padding:17px;
+    background:none;
+    color:white;
+    text-align:left;
+}
+.menu button:last-child{
+    border-bottom:0;
+}
+.menu span{
+    margin-right:10px;
 }
 /* LOGIN */
-.login {
-    padding: 70px 25px;
+.auth{
+    padding-top:55px;
 }
-.login h1 {
-    font-size: 35px;
+.auth h1{
+    font-size:34px;
+    margin-bottom:6px;
 }
-.input {
-    width: 100%;
-    padding: 16px;
-    margin-top: 12px;
-    border: 1px solid #30303a;
-    border-radius: 14px;
-    background: #15151c;
-    color: white;
-    font-size: 16px;
+.auth p{
+    color:#858b99;
 }
-.hidden {
-    display: none !important;
+.input{
+    width:100%;
+    margin-top:11px;
+    padding:16px;
+    border-radius:15px;
+    border:1px solid #292e38;
+    background:#12151b;
+    color:white;
+    outline:none;
 }
-.empty {
-    grid-column: 1 / -1;
-    text-align: center;
-    color: #777782;
-    padding: 40px 10px;
+.auth .primary{
+    margin-top:15px;
+}
+/* NAV */
+.nav{
+    position:fixed;
+    z-index:100;
+    left:50%;
+    transform:translateX(-50%);
+    bottom:12px;
+    width:calc(100% - 24px);
+    max-width:495px;
+    height:72px;
+    border-radius:23px;
+    background:rgba(17,19,25,.92);
+    border:1px solid #2a2f39;
+    backdrop-filter:blur(22px);
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+    box-shadow:0 12px 40px rgba(0,0,0,.35);
+}
+.nav button{
+    border:0;
+    background:none;
+    color:#717987;
+    font-size:11px;
+    min-width:65px;
+}
+.nav button.active{
+    color:#fff;
+}
+.nav-icon{
+    display:block;
+    font-size:22px;
+    margin-bottom:3px;
+}
+/* TOAST */
+.toast{
+    position:fixed;
+    left:50%;
+    bottom:98px;
+    transform:translate(-50%,20px);
+    background:#20242d;
+    color:white;
+    padding:13px 18px;
+    border-radius:14px;
+    opacity:0;
+    pointer-events:none;
+    transition:.3s;
+    z-index:200;
+    white-space:nowrap;
+}
+.toast.show{
+    opacity:1;
+    transform:translate(-50%,0);
+}
+/* RESPONSIVE */
+@media(max-width:360px){
+    .library{
+        grid-template-columns:1fr;
+    }
+    .camera-area{
+        height:330px;
+    }
 }
 </style>
 </head>
 <body>
 <div class="app">
-    <!-- HOME -->
-    <div id="homePage">
-        <div class="header">
-            <h1>CarScan 🚗</h1>
-            <p>Rozpoznaj samochód ze zdjęcia</p>
+<header class="top">
+    <div class="logo">Car<span>Scan</span></div>
+    <button class="top-profile" onclick="openPage('account')">👤</button>
+</header>
+<!-- HOME -->
+<main id="home" class="page">
+    <div class="greeting">
+        <small>Witaj w CarScan</small>
+        <h1>Znajdź swój samochód.</h1>
+    </div>
+    <section class="hero">
+        <div class="hero-icon">📸</div>
+        <h2>Zeskanuj samochód</h2>
+        <p>
+            Zrób zdjęcie auta, a CarScan spróbuje rozpoznać
+            markę, model i generację.
+        </p>
+        <button class="primary" onclick="openScanner()">
+            Rozpocznij skanowanie
+        </button>
+    </section>
+    <section class="stats">
+        <div class="stat">
+            <strong id="statCars">0</strong>
+            <span>Samochody</span>
         </div>
-        <div class="home">
-            <div class="scan-box">
-                <div class="camera">📸</div>
-                <h2>Zeskanuj samochód</h2>
-                <p>
-                    Zrób zdjęcie samochodu lub wybierz je z galerii.
-                </p>
-                <button class="scan-button" onclick="openCamera()">
-                    📷 Zrób zdjęcie
-                </button>
-                <input
-                    id="photoInput"
-                    type="file"
-                    accept="image/*"
-                    capture="environment"
-                    hidden
-                    onchange="scanCar(event)"
-                >
+        <div class="stat">
+            <strong id="statFav">0</strong>
+            <span>Ulubione</span>
+        </div>
+        <div class="stat">
+            <strong id="statScans">0</strong>
+            <span>Skanowania</span>
+        </div>
+    </section>
+    <div class="section-head">
+        <h2>Ostatnio dodane</h2>
+        <button onclick="openPage('library')">Zobacz wszystko</button>
+    </div>
+    <div id="homeLibrary" class="library" style="margin-top:15px"></div>
+</main>
+<!-- LIBRARY -->
+<main id="library" class="page hidden">
+    <div class="greeting">
+        <small>Twoja kolekcja</small>
+        <h1>Biblioteka 📚</h1>
+    </div>
+    <div class="search" style="margin-top:20px">
+        <span class="search-icon">🔍</span>
+        <input
+            id="searchInput"
+            placeholder="Szukaj samochodu..."
+            oninput="renderLibrary()"
+        >
+    </div>
+    <div id="fullLibrary" class="library"></div>
+</main>
+<!-- SCANNER -->
+<main id="scanner" class="page hidden">
+    <div class="scanner">
+        <h1>Skanuj samochód</h1>
+        <p>Zrób zdjęcie przodu lub boku auta.</p>
+        <div class="camera-area">
+            <div id="cameraPlaceholder" class="camera-placeholder">
+                <div>🚗</div>
+                <span>Dodaj zdjęcie samochodu</span>
             </div>
+            <img id="preview" class="preview">
         </div>
-        <div class="section">
-            <h2>Ostatnie samochody</h2>
-            <div id="library" class="library"></div>
-        </div>
-    </div>
-    <!-- LIBRARY -->
-    <div id="libraryPage" class="hidden">
-        <div class="header">
-            <h1>Biblioteka 📚</h1>
-            <p>Twoje zeskanowane samochody</p>
-        </div>
-        <div class="section">
-            <div id="libraryFull" class="library"></div>
-        </div>
-    </div>
-    <!-- PROFILE -->
-    <div id="profilePage" class="hidden">
-        <div class="header">
-            <h1>Twoje konto 👤</h1>
-            <p>Zarządzaj swoim CarScan</p>
-        </div>
-        <div class="profile">
-            <div class="profile-box">
-                <div class="avatar">👤</div>
-                <h2 id="username">Gość</h2>
-                <p id="accountText">
-                    Zaloguj się, aby synchronizować samochody.
-                </p>
-                <button class="scan-button" onclick="login()">
-                    Zaloguj / Zarejestruj
-                </button>
-            </div>
-        </div>
-    </div>
-    <!-- LOGIN -->
-    <div id="loginPage" class="hidden">
-        <div class="login">
-            <h1>Witaj 👋</h1>
-            <p style="color:#888">
-                Zaloguj się do CarScan
-            </p>
-            <input
-                id="email"
-                class="input"
-                type="email"
-                placeholder="E-mail"
-            >
-            <input
-                id="password"
-                class="input"
-                type="password"
-                placeholder="Hasło"
-            >
-            <button class="scan-button" onclick="doLogin()">
-                Zaloguj
+        <div class="scan-actions">
+            <button class="primary" onclick="choosePhoto()">
+                📷 Zrób / wybierz zdjęcie
             </button>
-            <button
-                class="scan-button"
-                style="background:#22222b"
-                onclick="register()">
-                Utwórz konto
-            </button>
+            <input
+                id="photoInput"
+                type="file"
+                accept="image/*"
+                capture="environment"
+                hidden
+                onchange="processPhoto(event)"
+            >
         </div>
     </div>
+</main>
+<!-- ANALYSIS -->
+<main id="analysis" class="page hidden">
+    <div class="analysis">
+        <div class="loader"></div>
+        <h2>Analizujemy zdjęcie...</h2>
+        <p>
+            CarScan przygotowuje rozpoznanie samochodu.
+        </p>
+    </div>
+</main>
+<!-- DETAIL -->
+<main id="detail" class="page hidden">
+    <button
+        class="secondary"
+        onclick="openPage('library')"
+        style="margin-bottom:15px">
+        ← Wróć do biblioteki
+    </button>
+    <img id="detailImage" class="detail-image">
+    <h1 id="detailTitle" class="detail-title"></h1>
+    <div id="detailSub" class="detail-sub"></div>
+    <div class="details-grid">
+        <div class="detail-box">
+            <small>Marka</small>
+            <strong id="dBrand">—</strong>
+        </div>
+        <div class="detail-box">
+            <small>Model</small>
+            <strong id="dModel">—</strong>
+        </div>
+        <div class="detail-box">
+            <small>Generacja</small>
+            <strong id="dGeneration">—</strong>
+        </div>
+        <div class="detail-box">
+            <small>Rok</small>
+            <strong id="dYear">—</strong>
+        </div>
+    </div>
+    <button
+        class="secondary"
+        onclick="deleteCurrentCar()"
+        style="margin-top:15px;color:#ff6464">
+        🗑️ Usuń z biblioteki
+    </button>
+</main>
+<!-- ACCOUNT -->
+<main id="account" class="page hidden">
+    <div class="account-header">
+        <div class="avatar">👤</div>
+        <h1 id="accountName">Gość</h1>
+        <p id="accountEmail">
+            Zaloguj się, aby korzystać z konta.
+        </p>
+    </div>
+    <div class="menu">
+        <button onclick="openAuth()">
+            <span>🔐</span>
+            Zaloguj / Zarejestruj
+        </button>
+        <button onclick="showToast('Ustawienia będą dostępne wkrótce ⚙️')">
+            <span>⚙️</span>
+            Ustawienia
+        </button>
+        <button onclick="showToast('CarScan 2026')">
+            <span>ℹ️</span>
+            O aplikacji
+        </button>
+        <button onclick="clearLibrary()">
+            <span>🗑️</span>
+            Wyczyść bibliotekę
+        </button>
+    </div>
+</main>
+<!-- AUTH -->
+<main id="auth" class="page hidden">
+    <div class="auth">
+        <button class="secondary" onclick="openPage('account')">
+            ← Wróć
+        </button>
+        <h1>Twoje konto</h1>
+        <p>
+            Zaloguj się lub utwórz konto CarScan.
+        </p>
+        <input
+            id="authName"
+            class="input"
+            placeholder="Nazwa użytkownika"
+        >
+        <input
+            id="authEmail"
+            class="input"
+            type="email"
+            placeholder="E-mail"
+        >
+        <input
+            id="authPassword"
+            class="input"
+            type="password"
+            placeholder="Hasło"
+        >
+        <button class="primary" onclick="fakeLogin()">
+            Kontynuuj
+        </button>
+    </div>
+</main>
 </div>
 <!-- NAV -->
-<div class="nav">
-    <button class="active" onclick="showPage('homePage', this)">
-        <span class="nav-icon">🏠</span>
+<nav id="nav" class="nav">
+    <button class="active" onclick="openPage('home',this)">
+        <span class="nav-icon">⌂</span>
         Start
     </button>
-    <button onclick="showPage('libraryPage', this)">
-        <span class="nav-icon">📚</span>
+    <button onclick="openPage('library',this)">
+        <span class="nav-icon">▦</span>
         Biblioteka
     </button>
-    <button onclick="showPage('profilePage', this)">
-        <span class="nav-icon">👤</span>
+    <button onclick="openScanner()">
+        <span class="nav-icon">＋</span>
+        Skanuj
+    </button>
+    <button onclick="openPage('account',this)">
+        <span class="nav-icon">♙</span>
         Konto
     </button>
-</div>
+</nav>
+<div id="toast" class="toast"></div>
 <script>
-let cars = JSON.parse(localStorage.getItem("carscanCars") || "[]");
-function openCamera() {
-    document.getElementById("photoInput").click();
-}
-function scanCar(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const image = e.target.result;
-        /*
-        NA RAZIE TESTOWA NAZWA.
-        W NASTĘPNYM KROKU PODŁĄCZYMY PRAWDZIWE AI.
-        */
-        const car = {
-            image: image,
-            name: "Rozpoznawanie...",
-            year: "Analizowanie zdjęcia"
-        };
-        cars.unshift(car);
-        localStorage.setItem(
-            "carscanCars",
-            JSON.stringify(cars)
-        );
-        renderLibrary();
-        alert("Zdjęcie dodane! 🚗");
-        /*
-        Tymczasowo po chwili pokazujemy przykładowy wynik.
-        */
-        setTimeout(() => {
-            car.name = "BMW M3";
-            car.year = "Przykładowy wynik AI";
-            localStorage.setItem(
-                "carscanCars",
-                JSON.stringify(cars)
-            );
-            renderLibrary();
-        }, 1500);
-    };
-    reader.readAsDataURL(file);
-}
-function renderLibrary() {
-    const containers = [
-        document.getElementById("library"),
-        document.getElementById("libraryFull")
-    ];
-    containers.forEach(container => {
-        if (!container) return;
-        container.innerHTML = "";
-        if (cars.length === 0) {
-            container.innerHTML = `
-                <div class="empty">
-                    Nie masz jeszcze żadnych samochodów 🚗
-                </div>
-            `;
-            return;
-        }
-        cars.forEach(car => {
-            const card = document.createElement("div");
-            card.className = "car-card";
-            card.innerHTML = `
-                <img src="${car.image}">
-                <div class="car-info">
-                    <div class="car-name">
-                        ${car.name}
-                    </div>
-                    <div class="car-year">
-                        ${car.year}
-                    </div>
-                </div>
-            `;
-            container.appendChild(card);
-        });
-    });
-}
-function showPage(pageId, button) {
+let cars = JSON.parse(
+    localStorage.getItem("carscan_cars") || "[]"
+);
+let scans = Number(
+    localStorage.getItem("carscan_scans") || 0
+);
+let currentCar = null;
+/* PAGE SYSTEM */
+function openPage(id,button){
     document
-        .querySelectorAll(".app > div")
+        .querySelectorAll(".page")
         .forEach(page => page.classList.add("hidden"));
     document
-        .getElementById(pageId)
+        .getElementById(id)
+        .classList.remove("hidden");
+    if(button){
+        document
+            .querySelectorAll(".nav button")
+            .forEach(b => b.classList.remove("active"));
+        button.classList.add("active");
+    }
+    if(id === "library"){
+        renderLibrary();
+    }
+}
+/* SCANNER */
+function openScanner(){
+    document
+        .querySelectorAll(".page")
+        .forEach(page => page.classList.add("hidden"));
+    document
+        .getElementById("scanner")
         .classList.remove("hidden");
     document
         .querySelectorAll(".nav button")
-        .forEach(btn => btn.classList.remove("active"));
-    if (button) {
-        button.classList.add("active");
+        .forEach(b => b.classList.remove("active"));
+}
+function choosePhoto(){
+    document
+        .getElementById("photoInput")
+        .click();
+}
+function processPhoto(event){
+    const file = event.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e){
+        const image = e.target.result;
+        document
+            .getElementById("preview")
+            .src = image;
+        document
+            .getElementById("preview")
+            .style.display = "block";
+        document
+            .getElementById("cameraPlaceholder")
+            .style.display = "none";
+        openPage("analysis");
+        setTimeout(() => {
+            createCar(image);
+        },1800);
+    };
+    reader.readAsDataURL(file);
+}
+/* TEMPORARY AI RESULT */
+function createCar(image){
+    /*
+      TUTAJ PÓŹNIEJ PODŁĄCZYMY PRAWDZIWE AI.
+      AI będzie zwracało np.:
+      {
+        brand:"BMW",
+        model:"M3",
+        generation:"G80",
+        year:"2021–2024"
+      }
+    */
+    const car = {
+        id:Date.now(),
+        image:image,
+        brand:"BMW",
+        model:"M3",
+        generation:"G80",
+        year:"2021–2024",
+        name:"BMW M3 G80",
+        favorite:false,
+        created:new Date().toISOString()
+    };
+    cars.unshift(car);
+    scans++;
+    save();
+    currentCar = car;
+    renderLibrary();
+    showDetail(car);
+    showToast("Samochód dodany do biblioteki 🚗");
+}
+/* LIBRARY */
+function renderLibrary(){
+    const search = (
+        document.getElementById("searchInput")?.value || ""
+    ).toLowerCase();
+    const filtered = cars.filter(car =>
+        car.name.toLowerCase().includes(search)
+    );
+    const home = document.getElementById("homeLibrary");
+    const full = document.getElementById("fullLibrary");
+    function cards(list){
+        if(!list.length){
+            return `
+                <div class="empty">
+                    <div class="empty-icon">🚗</div>
+                    Brak samochodów
+                </div>
+            `;
+        }
+        return list.map(car => `
+            <article class="card"
+                onclick="showDetailById(${car.id})">
+                <img
+                    class="card-img"
+                    src="${car.image}"
+                    alt="${car.name}"
+                >
+                <button
+                    class="favorite"
+                    onclick="toggleFavorite(event,${car.id})">
+                    ${car.favorite ? "★" : "☆"}
+                </button>
+                <div class="card-info">
+                    <div class="card-name">
+                        ${car.name}
+                    </div>
+                    <div class="card-meta">
+                        ${car.year}
+                    </div>
+                </div>
+            </article>
+        `).join("");
     }
+    if(home){
+        home.innerHTML = cards(cars.slice(0,4));
+    }
+    if(full){
+        full.innerHTML = cards(filtered);
+    }
+    updateStats();
 }
-function login() {
-    showPage("loginPage");
-    document.querySelector(".nav").style.display = "none";
+/* DETAILS */
+function showDetailById(id){
+    const car = cars.find(c => c.id === id);
+    if(car) showDetail(car);
 }
-function doLogin() {
-    const email = document.getElementById("email").value;
-    if (!email) {
-        alert("Wpisz e-mail.");
+function showDetail(car){
+    currentCar = car;
+    document.getElementById("detailImage").src = car.image;
+    document.getElementById("detailTitle").textContent = car.name;
+    document.getElementById("detailSub").textContent =
+        "Rozpoznano przez CarScan";
+    document.getElementById("dBrand").textContent =
+        car.brand;
+    document.getElementById("dModel").textContent =
+        car.model;
+    document.getElementById("dGeneration").textContent =
+        car.generation;
+    document.getElementById("dYear").textContent =
+        car.year;
+    openPage("detail");
+}
+function deleteCurrentCar(){
+    if(!currentCar) return;
+    cars = cars.filter(c => c.id !== currentCar.id);
+    save();
+    currentCar = null;
+    openPage("library");
+    showToast("Usunięto samochód");
+}
+/* FAVORITES */
+function toggleFavorite(event,id){
+    event.stopPropagation();
+    const car = cars.find(c => c.id === id);
+    if(!car) return;
+    car.favorite = !car.favorite;
+    save();
+    renderLibrary();
+}
+/* ACCOUNT */
+function openAuth(){
+    openPage("auth");
+}
+function fakeLogin(){
+    const name =
+        document.getElementById("authName").value.trim();
+    const email =
+        document.getElementById("authEmail").value.trim();
+    if(!name || !email){
+        showToast("Uzupełnij dane");
         return;
     }
-    localStorage.setItem("carscanUser", email);
-    document.querySelector(".nav").style.display = "flex";
-    document.getElementById("username").textContent = email;
-    document.getElementById("accountText").textContent =
-        "Jesteś zalogowany.";
-    showPage("profilePage");
+    localStorage.setItem(
+        "carscan_user",
+        JSON.stringify({
+            name:name,
+            email:email
+        })
+    );
+    updateAccount();
+    openPage("account");
+    showToast("Zalogowano pomyślnie 👋");
 }
-function register() {
-    const email = document.getElementById("email").value;
-    if (!email) {
-        alert("Wpisz e-mail.");
+function updateAccount(){
+    const user = JSON.parse(
+        localStorage.getItem("carscan_user") || "null"
+    );
+    if(!user) return;
+    document.getElementById("accountName")
+        .textContent = user.name;
+    document.getElementById("accountEmail")
+        .textContent = user.email;
+}
+/* STATS */
+function updateStats(){
+    document.getElementById("statCars")
+        .textContent = cars.length;
+    document.getElementById("statFav")
+        .textContent =
+        cars.filter(c => c.favorite).length;
+    document.getElementById("statScans")
+        .textContent = scans;
+}
+/* STORAGE */
+function save(){
+    localStorage.setItem(
+        "carscan_cars",
+        JSON.stringify(cars)
+    );
+    localStorage.setItem(
+        "carscan_scans",
+        scans
+    );
+}
+/* CLEAR */
+function clearLibrary(){
+    if(!cars.length){
+        showToast("Biblioteka jest już pusta");
         return;
     }
-    localStorage.setItem("carscanUser", email);
-    alert("Konto utworzone! 🚗");
-    document.querySelector(".nav").style.display = "flex";
-    document.getElementById("username").textContent = email;
-    document.getElementById("accountText").textContent =
-        "Twoje konto CarScan.";
-    showPage("profilePage");
+    if(confirm("Usunąć wszystkie samochody?")){
+        cars = [];
+        save();
+        renderLibrary();
+        showToast("Biblioteka wyczyszczona");
+    }
 }
+/* TOAST */
+let toastTimer;
+function showToast(text){
+    const toast =
+        document.getElementById("toast");
+    toast.textContent = text;
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+    },2200);
+}
+/* START */
 renderLibrary();
-const savedUser = localStorage.getItem("carscanUser");
-if (savedUser) {
-    document.getElementById("username").textContent = savedUser;
-    document.getElementById("accountText").textContent =
-        "Jesteś zalogowany.";
-}
+updateAccount();
 </script>
 </body>
 </html>
