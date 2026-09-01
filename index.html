@@ -15,13 +15,12 @@
 }
 html,body{
     margin:0;
-    padding:0;
+    min-height:100%;
     background:#08090d;
     color:#fff;
     font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
 }
 body{
-    min-height:100vh;
     overflow-x:hidden;
 }
 button,input{
@@ -30,79 +29,63 @@ button,input{
 button{
     cursor:pointer;
 }
+.hidden{
+    display:none!important;
+}
 .app{
     width:100%;
     max-width:520px;
-    margin:auto;
     min-height:100vh;
+    margin:auto;
     padding-bottom:105px;
 }
-/* TOP */
+/* HEADER */
 .top{
     padding:58px 20px 18px;
     display:flex;
-    align-items:center;
     justify-content:space-between;
+    align-items:center;
 }
 .logo{
     font-size:25px;
     font-weight:800;
-    letter-spacing:-.8px;
+    letter-spacing:-1px;
 }
 .logo span{
     color:#4f8cff;
 }
-.top-profile{
+.profile-button{
     width:42px;
     height:42px;
     border-radius:50%;
-    border:1px solid #292d38;
-    background:#151821;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:20px;
+    border:1px solid #292e39;
+    background:#151820;
+    color:white;
 }
-/* PAGES */
+/* PAGE */
 .page{
     padding:0 18px;
 }
-.hidden{
-    display:none!important;
-}
 /* HOME */
 .greeting{
-    margin-top:4px;
+    padding-top:4px;
 }
 .greeting small{
     color:#858b99;
-    font-size:14px;
 }
 .greeting h1{
-    margin:5px 0 0;
     font-size:31px;
+    margin:5px 0 0;
     letter-spacing:-1.2px;
 }
 .hero{
     margin-top:22px;
-    position:relative;
-    overflow:hidden;
-    border-radius:28px;
     padding:25px 20px;
+    border-radius:28px;
+    border:1px solid #252c3a;
     background:
-        radial-gradient(circle at 90% 10%,rgba(79,140,255,.35),transparent 35%),
-        linear-gradient(145deg,#151c2b,#0e1118);
-    border:1px solid #242b3a;
-}
-.hero:after{
-    content:"";
-    position:absolute;
-    width:160px;
-    height:160px;
-    right:-80px;
-    bottom:-80px;
-    border-radius:50%;
-    background:rgba(79,140,255,.14);
+        radial-gradient(circle at 90% 5%,rgba(79,140,255,.3),transparent 36%),
+        linear-gradient(145deg,#161d2b,#0e1118);
 }
 .hero-icon{
     width:58px;
@@ -112,29 +95,26 @@ button{
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:27px;
+    font-size:28px;
     margin-bottom:18px;
-    box-shadow:0 12px 30px rgba(52,120,246,.25);
 }
 .hero h2{
-    font-size:24px;
     margin:0;
-    letter-spacing:-.6px;
+    font-size:24px;
 }
 .hero p{
     color:#9299a8;
     line-height:1.45;
-    margin:8px 0 20px;
+    margin:9px 0 20px;
 }
 .primary{
     width:100%;
+    padding:16px;
     border:0;
     border-radius:16px;
-    padding:16px;
     color:#fff;
     font-weight:750;
     background:#3478f6;
-    box-shadow:0 10px 28px rgba(52,120,246,.22);
 }
 .primary:active{
     transform:scale(.98);
@@ -147,11 +127,11 @@ button{
     margin-top:16px;
 }
 .stat{
+    padding:15px 8px;
+    text-align:center;
+    border-radius:18px;
     background:#111319;
     border:1px solid #20242e;
-    border-radius:18px;
-    padding:15px 10px;
-    text-align:center;
 }
 .stat strong{
     display:block;
@@ -160,15 +140,13 @@ button{
 .stat span{
     color:#777e8c;
     font-size:11px;
-    margin-top:4px;
-    display:block;
 }
 /* SECTION */
 .section-head{
     margin-top:28px;
     display:flex;
-    justify-content:space-between;
     align-items:center;
+    justify-content:space-between;
 }
 .section-head h2{
     margin:0;
@@ -178,20 +156,19 @@ button{
     border:0;
     background:none;
     color:#4f8cff;
-    font-size:14px;
 }
-/* LIBRARY */
+/* SEARCH */
 .search{
-    margin:5px 0 17px;
     position:relative;
+    margin:20px 0 17px;
 }
 .search input{
     width:100%;
-    background:#12141a;
-    color:white;
-    border:1px solid #252934;
+    padding:14px 15px 14px 42px;
     border-radius:15px;
-    padding:14px 15px 14px 43px;
+    border:1px solid #292e38;
+    background:#12151b;
+    color:#fff;
     outline:none;
 }
 .search-icon{
@@ -200,24 +177,25 @@ button{
     top:12px;
     color:#777e8c;
 }
+/* LIBRARY */
 .library{
     display:grid;
     grid-template-columns:repeat(2,minmax(0,1fr));
     gap:13px;
 }
 .card{
+    position:relative;
     overflow:hidden;
     border-radius:19px;
     background:#111319;
     border:1px solid #20242e;
-    position:relative;
 }
 .card-img{
     width:100%;
     height:145px;
-    object-fit:cover;
     display:block;
-    background:#181b23;
+    object-fit:cover;
+    background:#171a21;
 }
 .card-info{
     padding:12px;
@@ -230,28 +208,27 @@ button{
     text-overflow:ellipsis;
 }
 .card-meta{
+    margin-top:4px;
     color:#777e8c;
     font-size:12px;
-    margin-top:4px;
 }
 .favorite{
     position:absolute;
-    top:9px;
     right:9px;
+    top:9px;
     width:32px;
     height:32px;
     border:0;
     border-radius:50%;
-    background:rgba(0,0,0,.55);
-    color:white;
-    backdrop-filter:blur(8px);
+    color:#fff;
+    background:rgba(0,0,0,.58);
 }
 /* EMPTY */
 .empty{
     grid-column:1/-1;
-    padding:45px 15px;
     text-align:center;
-    color:#747b89;
+    padding:45px 10px;
+    color:#777e8c;
 }
 .empty-icon{
     font-size:45px;
@@ -260,7 +237,7 @@ button{
 /* SCANNER */
 .scanner{
     text-align:center;
-    padding-top:20px;
+    padding-top:10px;
 }
 .scanner h1{
     font-size:29px;
@@ -270,19 +247,17 @@ button{
     color:#858b99;
 }
 .camera-area{
-    margin-top:25px;
     height:390px;
+    margin-top:24px;
+    overflow:hidden;
     border-radius:28px;
     border:1px solid #292f3b;
     background:#11141b;
     display:flex;
     align-items:center;
     justify-content:center;
-    overflow:hidden;
-    position:relative;
 }
 .camera-placeholder{
-    text-align:center;
     color:#737b89;
 }
 .camera-placeholder div{
@@ -290,33 +265,22 @@ button{
     margin-bottom:12px;
 }
 .preview{
+    display:none;
     width:100%;
     height:100%;
     object-fit:cover;
-    display:none;
-}
-.scan-actions{
-    margin-top:15px;
-}
-.secondary{
-    width:100%;
-    border:1px solid #2b303b;
-    background:#151820;
-    color:white;
-    border-radius:16px;
-    padding:15px;
 }
 /* ANALYSIS */
 .analysis{
     text-align:center;
-    padding:60px 20px;
+    padding:65px 20px;
 }
 .loader{
-    width:75px;
-    height:75px;
+    width:76px;
+    height:76px;
     margin:auto;
     border-radius:50%;
-    border:5px solid #242a36;
+    border:5px solid #252b36;
     border-top-color:#4f8cff;
     animation:spin 1s linear infinite;
 }
@@ -329,45 +293,42 @@ button{
 .analysis p{
     color:#858b99;
 }
-/* DETAIL */
-.detail-image{
+/* RESULT */
+.result-image{
     width:100%;
-    height:310px;
+    height:300px;
     object-fit:cover;
     border-radius:25px;
     border:1px solid #292e39;
 }
-.detail-title{
-    font-size:29px;
+.result-title{
     margin:18px 0 4px;
+    font-size:29px;
 }
-.detail-sub{
+.result-sub{
     color:#7f8795;
 }
-.details-grid{
+.result-boxes{
     display:grid;
     grid-template-columns:repeat(2,1fr);
     gap:10px;
     margin-top:20px;
 }
-.detail-box{
+.result-box{
+    padding:15px;
+    border-radius:16px;
     background:#12151b;
     border:1px solid #222732;
-    border-radius:16px;
-    padding:15px;
 }
-.detail-box small{
-    color:#727a88;
+.result-box small{
     display:block;
+    color:#727a88;
     margin-bottom:5px;
 }
-.detail-box strong{
-    font-size:15px;
-}
 /* ACCOUNT */
-.account-header{
+.account{
     text-align:center;
-    padding:25px 0;
+    padding-top:25px;
 }
 .avatar{
     width:82px;
@@ -376,47 +337,42 @@ button{
     border-radius:50%;
     background:linear-gradient(145deg,#3478f6,#5c9aff);
     display:flex;
-    justify-content:center;
     align-items:center;
+    justify-content:center;
     font-size:32px;
-    box-shadow:0 15px 35px rgba(52,120,246,.2);
 }
-.account-header h1{
+.account h1{
     margin:13px 0 4px;
 }
-.account-header p{
+.account p{
     margin:0;
     color:#858b99;
 }
 .menu{
-    margin-top:12px;
-    background:#111319;
-    border:1px solid #222732;
-    border-radius:20px;
+    margin-top:25px;
     overflow:hidden;
+    border-radius:20px;
+    border:1px solid #222732;
+    background:#111319;
 }
 .menu button{
     width:100%;
+    padding:17px;
     border:0;
     border-bottom:1px solid #222732;
-    padding:17px;
     background:none;
-    color:white;
+    color:#fff;
     text-align:left;
 }
 .menu button:last-child{
     border-bottom:0;
 }
-.menu span{
-    margin-right:10px;
-}
-/* LOGIN */
+/* AUTH */
 .auth{
-    padding-top:55px;
+    padding-top:45px;
 }
 .auth h1{
     font-size:34px;
-    margin-bottom:6px;
 }
 .auth p{
     color:#858b99;
@@ -428,7 +384,7 @@ button{
     border-radius:15px;
     border:1px solid #292e38;
     background:#12151b;
-    color:white;
+    color:#fff;
     outline:none;
 }
 .auth .primary{
@@ -439,26 +395,25 @@ button{
     position:fixed;
     z-index:100;
     left:50%;
-    transform:translateX(-50%);
     bottom:12px;
+    transform:translateX(-50%);
     width:calc(100% - 24px);
     max-width:495px;
     height:72px;
     border-radius:23px;
-    background:rgba(17,19,25,.92);
     border:1px solid #2a2f39;
+    background:rgba(17,19,25,.92);
     backdrop-filter:blur(22px);
     display:flex;
-    align-items:center;
     justify-content:space-around;
-    box-shadow:0 12px 40px rgba(0,0,0,.35);
+    align-items:center;
 }
 .nav button{
+    min-width:65px;
     border:0;
     background:none;
     color:#717987;
     font-size:11px;
-    min-width:65px;
 }
 .nav button.active{
     color:#fff;
@@ -473,22 +428,21 @@ button{
     position:fixed;
     left:50%;
     bottom:98px;
+    z-index:200;
     transform:translate(-50%,20px);
-    background:#20242d;
-    color:white;
     padding:13px 18px;
     border-radius:14px;
+    background:#20242d;
+    color:#fff;
     opacity:0;
     pointer-events:none;
     transition:.3s;
-    z-index:200;
     white-space:nowrap;
 }
 .toast.show{
     opacity:1;
     transform:translate(-50%,0);
 }
-/* RESPONSIVE */
 @media(max-width:360px){
     .library{
         grid-template-columns:1fr;
@@ -503,20 +457,22 @@ button{
 <div class="app">
 <header class="top">
     <div class="logo">Car<span>Scan</span></div>
-    <button class="top-profile" onclick="openPage('account')">👤</button>
+    <button class="profile-button" onclick="openPage('account')">
+        👤
+    </button>
 </header>
 <!-- HOME -->
 <main id="home" class="page">
     <div class="greeting">
-        <small>Witaj w CarScan</small>
-        <h1>Znajdź swój samochód.</h1>
+        <small>CarScan AI</small>
+        <h1>Rozpoznaj samochód.</h1>
     </div>
     <section class="hero">
         <div class="hero-icon">📸</div>
         <h2>Zeskanuj samochód</h2>
         <p>
-            Zrób zdjęcie auta, a CarScan spróbuje rozpoznać
-            markę, model i generację.
+            Zrób zdjęcie auta. Prawdziwe AI przeanalizuje obraz
+            i spróbuje określić markę, model, generację oraz rocznik.
         </p>
         <button class="primary" onclick="openScanner()">
             Rozpocznij skanowanie
@@ -537,10 +493,15 @@ button{
         </div>
     </section>
     <div class="section-head">
-        <h2>Ostatnio dodane</h2>
-        <button onclick="openPage('library')">Zobacz wszystko</button>
+        <h2>Ostatnie</h2>
+        <button onclick="openPage('library')">
+            Wszystkie
+        </button>
     </div>
-    <div id="homeLibrary" class="library" style="margin-top:15px"></div>
+    <div id="homeLibrary"
+         class="library"
+         style="margin-top:15px">
+    </div>
 </main>
 <!-- LIBRARY -->
 <main id="library" class="page hidden">
@@ -548,7 +509,7 @@ button{
         <small>Twoja kolekcja</small>
         <h1>Biblioteka 📚</h1>
     </div>
-    <div class="search" style="margin-top:20px">
+    <div class="search">
         <span class="search-icon">🔍</span>
         <input
             id="searchInput"
@@ -562,112 +523,132 @@ button{
 <main id="scanner" class="page hidden">
     <div class="scanner">
         <h1>Skanuj samochód</h1>
-        <p>Zrób zdjęcie przodu lub boku auta.</p>
+        <p>
+            Najlepiej fotografować całe auto z przodu lub z boku.
+        </p>
         <div class="camera-area">
-            <div id="cameraPlaceholder" class="camera-placeholder">
+            <div id="cameraPlaceholder"
+                 class="camera-placeholder">
                 <div>🚗</div>
-                <span>Dodaj zdjęcie samochodu</span>
+                <span>
+                    Dodaj zdjęcie samochodu
+                </span>
             </div>
-            <img id="preview" class="preview">
-        </div>
-        <div class="scan-actions">
-            <button class="primary" onclick="choosePhoto()">
-                📷 Zrób / wybierz zdjęcie
-            </button>
-            <input
-                id="photoInput"
-                type="file"
-                accept="image/*"
-                capture="environment"
-                hidden
-                onchange="processPhoto(event)"
+            <img
+                id="preview"
+                class="preview"
+                alt="Podgląd zdjęcia"
             >
         </div>
+        <button
+            class="primary"
+            style="margin-top:15px"
+            onclick="choosePhoto()">
+            📷 Zrób / wybierz zdjęcie
+        </button>
+        <input
+            id="photoInput"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            capture="environment"
+            hidden
+            onchange="processPhoto(event)"
+        >
     </div>
 </main>
 <!-- ANALYSIS -->
 <main id="analysis" class="page hidden">
     <div class="analysis">
         <div class="loader"></div>
-        <h2>Analizujemy zdjęcie...</h2>
-        <p>
-            CarScan przygotowuje rozpoznanie samochodu.
+        <h2>AI analizuje zdjęcie...</h2>
+        <p id="analysisText">
+            Sprawdzamy, czy na zdjęciu znajduje się samochód.
         </p>
     </div>
 </main>
-<!-- DETAIL -->
-<main id="detail" class="page hidden">
-    <button
-        class="secondary"
-        onclick="openPage('library')"
-        style="margin-bottom:15px">
-        ← Wróć do biblioteki
-    </button>
-    <img id="detailImage" class="detail-image">
-    <h1 id="detailTitle" class="detail-title"></h1>
-    <div id="detailSub" class="detail-sub"></div>
-    <div class="details-grid">
-        <div class="detail-box">
+<!-- RESULT -->
+<main id="result" class="page hidden">
+    <img
+        id="resultImage"
+        class="result-image"
+        alt="Samochód"
+    >
+    <h1
+        id="resultTitle"
+        class="result-title">
+    </h1>
+    <div
+        id="resultSub"
+        class="result-sub">
+    </div>
+    <div class="result-boxes">
+        <div class="result-box">
             <small>Marka</small>
-            <strong id="dBrand">—</strong>
+            <strong id="rBrand">—</strong>
         </div>
-        <div class="detail-box">
+        <div class="result-box">
             <small>Model</small>
-            <strong id="dModel">—</strong>
+            <strong id="rModel">—</strong>
         </div>
-        <div class="detail-box">
+        <div class="result-box">
             <small>Generacja</small>
-            <strong id="dGeneration">—</strong>
+            <strong id="rGeneration">—</strong>
         </div>
-        <div class="detail-box">
-            <small>Rok</small>
-            <strong id="dYear">—</strong>
+        <div class="result-box">
+            <small>Rocznik</small>
+            <strong id="rYear">—</strong>
         </div>
     </div>
     <button
-        class="secondary"
-        onclick="deleteCurrentCar()"
-        style="margin-top:15px;color:#ff6464">
-        🗑️ Usuń z biblioteki
+        class="primary"
+        style="margin-top:15px"
+        onclick="openPage('library')">
+        📚 Otwórz bibliotekę
+    </button>
+    <button
+        class="primary"
+        style="margin-top:10px;background:#181c25"
+        onclick="openScanner()">
+        📸 Zeskanuj kolejne auto
     </button>
 </main>
 <!-- ACCOUNT -->
 <main id="account" class="page hidden">
-    <div class="account-header">
+    <div class="account">
         <div class="avatar">👤</div>
         <h1 id="accountName">Gość</h1>
         <p id="accountEmail">
-            Zaloguj się, aby korzystać z konta.
+            Konto lokalne
         </p>
     </div>
     <div class="menu">
-        <button onclick="openAuth()">
-            <span>🔐</span>
-            Zaloguj / Zarejestruj
+        <button onclick="openPage('auth')">
+            🔐 Zaloguj / Zarejestruj
         </button>
-        <button onclick="showToast('Ustawienia będą dostępne wkrótce ⚙️')">
-            <span>⚙️</span>
-            Ustawienia
+        <button onclick="showToast('Ustawienia wkrótce ⚙️')">
+            ⚙️ Ustawienia
         </button>
-        <button onclick="showToast('CarScan 2026')">
-            <span>ℹ️</span>
-            O aplikacji
+        <button onclick="showToast('CarScan AI 2026')">
+            ℹ️ O CarScan
         </button>
         <button onclick="clearLibrary()">
-            <span>🗑️</span>
-            Wyczyść bibliotekę
+            🗑️ Wyczyść bibliotekę
         </button>
     </div>
 </main>
 <!-- AUTH -->
 <main id="auth" class="page hidden">
     <div class="auth">
-        <button class="secondary" onclick="openPage('account')">
+        <button
+            class="primary"
+            style="background:#181c25"
+            onclick="openPage('account')">
             ← Wróć
         </button>
         <h1>Twoje konto</h1>
         <p>
-            Zaloguj się lub utwórz konto CarScan.
+            Logowanie zostanie później podłączone
+            do prawdziwej bazy użytkowników.
         </p>
         <input
             id="authName"
@@ -680,21 +661,19 @@ button{
             type="email"
             placeholder="E-mail"
         >
-        <input
-            id="authPassword"
-            class="input"
-            type="password"
-            placeholder="Hasło"
-        >
-        <button class="primary" onclick="fakeLogin()">
+        <button
+            class="primary"
+            onclick="saveDemoUser()">
             Kontynuuj
         </button>
     </div>
 </main>
 </div>
 <!-- NAV -->
-<nav id="nav" class="nav">
-    <button class="active" onclick="openPage('home',this)">
+<nav class="nav">
+    <button
+        class="active"
+        onclick="openPage('home',this)">
         <span class="nav-icon">⌂</span>
         Start
     </button>
@@ -713,18 +692,16 @@ button{
 </nav>
 <div id="toast" class="toast"></div>
 <script>
-let cars = JSON.parse(
-    localStorage.getItem("carscan_cars") || "[]"
-);
-let scans = Number(
-    localStorage.getItem("carscan_scans") || 0
-);
+let cars =
+    JSON.parse(localStorage.getItem("carscan_cars") || "[]");
+let scans =
+    Number(localStorage.getItem("carscan_scans") || "0");
 let currentCar = null;
-/* PAGE SYSTEM */
+/* PAGE */
 function openPage(id,button){
     document
         .querySelectorAll(".page")
-        .forEach(page => page.classList.add("hidden"));
+        .forEach(p => p.classList.add("hidden"));
     document
         .getElementById(id)
         .classList.remove("hidden");
@@ -742,7 +719,7 @@ function openPage(id,button){
 function openScanner(){
     document
         .querySelectorAll(".page")
-        .forEach(page => page.classList.add("hidden"));
+        .forEach(p => p.classList.add("hidden"));
     document
         .getElementById("scanner")
         .classList.remove("hidden");
@@ -755,70 +732,132 @@ function choosePhoto(){
         .getElementById("photoInput")
         .click();
 }
+/* IMAGE */
 function processPhoto(event){
     const file = event.target.files[0];
     if(!file) return;
+    if(file.size > 8 * 1024 * 1024){
+        showToast("Zdjęcie jest za duże. Maks. 8 MB.");
+        return;
+    }
     const reader = new FileReader();
-    reader.onload = function(e){
-        const image = e.target.result;
-        document
-            .getElementById("preview")
-            .src = image;
-        document
-            .getElementById("preview")
-            .style.display = "block";
+    reader.onload = async function(){
+        const image = reader.result;
+        document.getElementById("preview").src = image;
+        document.getElementById("preview").style.display = "block";
         document
             .getElementById("cameraPlaceholder")
             .style.display = "none";
         openPage("analysis");
-        setTimeout(() => {
-            createCar(image);
-        },1800);
+        await analyzeCar(image);
     };
     reader.readAsDataURL(file);
 }
-/* TEMPORARY AI RESULT */
-function createCar(image){
-    /*
-      TUTAJ PÓŹNIEJ PODŁĄCZYMY PRAWDZIWE AI.
-      AI będzie zwracało np.:
-      {
-        brand:"BMW",
-        model:"M3",
-        generation:"G80",
-        year:"2021–2024"
-      }
-    */
-    const car = {
-        id:Date.now(),
-        image:image,
-        brand:"BMW",
-        model:"M3",
-        generation:"G80",
-        year:"2021–2024",
-        name:"BMW M3 G80",
-        favorite:false,
-        created:new Date().toISOString()
-    };
-    cars.unshift(car);
-    scans++;
-    save();
-    currentCar = car;
-    renderLibrary();
-    showDetail(car);
-    showToast("Samochód dodany do biblioteki 🚗");
+/* REAL AI */
+async function analyzeCar(image){
+    const text =
+        document.getElementById("analysisText");
+    text.textContent =
+        "Wysyłamy zdjęcie do AI...";
+    try{
+        const response = await fetch("/api/analyze",{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify({
+                image:image
+            })
+        });
+        const data = await response.json();
+        if(!response.ok){
+            throw new Error(
+                data.error || "Błąd serwera"
+            );
+        }
+        if(!data.is_car){
+            showToast(
+                "Nie znaleziono samochodu 🚫"
+            );
+            openScanner();
+            return;
+        }
+        const car = {
+            id:Date.now(),
+            image:image,
+            brand:data.brand || "Nieznana",
+            model:data.model || "Nieznany",
+            generation:data.generation || "Nieznana",
+            year:data.year || "Nieznany",
+            name:data.name || "Nieznany samochód",
+            confidence:data.confidence || null,
+            favorite:false,
+            created:new Date().toISOString()
+        };
+        cars.unshift(car);
+        scans++;
+        save();
+        currentCar = car;
+        showResult(car);
+        showToast(
+            "Rozpoznano: " + car.name
+        );
+    }catch(error){
+        console.error(error);
+        alert(
+            "Nie udało się przeanalizować zdjęcia.\n\n" +
+            error.message
+        );
+        openScanner();
+    }
+}
+/* RESULT */
+function showResult(car){
+    document
+        .getElementById("resultImage")
+        .src = car.image;
+    document
+        .getElementById("resultTitle")
+        .textContent = car.name;
+    document
+        .getElementById("resultSub")
+        .textContent =
+        car.confidence
+            ? "Pewność AI: " +
+              Math.round(car.confidence * 100) +
+              "%"
+            : "Analiza AI zakończona";
+    document
+        .getElementById("rBrand")
+        .textContent = car.brand;
+    document
+        .getElementById("rModel")
+        .textContent = car.model;
+    document
+        .getElementById("rGeneration")
+        .textContent = car.generation;
+    document
+        .getElementById("rYear")
+        .textContent = car.year;
+    openPage("result");
 }
 /* LIBRARY */
 function renderLibrary(){
-    const search = (
-        document.getElementById("searchInput")?.value || ""
-    ).toLowerCase();
+    const search =
+        (
+            document.getElementById("searchInput")
+            ?.value || ""
+        ).toLowerCase();
     const filtered = cars.filter(car =>
-        car.name.toLowerCase().includes(search)
+        car.name.toLowerCase().includes(search) ||
+        car.brand.toLowerCase().includes(search) ||
+        car.model.toLowerCase().includes(search)
     );
-    const home = document.getElementById("homeLibrary");
-    const full = document.getElementById("fullLibrary");
-    function cards(list){
+    const home =
+        document.getElementById("homeLibrary");
+    const full =
+        document.getElementById("fullLibrary");
+    function createCards(list){
         if(!list.length){
             return `
                 <div class="empty">
@@ -828,12 +867,13 @@ function renderLibrary(){
             `;
         }
         return list.map(car => `
-            <article class="card"
-                onclick="showDetailById(${car.id})">
+            <article
+                class="card"
+                onclick="showCar(${car.id})">
                 <img
                     class="card-img"
                     src="${car.image}"
-                    alt="${car.name}"
+                    alt="${escapeHtml(car.name)}"
                 >
                 <button
                     class="favorite"
@@ -842,72 +882,74 @@ function renderLibrary(){
                 </button>
                 <div class="card-info">
                     <div class="card-name">
-                        ${car.name}
+                        ${escapeHtml(car.name)}
                     </div>
                     <div class="card-meta">
-                        ${car.year}
+                        ${escapeHtml(car.year)}
                     </div>
                 </div>
             </article>
         `).join("");
     }
     if(home){
-        home.innerHTML = cards(cars.slice(0,4));
+        home.innerHTML =
+            createCards(cars.slice(0,4));
     }
     if(full){
-        full.innerHTML = cards(filtered);
+        full.innerHTML =
+            createCards(filtered);
     }
     updateStats();
 }
-/* DETAILS */
-function showDetailById(id){
-    const car = cars.find(c => c.id === id);
-    if(car) showDetail(car);
-}
-function showDetail(car){
+/* DETAIL */
+function showCar(id){
+    const car =
+        cars.find(c => c.id === id);
+    if(!car) return;
     currentCar = car;
-    document.getElementById("detailImage").src = car.image;
-    document.getElementById("detailTitle").textContent = car.name;
-    document.getElementById("detailSub").textContent =
-        "Rozpoznano przez CarScan";
-    document.getElementById("dBrand").textContent =
-        car.brand;
-    document.getElementById("dModel").textContent =
-        car.model;
-    document.getElementById("dGeneration").textContent =
-        car.generation;
-    document.getElementById("dYear").textContent =
-        car.year;
-    openPage("detail");
+    showResult(car);
 }
-function deleteCurrentCar(){
-    if(!currentCar) return;
-    cars = cars.filter(c => c.id !== currentCar.id);
-    save();
-    currentCar = null;
-    openPage("library");
-    showToast("Usunięto samochód");
-}
-/* FAVORITES */
+/* FAVORITE */
 function toggleFavorite(event,id){
     event.stopPropagation();
-    const car = cars.find(c => c.id === id);
+    const car =
+        cars.find(c => c.id === id);
     if(!car) return;
     car.favorite = !car.favorite;
     save();
     renderLibrary();
 }
-/* ACCOUNT */
-function openAuth(){
-    openPage("auth");
+/* DELETE */
+function deleteCar(){
+    if(!currentCar) return;
+    cars =
+        cars.filter(c => c.id !== currentCar.id);
+    save();
+    currentCar = null;
+    openPage("library");
+    showToast("Usunięto samochód");
 }
-function fakeLogin(){
+/* CLEAR */
+function clearLibrary(){
+    if(!cars.length){
+        showToast("Biblioteka jest pusta");
+        return;
+    }
+    if(confirm("Usunąć wszystkie samochody?")){
+        cars = [];
+        save();
+        renderLibrary();
+        showToast("Biblioteka wyczyszczona");
+    }
+}
+/* ACCOUNT */
+function saveDemoUser(){
     const name =
         document.getElementById("authName").value.trim();
     const email =
         document.getElementById("authEmail").value.trim();
     if(!name || !email){
-        showToast("Uzupełnij dane");
+        showToast("Wpisz nazwę i e-mail");
         return;
     }
     localStorage.setItem(
@@ -919,26 +961,32 @@ function fakeLogin(){
     );
     updateAccount();
     openPage("account");
-    showToast("Zalogowano pomyślnie 👋");
+    showToast("Profil zapisany 👋");
 }
 function updateAccount(){
-    const user = JSON.parse(
-        localStorage.getItem("carscan_user") || "null"
-    );
+    const user =
+        JSON.parse(
+            localStorage.getItem("carscan_user") || "null"
+        );
     if(!user) return;
-    document.getElementById("accountName")
+    document
+        .getElementById("accountName")
         .textContent = user.name;
-    document.getElementById("accountEmail")
+    document
+        .getElementById("accountEmail")
         .textContent = user.email;
 }
 /* STATS */
 function updateStats(){
-    document.getElementById("statCars")
+    document
+        .getElementById("statCars")
         .textContent = cars.length;
-    document.getElementById("statFav")
+    document
+        .getElementById("statFav")
         .textContent =
         cars.filter(c => c.favorite).length;
-    document.getElementById("statScans")
+    document
+        .getElementById("statScans")
         .textContent = scans;
 }
 /* STORAGE */
@@ -951,31 +999,30 @@ function save(){
         "carscan_scans",
         scans
     );
-}
-/* CLEAR */
-function clearLibrary(){
-    if(!cars.length){
-        showToast("Biblioteka jest już pusta");
-        return;
-    }
-    if(confirm("Usunąć wszystkie samochody?")){
-        cars = [];
-        save();
-        renderLibrary();
-        showToast("Biblioteka wyczyszczona");
-    }
+    renderLibrary();
 }
 /* TOAST */
 let toastTimer;
-function showToast(text){
+function showToast(message){
     const toast =
         document.getElementById("toast");
-    toast.textContent = text;
+    toast.textContent = message;
     toast.classList.add("show");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => {
-        toast.classList.remove("show");
-    },2200);
+    toastTimer =
+        setTimeout(
+            () => toast.classList.remove("show"),
+            2500
+        );
+}
+/* ESCAPE */
+function escapeHtml(value){
+    return String(value)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
 }
 /* START */
 renderLibrary();
