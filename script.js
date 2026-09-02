@@ -14,7 +14,7 @@
   NIE WKLEJAJ TUTAJ KLUCZA OPENAI.
 */
 
-const API_URL = "https://TWOJ-BACKEND.workers.dev";
+const API_URL = "https://carscan-ai.sz5758357.workers.dev";
 
 const STORAGE_KEY = "carscan_library_v2";
 const THEME_KEY = "carscan_theme_v2";
