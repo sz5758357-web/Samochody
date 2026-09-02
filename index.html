@@ -2,1031 +2,1789 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
 <meta name="theme-color" content="#08090d">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CarScan">
+
 <title>CarScan</title>
+
 <style>
-*{
-    box-sizing:border-box;
-    -webkit-tap-highlight-color:transparent;
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
-html,body{
-    margin:0;
-    min-height:100%;
-    background:#08090d;
-    color:#fff;
-    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    background: #08090d;
+    color: white;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Display",
+        "SF Pro Text",
+        Arial,
+        sans-serif;
 }
-body{
-    overflow-x:hidden;
+
+body {
+    overflow-x: hidden;
 }
-button,input{
-    font:inherit;
+
+button,
+input {
+    font: inherit;
 }
-button{
-    cursor:pointer;
+
+button {
+    cursor: pointer;
 }
-.hidden{
-    display:none!important;
+
+.hidden {
+    display: none !important;
 }
-.app{
-    width:100%;
-    max-width:520px;
-    min-height:100vh;
-    margin:auto;
-    padding-bottom:105px;
+
+.app {
+    width: 100%;
+    max-width: 520px;
+    min-height: 100vh;
+    margin: auto;
+    padding-bottom: 110px;
 }
+
 /* HEADER */
-.top{
-    padding:58px 20px 18px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding:
+        calc(28px + env(safe-area-inset-top))
+        20px
+        18px;
 }
-.logo{
-    font-size:25px;
-    font-weight:800;
-    letter-spacing:-1px;
+
+.logo {
+    font-size: 27px;
+    font-weight: 850;
+    letter-spacing: -1.4px;
 }
-.logo span{
-    color:#4f8cff;
+
+.logo span {
+    color: #4d8dff;
 }
-.profile-button{
-    width:42px;
-    height:42px;
-    border-radius:50%;
-    border:1px solid #292e39;
-    background:#151820;
-    color:white;
+
+.profile {
+    width: 43px;
+    height: 43px;
+    border-radius: 50%;
+    border: 1px solid #272d38;
+    background: #11151d;
+    color: white;
+    font-size: 19px;
 }
-/* PAGE */
-.page{
-    padding:0 18px;
+
+/* PAGES */
+
+.page {
+    padding: 0 18px;
 }
+
 /* HOME */
-.greeting{
-    padding-top:4px;
+
+.small-title {
+    color: #7f8795;
+    font-size: 13px;
 }
-.greeting small{
-    color:#858b99;
+
+h1 {
+    letter-spacing: -1px;
 }
-.greeting h1{
-    font-size:31px;
-    margin:5px 0 0;
-    letter-spacing:-1.2px;
+
+.home-title {
+    margin: 5px 0 0;
+    font-size: 31px;
 }
-.hero{
-    margin-top:22px;
-    padding:25px 20px;
-    border-radius:28px;
-    border:1px solid #252c3a;
+
+/* HERO */
+
+.hero {
+    margin-top: 23px;
+    padding: 24px;
+    border-radius: 28px;
+    border: 1px solid #252d3b;
     background:
-        radial-gradient(circle at 90% 5%,rgba(79,140,255,.3),transparent 36%),
-        linear-gradient(145deg,#161d2b,#0e1118);
+        radial-gradient(
+            circle at 90% 0%,
+            rgba(64, 125, 255, .32),
+            transparent 38%
+        ),
+        linear-gradient(
+            145deg,
+            #161e2d,
+            #0d1016
+        );
 }
-.hero-icon{
-    width:58px;
-    height:58px;
-    border-radius:19px;
-    background:#3478f6;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:28px;
-    margin-bottom:18px;
+
+.hero-icon {
+    width: 58px;
+    height: 58px;
+    border-radius: 19px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #347cf5;
+    font-size: 28px;
 }
-.hero h2{
-    margin:0;
-    font-size:24px;
+
+.hero h2 {
+    margin: 17px 0 8px;
+    font-size: 24px;
 }
-.hero p{
-    color:#9299a8;
-    line-height:1.45;
-    margin:9px 0 20px;
+
+.hero p {
+    color: #929aa9;
+    line-height: 1.5;
+    margin: 0 0 20px;
 }
-.primary{
-    width:100%;
-    padding:16px;
-    border:0;
-    border-radius:16px;
-    color:#fff;
-    font-weight:750;
-    background:#3478f6;
+
+.primary {
+    width: 100%;
+    border: 0;
+    border-radius: 16px;
+    padding: 16px;
+    background: #347cf5;
+    color: white;
+    font-weight: 750;
 }
-.primary:active{
-    transform:scale(.98);
+
+.secondary {
+    width: 100%;
+    border: 1px solid #272e3a;
+    border-radius: 16px;
+    padding: 16px;
+    background: #151922;
+    color: white;
+    font-weight: 700;
 }
+
 /* STATS */
-.stats{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:10px;
-    margin-top:16px;
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 9px;
+    margin-top: 15px;
 }
-.stat{
-    padding:15px 8px;
-    text-align:center;
-    border-radius:18px;
-    background:#111319;
-    border:1px solid #20242e;
+
+.stat {
+    padding: 15px 5px;
+    border-radius: 18px;
+    border: 1px solid #202630;
+    background: #11141a;
+    text-align: center;
 }
-.stat strong{
-    display:block;
-    font-size:20px;
+
+.stat strong {
+    display: block;
+    font-size: 20px;
 }
-.stat span{
-    color:#777e8c;
-    font-size:11px;
+
+.stat span {
+    display: block;
+    margin-top: 3px;
+    color: #737b89;
+    font-size: 11px;
 }
+
 /* SECTION */
-.section-head{
-    margin-top:28px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
+
+.section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 28px;
 }
-.section-head h2{
-    margin:0;
-    font-size:20px;
+
+.section-head h2 {
+    margin: 0;
+    font-size: 20px;
 }
-.section-head button{
-    border:0;
-    background:none;
-    color:#4f8cff;
+
+.section-head button {
+    border: 0;
+    background: none;
+    color: #4d8dff;
 }
+
 /* SEARCH */
-.search{
-    position:relative;
-    margin:20px 0 17px;
+
+.search {
+    position: relative;
+    margin: 19px 0 16px;
 }
-.search input{
-    width:100%;
-    padding:14px 15px 14px 42px;
-    border-radius:15px;
-    border:1px solid #292e38;
-    background:#12151b;
-    color:#fff;
-    outline:none;
+
+.search-icon {
+    position: absolute;
+    left: 15px;
+    top: 13px;
+    color: #717987;
 }
-.search-icon{
-    position:absolute;
-    left:15px;
-    top:12px;
-    color:#777e8c;
+
+.search input {
+    width: 100%;
+    border: 1px solid #282e39;
+    border-radius: 15px;
+    padding: 14px 15px 14px 42px;
+    outline: none;
+    background: #12151b;
+    color: white;
 }
+
 /* LIBRARY */
-.library{
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:13px;
+
+.library {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 13px;
 }
-.card{
-    position:relative;
-    overflow:hidden;
-    border-radius:19px;
-    background:#111319;
-    border:1px solid #20242e;
+
+.card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 19px;
+    border: 1px solid #222832;
+    background: #11141a;
 }
-.card-img{
-    width:100%;
-    height:145px;
-    display:block;
-    object-fit:cover;
-    background:#171a21;
+
+.card-image {
+    width: 100%;
+    height: 150px;
+    display: block;
+    object-fit: cover;
+    background: #171b23;
 }
-.card-info{
-    padding:12px;
+
+.card-info {
+    padding: 12px;
 }
-.card-name{
-    font-weight:750;
-    font-size:15px;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
+
+.card-name {
+    font-size: 15px;
+    font-weight: 750;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
-.card-meta{
-    margin-top:4px;
-    color:#777e8c;
-    font-size:12px;
+
+.card-meta {
+    margin-top: 5px;
+    color: #777f8d;
+    font-size: 12px;
 }
-.favorite{
-    position:absolute;
-    right:9px;
-    top:9px;
-    width:32px;
-    height:32px;
-    border:0;
-    border-radius:50%;
-    color:#fff;
-    background:rgba(0,0,0,.58);
+
+.favorite {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(0,0,0,.6);
+    color: white;
+    font-size: 18px;
 }
-/* EMPTY */
-.empty{
-    grid-column:1/-1;
-    text-align:center;
-    padding:45px 10px;
-    color:#777e8c;
+
+.empty {
+    grid-column: 1 / -1;
+    padding: 45px 10px;
+    text-align: center;
+    color: #737b89;
 }
-.empty-icon{
-    font-size:45px;
-    margin-bottom:10px;
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 10px;
 }
+
 /* SCANNER */
-.scanner{
-    text-align:center;
-    padding-top:10px;
+
+.scanner {
+    text-align: center;
 }
-.scanner h1{
-    font-size:29px;
-    margin-bottom:7px;
+
+.scanner h1 {
+    margin-bottom: 7px;
+    font-size: 29px;
 }
-.scanner p{
-    color:#858b99;
+
+.scanner-description {
+    color: #858d9b;
+    line-height: 1.45;
 }
-.camera-area{
-    height:390px;
-    margin-top:24px;
-    overflow:hidden;
-    border-radius:28px;
-    border:1px solid #292f3b;
-    background:#11141b;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+
+.camera {
+    position: relative;
+    height: 390px;
+    margin-top: 23px;
+    overflow: hidden;
+    border-radius: 28px;
+    border: 1px solid #292f3a;
+    background: #11151c;
 }
-.camera-placeholder{
-    color:#737b89;
+
+.camera-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #737b89;
 }
-.camera-placeholder div{
-    font-size:60px;
-    margin-bottom:12px;
+
+.camera-placeholder-icon {
+    margin-bottom: 13px;
+    font-size: 60px;
 }
-.preview{
-    display:none;
-    width:100%;
-    height:100%;
-    object-fit:cover;
+
+.preview {
+    width: 100%;
+    height: 100%;
+    display: none;
+    object-fit: cover;
 }
+
 /* ANALYSIS */
-.analysis{
-    text-align:center;
-    padding:65px 20px;
+
+.analysis {
+    padding-top: 80px;
+    text-align: center;
 }
-.loader{
-    width:76px;
-    height:76px;
-    margin:auto;
-    border-radius:50%;
-    border:5px solid #252b36;
-    border-top-color:#4f8cff;
-    animation:spin 1s linear infinite;
+
+.loader {
+    width: 78px;
+    height: 78px;
+    margin: auto;
+    border: 5px solid #202631;
+    border-top-color: #4d8dff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
 }
-@keyframes spin{
-    to{transform:rotate(360deg)}
-}
-.analysis h2{
-    margin-top:25px;
-}
-.analysis p{
-    color:#858b99;
-}
-/* RESULT */
-.result-image{
-    width:100%;
-    height:300px;
-    object-fit:cover;
-    border-radius:25px;
-    border:1px solid #292e39;
-}
-.result-title{
-    margin:18px 0 4px;
-    font-size:29px;
-}
-.result-sub{
-    color:#7f8795;
-}
-.result-boxes{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:10px;
-    margin-top:20px;
-}
-.result-box{
-    padding:15px;
-    border-radius:16px;
-    background:#12151b;
-    border:1px solid #222732;
-}
-.result-box small{
-    display:block;
-    color:#727a88;
-    margin-bottom:5px;
-}
-/* ACCOUNT */
-.account{
-    text-align:center;
-    padding-top:25px;
-}
-.avatar{
-    width:82px;
-    height:82px;
-    margin:auto;
-    border-radius:50%;
-    background:linear-gradient(145deg,#3478f6,#5c9aff);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:32px;
-}
-.account h1{
-    margin:13px 0 4px;
-}
-.account p{
-    margin:0;
-    color:#858b99;
-}
-.menu{
-    margin-top:25px;
-    overflow:hidden;
-    border-radius:20px;
-    border:1px solid #222732;
-    background:#111319;
-}
-.menu button{
-    width:100%;
-    padding:17px;
-    border:0;
-    border-bottom:1px solid #222732;
-    background:none;
-    color:#fff;
-    text-align:left;
-}
-.menu button:last-child{
-    border-bottom:0;
-}
-/* AUTH */
-.auth{
-    padding-top:45px;
-}
-.auth h1{
-    font-size:34px;
-}
-.auth p{
-    color:#858b99;
-}
-.input{
-    width:100%;
-    margin-top:11px;
-    padding:16px;
-    border-radius:15px;
-    border:1px solid #292e38;
-    background:#12151b;
-    color:#fff;
-    outline:none;
-}
-.auth .primary{
-    margin-top:15px;
-}
-/* NAV */
-.nav{
-    position:fixed;
-    z-index:100;
-    left:50%;
-    bottom:12px;
-    transform:translateX(-50%);
-    width:calc(100% - 24px);
-    max-width:495px;
-    height:72px;
-    border-radius:23px;
-    border:1px solid #2a2f39;
-    background:rgba(17,19,25,.92);
-    backdrop-filter:blur(22px);
-    display:flex;
-    justify-content:space-around;
-    align-items:center;
-}
-.nav button{
-    min-width:65px;
-    border:0;
-    background:none;
-    color:#717987;
-    font-size:11px;
-}
-.nav button.active{
-    color:#fff;
-}
-.nav-icon{
-    display:block;
-    font-size:22px;
-    margin-bottom:3px;
-}
-/* TOAST */
-.toast{
-    position:fixed;
-    left:50%;
-    bottom:98px;
-    z-index:200;
-    transform:translate(-50%,20px);
-    padding:13px 18px;
-    border-radius:14px;
-    background:#20242d;
-    color:#fff;
-    opacity:0;
-    pointer-events:none;
-    transition:.3s;
-    white-space:nowrap;
-}
-.toast.show{
-    opacity:1;
-    transform:translate(-50%,0);
-}
-@media(max-width:360px){
-    .library{
-        grid-template-columns:1fr;
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
     }
-    .camera-area{
-        height:330px;
+}
+
+.analysis h1 {
+    margin-top: 28px;
+    font-size: 28px;
+}
+
+.analysis p {
+    color: #7d8594;
+}
+
+/* RESULT */
+
+.result-image {
+    width: 100%;
+    height: 300px;
+    display: block;
+    object-fit: cover;
+    border-radius: 25px;
+    border: 1px solid #292f39;
+}
+
+.result-title {
+    margin: 18px 0 4px;
+    font-size: 29px;
+}
+
+.result-confidence {
+    color: #818997;
+}
+
+.result-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.result-box {
+    padding: 15px;
+    border-radius: 17px;
+    border: 1px solid #232a34;
+    background: #12151b;
+}
+
+.result-box small {
+    display: block;
+    margin-bottom: 5px;
+    color: #737b89;
+}
+
+/* ACCOUNT */
+
+.account {
+    padding-top: 25px;
+    text-align: center;
+}
+
+.avatar {
+    width: 82px;
+    height: 82px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #347cf5, #5b98ff);
+    font-size: 32px;
+}
+
+.account h1 {
+    margin: 14px 0 4px;
+}
+
+.account p {
+    margin: 0;
+    color: #7e8694;
+}
+
+.menu {
+    margin-top: 25px;
+    overflow: hidden;
+    border: 1px solid #232a34;
+    border-radius: 20px;
+    background: #11141a;
+}
+
+.menu button {
+    width: 100%;
+    padding: 18px;
+    border: 0;
+    border-bottom: 1px solid #232a34;
+    background: none;
+    color: white;
+    text-align: left;
+}
+
+.menu button:last-child {
+    border-bottom: 0;
+}
+
+/* AUTH */
+
+.auth {
+    padding-top: 35px;
+}
+
+.auth h1 {
+    font-size: 33px;
+}
+
+.auth p {
+    color: #818997;
+    line-height: 1.5;
+}
+
+.input {
+    width: 100%;
+    margin-top: 10px;
+    padding: 16px;
+    border: 1px solid #292f39;
+    border-radius: 15px;
+    outline: none;
+    background: #12151b;
+    color: white;
+}
+
+/* NAV */
+
+.nav {
+    position: fixed;
+    z-index: 100;
+    left: 50%;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    width: calc(100% - 24px);
+    max-width: 495px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    border: 1px solid #282e38;
+    border-radius: 23px;
+    background: rgba(17,20,27,.94);
+    backdrop-filter: blur(22px);
+}
+
+.nav button {
+    min-width: 65px;
+    border: 0;
+    background: none;
+    color: #6e7786;
+    font-size: 11px;
+}
+
+.nav button.active {
+    color: white;
+}
+
+.nav-icon {
+    display: block;
+    margin-bottom: 3px;
+    font-size: 22px;
+}
+
+/* TOAST */
+
+.toast {
+    position: fixed;
+    z-index: 500;
+    left: 50%;
+    bottom: 100px;
+    transform: translate(-50%, 20px);
+    opacity: 0;
+    padding: 13px 18px;
+    border-radius: 14px;
+    background: #222832;
+    color: white;
+    pointer-events: none;
+    transition: .25s;
+    white-space: nowrap;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+@media (max-width: 360px) {
+    .library {
+        grid-template-columns: 1fr;
+    }
+
+    .camera {
+        height: 340px;
     }
 }
 </style>
 </head>
+
 <body>
+
 <div class="app">
-<header class="top">
+
+<header class="header">
     <div class="logo">Car<span>Scan</span></div>
-    <button class="profile-button" onclick="openPage('account')">
+
+    <button
+        class="profile"
+        onclick="openPage('account')">
         👤
     </button>
 </header>
-<!-- HOME -->
+
+
+<!-- START -->
+
 <main id="home" class="page">
-    <div class="greeting">
-        <small>CarScan AI</small>
-        <h1>Rozpoznaj samochód.</h1>
+
+    <div class="small-title">
+        CarScan AI
     </div>
+
+    <h1 class="home-title">
+        Rozpoznaj samochód.
+    </h1>
+
     <section class="hero">
-        <div class="hero-icon">📸</div>
-        <h2>Zeskanuj samochód</h2>
+
+        <div class="hero-icon">
+            🚗
+        </div>
+
+        <h2>
+            Zeskanuj samochód
+        </h2>
+
         <p>
-            Zrób zdjęcie auta. Prawdziwe AI przeanalizuje obraz
-            i spróbuje określić markę, model, generację oraz rocznik.
+            Zrób zdjęcie samochodu, a CarScan AI
+            spróbuje rozpoznać markę, model,
+            generację i przybliżony rocznik.
         </p>
-        <button class="primary" onclick="openScanner()">
-            Rozpocznij skanowanie
+
+        <button
+            class="primary"
+            onclick="openScanner()">
+            📸 Rozpocznij skanowanie
         </button>
+
     </section>
+
+
     <section class="stats">
+
         <div class="stat">
             <strong id="statCars">0</strong>
             <span>Samochody</span>
         </div>
+
         <div class="stat">
-            <strong id="statFav">0</strong>
+            <strong id="statFavorites">0</strong>
             <span>Ulubione</span>
         </div>
+
         <div class="stat">
             <strong id="statScans">0</strong>
             <span>Skanowania</span>
         </div>
+
     </section>
+
+
     <div class="section-head">
         <h2>Ostatnie</h2>
+
         <button onclick="openPage('library')">
             Wszystkie
         </button>
     </div>
-    <div id="homeLibrary"
-         class="library"
-         style="margin-top:15px">
+
+    <div
+        id="homeLibrary"
+        class="library"
+        style="margin-top:15px">
     </div>
+
 </main>
-<!-- LIBRARY -->
+
+
+<!-- BIBLIOTEKA -->
+
 <main id="library" class="page hidden">
-    <div class="greeting">
-        <small>Twoja kolekcja</small>
-        <h1>Biblioteka 📚</h1>
+
+    <div class="small-title">
+        Twoja kolekcja
     </div>
+
+    <h1>
+        Biblioteka 📚
+    </h1>
+
     <div class="search">
-        <span class="search-icon">🔍</span>
+
+        <span class="search-icon">
+            🔍
+        </span>
+
         <input
             id="searchInput"
+            type="text"
             placeholder="Szukaj samochodu..."
-            oninput="renderLibrary()"
-        >
+            oninput="renderLibrary()">
+
     </div>
-    <div id="fullLibrary" class="library"></div>
+
+    <div
+        id="fullLibrary"
+        class="library">
+    </div>
+
 </main>
-<!-- SCANNER -->
+
+
+<!-- SKANER -->
+
 <main id="scanner" class="page hidden">
+
     <div class="scanner">
-        <h1>Skanuj samochód</h1>
-        <p>
-            Najlepiej fotografować całe auto z przodu lub z boku.
+
+        <h1>
+            Skanuj samochód
+        </h1>
+
+        <p class="scanner-description">
+            Zrób zdjęcie całego samochodu.
+            AI sprawdzi najpierw, czy na zdjęciu
+            rzeczywiście znajduje się auto.
         </p>
-        <div class="camera-area">
-            <div id="cameraPlaceholder"
-                 class="camera-placeholder">
-                <div>🚗</div>
-                <span>
+
+        <div class="camera">
+
+            <div
+                id="cameraPlaceholder"
+                class="camera-placeholder">
+
+                <div class="camera-placeholder-icon">
+                    📷
+                </div>
+
+                <div>
                     Dodaj zdjęcie samochodu
-                </span>
+                </div>
+
             </div>
+
             <img
                 id="preview"
                 class="preview"
-                alt="Podgląd zdjęcia"
-            >
+                alt="Zdjęcie samochodu">
+
         </div>
+
         <button
             class="primary"
             style="margin-top:15px"
             onclick="choosePhoto()">
-            📷 Zrób / wybierz zdjęcie
+
+            📸 Zrób zdjęcie
+
         </button>
+
         <input
             id="photoInput"
             type="file"
             accept="image/jpeg,image/png,image/webp"
             capture="environment"
             hidden
-            onchange="processPhoto(event)"
-        >
+            onchange="processPhoto(event)">
+
     </div>
+
 </main>
-<!-- ANALYSIS -->
+
+
+<!-- ANALIZA -->
+
 <main id="analysis" class="page hidden">
+
     <div class="analysis">
+
         <div class="loader"></div>
-        <h2>AI analizuje zdjęcie...</h2>
+
+        <h1>
+            AI analizuje zdjęcie...
+        </h1>
+
         <p id="analysisText">
-            Sprawdzamy, czy na zdjęciu znajduje się samochód.
+            Sprawdzamy zdjęcie.
         </p>
+
     </div>
+
 </main>
-<!-- RESULT -->
+
+
+<!-- WYNIK -->
+
 <main id="result" class="page hidden">
+
     <img
         id="resultImage"
         class="result-image"
-        alt="Samochód"
-    >
+        alt="Rozpoznany samochód">
+
     <h1
         id="resultTitle"
         class="result-title">
     </h1>
+
     <div
-        id="resultSub"
-        class="result-sub">
+        id="resultConfidence"
+        class="result-confidence">
     </div>
-    <div class="result-boxes">
+
+    <div class="result-grid">
+
         <div class="result-box">
             <small>Marka</small>
-            <strong id="rBrand">—</strong>
+            <strong id="resultBrand">—</strong>
         </div>
+
         <div class="result-box">
             <small>Model</small>
-            <strong id="rModel">—</strong>
+            <strong id="resultModel">—</strong>
         </div>
+
         <div class="result-box">
             <small>Generacja</small>
-            <strong id="rGeneration">—</strong>
+            <strong id="resultGeneration">—</strong>
         </div>
+
         <div class="result-box">
             <small>Rocznik</small>
-            <strong id="rYear">—</strong>
+            <strong id="resultYear">—</strong>
         </div>
+
     </div>
+
     <button
         class="primary"
         style="margin-top:15px"
         onclick="openPage('library')">
-        📚 Otwórz bibliotekę
+
+        📚 Biblioteka
+
     </button>
+
     <button
-        class="primary"
-        style="margin-top:10px;background:#181c25"
+        class="secondary"
+        style="margin-top:10px"
         onclick="openScanner()">
-        📸 Zeskanuj kolejne auto
+
+        📸 Zeskanuj następny
+
     </button>
+
 </main>
-<!-- ACCOUNT -->
+
+
+<!-- KONTO -->
+
 <main id="account" class="page hidden">
+
     <div class="account">
-        <div class="avatar">👤</div>
-        <h1 id="accountName">Gość</h1>
+
+        <div class="avatar">
+            👤
+        </div>
+
+        <h1 id="accountName">
+            Gość
+        </h1>
+
         <p id="accountEmail">
             Konto lokalne
         </p>
+
     </div>
+
     <div class="menu">
+
         <button onclick="openPage('auth')">
             🔐 Zaloguj / Zarejestruj
         </button>
-        <button onclick="showToast('Ustawienia wkrótce ⚙️')">
+
+        <button onclick="showToast('Ustawienia wkrótce')">
             ⚙️ Ustawienia
         </button>
+
         <button onclick="showToast('CarScan AI 2026')">
             ℹ️ O CarScan
         </button>
+
         <button onclick="clearLibrary()">
             🗑️ Wyczyść bibliotekę
         </button>
+
     </div>
+
 </main>
-<!-- AUTH -->
+
+
+<!-- LOGOWANIE -->
+
 <main id="auth" class="page hidden">
+
     <div class="auth">
+
         <button
-            class="primary"
-            style="background:#181c25"
+            class="secondary"
             onclick="openPage('account')">
+
             ← Wróć
+
         </button>
-        <h1>Twoje konto</h1>
+
+        <h1>
+            Twoje konto
+        </h1>
+
         <p>
-            Logowanie zostanie później podłączone
-            do prawdziwej bazy użytkowników.
+            Na razie profil jest zapisywany
+            lokalnie na urządzeniu.
         </p>
+
         <input
             id="authName"
             class="input"
-            placeholder="Nazwa użytkownika"
-        >
+            placeholder="Nazwa użytkownika">
+
         <input
             id="authEmail"
             class="input"
             type="email"
-            placeholder="E-mail"
-        >
+            placeholder="E-mail">
+
         <button
             class="primary"
-            onclick="saveDemoUser()">
-            Kontynuuj
+            onclick="saveUser()">
+
+            Zapisz profil
+
         </button>
+
     </div>
+
 </main>
+
 </div>
-<!-- NAV -->
+
+
+<!-- DOLNA NAWIGACJA -->
+
 <nav class="nav">
+
     <button
+        id="navHome"
         class="active"
-        onclick="openPage('home',this)">
+        onclick="openPage('home', this)">
+
         <span class="nav-icon">⌂</span>
         Start
+
     </button>
-    <button onclick="openPage('library',this)">
+
+    <button
+        id="navLibrary"
+        onclick="openPage('library', this)">
+
         <span class="nav-icon">▦</span>
         Biblioteka
+
     </button>
-    <button onclick="openScanner()">
+
+    <button
+        id="navScanner"
+        onclick="openScanner()">
+
         <span class="nav-icon">＋</span>
         Skanuj
+
     </button>
-    <button onclick="openPage('account',this)">
+
+    <button
+        id="navAccount"
+        onclick="openPage('account', this)">
+
         <span class="nav-icon">♙</span>
         Konto
+
     </button>
+
 </nav>
+
+
 <div id="toast" class="toast"></div>
+
+
 <script>
-let cars =
-    JSON.parse(localStorage.getItem("carscan_cars") || "[]");
-let scans =
-    Number(localStorage.getItem("carscan_scans") || "0");
-let currentCar = null;
-/* PAGE */
-function openPage(id,button){
+
+/* =========================
+   DANE
+========================= */
+
+let cars = JSON.parse(
+    localStorage.getItem("carscan_cars") || "[]"
+);
+
+let scans = Number(
+    localStorage.getItem("carscan_scans") || "0"
+);
+
+
+/* =========================
+   NAWIGACJA
+========================= */
+
+function openPage(id, button = null) {
+
     document
         .querySelectorAll(".page")
-        .forEach(p => p.classList.add("hidden"));
-    document
-        .getElementById(id)
-        .classList.remove("hidden");
-    if(button){
-        document
-            .querySelectorAll(".nav button")
-            .forEach(b => b.classList.remove("active"));
-        button.classList.add("active");
+        .forEach(page => {
+            page.classList.add("hidden");
+        });
+
+    const page =
+        document.getElementById(id);
+
+    if (page) {
+        page.classList.remove("hidden");
     }
-    if(id === "library"){
-        renderLibrary();
-    }
-}
-/* SCANNER */
-function openScanner(){
-    document
-        .querySelectorAll(".page")
-        .forEach(p => p.classList.add("hidden"));
-    document
-        .getElementById("scanner")
-        .classList.remove("hidden");
+
     document
         .querySelectorAll(".nav button")
-        .forEach(b => b.classList.remove("active"));
+        .forEach(btn => {
+            btn.classList.remove("active");
+        });
+
+    if (button) {
+        button.classList.add("active");
+    }
+
+    if (id === "home") {
+        document
+            .getElementById("navHome")
+            .classList.add("active");
+    }
+
+    if (id === "library") {
+        document
+            .getElementById("navLibrary")
+            .classList.add("active");
+
+        renderLibrary();
+    }
+
+    if (id === "scanner") {
+        document
+            .getElementById("navScanner")
+            .classList.add("active");
+    }
+
+    if (id === "account") {
+        document
+            .getElementById("navAccount")
+            .classList.add("active");
+    }
 }
-function choosePhoto(){
+
+
+/* =========================
+   SKANER
+========================= */
+
+function openScanner() {
+
+    openPage("scanner");
+
+    document
+        .getElementById("photoInput")
+        .value = "";
+
+    document
+        .getElementById("preview")
+        .style.display = "none";
+
+    document
+        .getElementById("cameraPlaceholder")
+        .style.display = "flex";
+}
+
+
+function choosePhoto() {
+
     document
         .getElementById("photoInput")
         .click();
 }
-/* IMAGE */
-function processPhoto(event){
-    const file = event.target.files[0];
-    if(!file) return;
-    if(file.size > 8 * 1024 * 1024){
-        showToast("Zdjęcie jest za duże. Maks. 8 MB.");
+
+
+/* =========================
+   ZDJĘCIE
+========================= */
+
+async function processPhoto(event) {
+
+    const file =
+        event.target.files[0];
+
+    if (!file) {
         return;
     }
-    const reader = new FileReader();
-    reader.onload = async function(){
-        const image = reader.result;
-        document.getElementById("preview").src = image;
-        document.getElementById("preview").style.display = "block";
+
+    if (!file.type.startsWith("image/")) {
+        showToast("To nie jest zdjęcie.");
+        return;
+    }
+
+    openPage("analysis");
+
+    document
+        .getElementById("analysisText")
+        .textContent =
+        "Przygotowujemy zdjęcie...";
+
+    try {
+
+        const compressed =
+            await compressImage(file);
+
         document
-            .getElementById("cameraPlaceholder")
-            .style.display = "none";
-        openPage("analysis");
-        await analyzeCar(image);
-    };
-    reader.readAsDataURL(file);
-}
-/* REAL AI */
-async function analyzeCar(image){
-    const text =
-        document.getElementById("analysisText");
-    text.textContent =
-        "Wysyłamy zdjęcie do AI...";
-    try{
-        const response = await fetch("/api/analyze",{
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json"
-            },
-            body:JSON.stringify({
-                image:image
-            })
-        });
-        const data = await response.json();
-        if(!response.ok){
-            throw new Error(
-                data.error || "Błąd serwera"
-            );
-        }
-        if(!data.is_car){
-            showToast(
-                "Nie znaleziono samochodu 🚫"
-            );
+            .getElementById("analysisText")
+            .textContent =
+            "Wysyłamy zdjęcie do AI...";
+
+        const result =
+            await analyzeCar(compressed);
+
+        scans++;
+
+        localStorage.setItem(
+            "carscan_scans",
+            String(scans)
+        );
+
+        if (!result.is_car) {
+
             openScanner();
+
+            showToast(
+                "Na zdjęciu nie ma samochodu."
+            );
+
             return;
         }
+
         const car = {
-            id:Date.now(),
-            image:image,
-            brand:data.brand || "Nieznana",
-            model:data.model || "Nieznany",
-            generation:data.generation || "Nieznana",
-            year:data.year || "Nieznany",
-            name:data.name || "Nieznany samochód",
-            confidence:data.confidence || null,
-            favorite:false,
-            created:new Date().toISOString()
+
+            id: Date.now(),
+
+            image: compressed,
+
+            brand:
+                result.brand || "Nieznana",
+
+            model:
+                result.model || "Nieznany",
+
+            generation:
+                result.generation || "Nieznana",
+
+            year:
+                result.year || "Nieznany",
+
+            name:
+                result.name ||
+                "Nieznany samochód",
+
+            confidence:
+                typeof result.confidence === "number"
+                    ? result.confidence
+                    : null,
+
+            favorite: false,
+
+            created:
+                new Date().toISOString()
+
         };
+
         cars.unshift(car);
-        scans++;
-        save();
-        currentCar = car;
+
+        saveCars();
+
         showResult(car);
-        showToast(
-            "Rozpoznano: " + car.name
-        );
-    }catch(error){
+
+    } catch (error) {
+
         console.error(error);
+
+        openScanner();
+
         alert(
             "Nie udało się przeanalizować zdjęcia.\n\n" +
             error.message
         );
-        openScanner();
     }
 }
-/* RESULT */
-function showResult(car){
+
+
+/* =========================
+   KOMPRESJA ZDJĘCIA
+========================= */
+
+function compressImage(file) {
+
+    return new Promise((resolve, reject) => {
+
+        const reader =
+            new FileReader();
+
+        reader.onload = () => {
+
+            const image =
+                new Image();
+
+            image.onload = () => {
+
+                const maxSize = 1600;
+
+                let width =
+                    image.width;
+
+                let height =
+                    image.height;
+
+                if (width > maxSize ||
+                    height > maxSize) {
+
+                    if (width > height) {
+
+                        height =
+                            Math.round(
+                                height *
+                                maxSize /
+                                width
+                            );
+
+                        width =
+                            maxSize;
+
+                    } else {
+
+                        width =
+                            Math.round(
+                                width *
+                                maxSize /
+                                height
+                            );
+
+                        height =
+                            maxSize;
+                    }
+                }
+
+                const canvas =
+                    document.createElement("canvas");
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx =
+                    canvas.getContext("2d");
+
+                ctx.drawImage(
+                    image,
+                    0,
+                    0,
+                    width,
+                    height
+                );
+
+                const result =
+                    canvas.toDataURL(
+                        "image/jpeg",
+                        0.75
+                    );
+
+                resolve(result);
+            };
+
+            image.onerror = () =>
+                reject(
+                    new Error(
+                        "Nie można odczytać zdjęcia."
+                    )
+                );
+
+            image.src = reader.result;
+        };
+
+        reader.onerror = () =>
+            reject(
+                new Error(
+                    "Nie można wczytać zdjęcia."
+                )
+            );
+
+        reader.readAsDataURL(file);
+    });
+}
+
+
+/* =========================
+   AI
+========================= */
+
+async function analyzeCar(image) {
+
+    const response =
+        await fetch(
+            "/api/analyze",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+                    image: image
+                })
+            }
+        );
+
+    let data;
+
+    try {
+        data = await response.json();
+    } catch {
+        throw new Error(
+            "Serwer zwrócił nieprawidłową odpowiedź."
+        );
+    }
+
+    if (!response.ok) {
+
+        throw new Error(
+            data.error ||
+            "Błąd serwera AI."
+        );
+    }
+
+    return data;
+}
+
+
+/* =========================
+   WYNIK
+========================= */
+
+function showResult(car) {
+
     document
         .getElementById("resultImage")
         .src = car.image;
+
     document
         .getElementById("resultTitle")
-        .textContent = car.name;
-    document
-        .getElementById("resultSub")
         .textContent =
-        car.confidence
-            ? "Pewność AI: " +
-              Math.round(car.confidence * 100) +
-              "%"
-            : "Analiza AI zakończona";
+        car.name;
+
     document
-        .getElementById("rBrand")
-        .textContent = car.brand;
+        .getElementById("resultBrand")
+        .textContent =
+        car.brand;
+
     document
-        .getElementById("rModel")
-        .textContent = car.model;
+        .getElementById("resultModel")
+        .textContent =
+        car.model;
+
     document
-        .getElementById("rGeneration")
-        .textContent = car.generation;
+        .getElementById("resultGeneration")
+        .textContent =
+        car.generation;
+
     document
-        .getElementById("rYear")
-        .textContent = car.year;
+        .getElementById("resultYear")
+        .textContent =
+        car.year;
+
+    const confidence =
+        document
+            .getElementById("resultConfidence");
+
+    if (
+        typeof car.confidence ===
+        "number"
+    ) {
+
+        confidence.textContent =
+            "Pewność AI: " +
+            Math.round(
+                car.confidence * 100
+            ) +
+            "%";
+
+    } else {
+
+        confidence.textContent =
+            "Analiza AI zakończona";
+    }
+
     openPage("result");
 }
-/* LIBRARY */
-function renderLibrary(){
+
+
+/* =========================
+   BIBLIOTEKA
+========================= */
+
+function renderLibrary() {
+
     const search =
         (
-            document.getElementById("searchInput")
-            ?.value || ""
-        ).toLowerCase();
-    const filtered = cars.filter(car =>
-        car.name.toLowerCase().includes(search) ||
-        car.brand.toLowerCase().includes(search) ||
-        car.model.toLowerCase().includes(search)
-    );
-    const home =
-        document.getElementById("homeLibrary");
-    const full =
-        document.getElementById("fullLibrary");
-    function createCards(list){
-        if(!list.length){
-            return `
+            document
+                .getElementById("searchInput")
+                ?.value || ""
+        )
+        .trim()
+        .toLowerCase();
+
+    const filtered =
+        cars.filter(car => {
+
+            const text =
+                (
+                    car.name +
+                    " " +
+                    car.brand +
+                    " " +
+                    car.model +
+                    " " +
+                    car.generation
+                ).toLowerCase();
+
+            return text.includes(search);
+        });
+
+    const html =
+        filtered.length
+            ? filtered
+                .map(createCard)
+                .join("")
+            : `
                 <div class="empty">
-                    <div class="empty-icon">🚗</div>
-                    Brak samochodów
+                    <div class="empty-icon">
+                        🚗
+                    </div>
+                    <div>
+                        Brak samochodów
+                    </div>
                 </div>
             `;
-        }
-        return list.map(car => `
-            <article
-                class="card"
-                onclick="showCar(${car.id})">
-                <img
-                    class="card-img"
-                    src="${car.image}"
-                    alt="${escapeHtml(car.name)}"
-                >
-                <button
-                    class="favorite"
-                    onclick="toggleFavorite(event,${car.id})">
-                    ${car.favorite ? "★" : "☆"}
-                </button>
-                <div class="card-info">
-                    <div class="card-name">
-                        ${escapeHtml(car.name)}
-                    </div>
-                    <div class="card-meta">
-                        ${escapeHtml(car.year)}
-                    </div>
-                </div>
-            </article>
-        `).join("");
+
+    const full =
+        document.getElementById(
+            "fullLibrary"
+        );
+
+    const home =
+        document.getElementById(
+            "homeLibrary"
+        );
+
+    if (full) {
+        full.innerHTML = html;
     }
-    if(home){
+
+    if (home) {
+
+        const recent =
+            cars.slice(0, 4);
+
         home.innerHTML =
-            createCards(cars.slice(0,4));
+            recent.length
+                ? recent
+                    .map(createCard)
+                    .join("")
+                : `
+                    <div class="empty">
+                        <div class="empty-icon">
+                            🚗
+                        </div>
+                        Zeskanuj swój pierwszy samochód
+                    </div>
+                `;
     }
-    if(full){
-        full.innerHTML =
-            createCards(filtered);
-    }
+
     updateStats();
 }
-/* DETAIL */
-function showCar(id){
+
+
+function createCard(car) {
+
+    return `
+        <article
+            class="card"
+            onclick="showCar(${car.id})">
+
+            <img
+                class="card-image"
+                src="${escapeHtml(car.image)}"
+                alt="${escapeHtml(car.name)}">
+
+            <button
+                class="favorite"
+                onclick="
+                    toggleFavorite(event, ${car.id})
+                ">
+
+                ${car.favorite ? "★" : "☆"}
+
+            </button>
+
+            <div class="card-info">
+
+                <div class="card-name">
+                    ${escapeHtml(car.name)}
+                </div>
+
+                <div class="card-meta">
+                    ${escapeHtml(car.year)}
+                </div>
+
+            </div>
+
+        </article>
+    `;
+}
+
+
+function showCar(id) {
+
     const car =
-        cars.find(c => c.id === id);
-    if(!car) return;
-    currentCar = car;
+        cars.find(
+            item => item.id === id
+        );
+
+    if (!car) {
+        return;
+    }
+
     showResult(car);
 }
-/* FAVORITE */
-function toggleFavorite(event,id){
+
+
+/* =========================
+   ULUBIONE
+========================= */
+
+function toggleFavorite(event, id) {
+
     event.stopPropagation();
+
     const car =
-        cars.find(c => c.id === id);
-    if(!car) return;
-    car.favorite = !car.favorite;
-    save();
+        cars.find(
+            item => item.id === id
+        );
+
+    if (!car) {
+        return;
+    }
+
+    car.favorite =
+        !car.favorite;
+
+    saveCars();
+}
+
+
+/* =========================
+   USUWANIE
+========================= */
+
+function clearLibrary() {
+
+    if (!cars.length) {
+
+        showToast(
+            "Biblioteka jest pusta."
+        );
+
+        return;
+    }
+
+    const ok =
+        confirm(
+            "Usunąć wszystkie samochody?"
+        );
+
+    if (!ok) {
+        return;
+    }
+
+    cars = [];
+
+    saveCars();
+
+    showToast(
+        "Biblioteka została wyczyszczona."
+    );
+}
+
+
+/* =========================
+   STORAGE
+========================= */
+
+function saveCars() {
+
+    try {
+
+        localStorage.setItem(
+            "carscan_cars",
+            JSON.stringify(cars)
+        );
+
+    } catch {
+
+        showToast(
+            "Brak miejsca na zapis zdjęcia."
+        );
+    }
+
     renderLibrary();
 }
-/* DELETE */
-function deleteCar(){
-    if(!currentCar) return;
-    cars =
-        cars.filter(c => c.id !== currentCar.id);
-    save();
-    currentCar = null;
-    openPage("library");
-    showToast("Usunięto samochód");
+
+
+/* =========================
+   STATYSTYKI
+========================= */
+
+function updateStats() {
+
+    document
+        .getElementById("statCars")
+        .textContent =
+        cars.length;
+
+    document
+        .getElementById("statFavorites")
+        .textContent =
+        cars.filter(
+            car => car.favorite
+        ).length;
+
+    document
+        .getElementById("statScans")
+        .textContent =
+        scans;
 }
-/* CLEAR */
-function clearLibrary(){
-    if(!cars.length){
-        showToast("Biblioteka jest pusta");
-        return;
-    }
-    if(confirm("Usunąć wszystkie samochody?")){
-        cars = [];
-        save();
-        renderLibrary();
-        showToast("Biblioteka wyczyszczona");
-    }
-}
-/* ACCOUNT */
-function saveDemoUser(){
+
+
+/* =========================
+   KONTO
+========================= */
+
+function saveUser() {
+
     const name =
-        document.getElementById("authName").value.trim();
+        document
+            .getElementById("authName")
+            .value
+            .trim();
+
     const email =
-        document.getElementById("authEmail").value.trim();
-    if(!name || !email){
-        showToast("Wpisz nazwę i e-mail");
+        document
+            .getElementById("authEmail")
+            .value
+            .trim();
+
+    if (!name || !email) {
+
+        showToast(
+            "Wpisz nazwę i e-mail."
+        );
+
         return;
     }
+
     localStorage.setItem(
         "carscan_user",
         JSON.stringify({
-            name:name,
-            email:email
+            name,
+            email
         })
     );
+
     updateAccount();
+
     openPage("account");
-    showToast("Profil zapisany 👋");
+
+    showToast(
+        "Profil zapisany."
+    );
 }
-function updateAccount(){
+
+
+function updateAccount() {
+
     const user =
         JSON.parse(
-            localStorage.getItem("carscan_user") || "null"
+            localStorage.getItem(
+                "carscan_user"
+            ) || "null"
         );
-    if(!user) return;
+
+    if (!user) {
+        return;
+    }
+
     document
         .getElementById("accountName")
-        .textContent = user.name;
+        .textContent =
+        user.name;
+
     document
         .getElementById("accountEmail")
-        .textContent = user.email;
-}
-/* STATS */
-function updateStats(){
-    document
-        .getElementById("statCars")
-        .textContent = cars.length;
-    document
-        .getElementById("statFav")
         .textContent =
-        cars.filter(c => c.favorite).length;
-    document
-        .getElementById("statScans")
-        .textContent = scans;
+        user.email;
 }
-/* STORAGE */
-function save(){
-    localStorage.setItem(
-        "carscan_cars",
-        JSON.stringify(cars)
-    );
-    localStorage.setItem(
-        "carscan_scans",
-        scans
-    );
-    renderLibrary();
-}
-/* TOAST */
-let toastTimer;
-function showToast(message){
+
+
+/* =========================
+   TOAST
+========================= */
+
+let toastTimeout;
+
+function showToast(message) {
+
     const toast =
-        document.getElementById("toast");
-    toast.textContent = message;
-    toast.classList.add("show");
-    clearTimeout(toastTimer);
-    toastTimer =
-        setTimeout(
-            () => toast.classList.remove("show"),
-            2500
+        document.getElementById(
+            "toast"
         );
+
+    toast.textContent =
+        message;
+
+    toast.classList.add("show");
+
+    clearTimeout(
+        toastTimeout
+    );
+
+    toastTimeout =
+        setTimeout(() => {
+
+            toast.classList.remove(
+                "show"
+            );
+
+        }, 2500);
 }
-/* ESCAPE */
-function escapeHtml(value){
+
+
+/* =========================
+   BEZPIECZNY TEKST
+========================= */
+
+function escapeHtml(value) {
+
     return String(value)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
 }
-/* START */
+
+
+/* =========================
+   START
+========================= */
+
 renderLibrary();
 updateAccount();
+
 </script>
+
 </body>
 </html>
