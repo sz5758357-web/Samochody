@@ -1,17 +1,19 @@
+"use strict";
+/*
+  CARSCAN AI
+  Frontend + Cloudflare Worker
+  NIE WKLEJAJ TUTAJ KLUCZA OPENAI.
+*/
 const API_URL = "https://carscan-ai.sz5758357.workers.dev";
-
-const STORAGE_KEY = "carscan_library_v3";
-
-let currentImage = null;
-let currentResult = null;
-
-
-/* =========================
-   ELEMENTS
-========================= */
-
 const $ = (id) => document.getElementById(id);
-
+let currentImage = "";
+let currentResult = null;
+let library = JSON.parse(
+  localStorage.getItem("carscan_library_v3") || "[]"
+);
+/* =========================
+   NAVIGATION
+========================= */
 const pages = {
   home: $("homePage"),
   scan: $("scanPage"),
@@ -19,263 +21,90 @@ const pages = {
   library: $("libraryPage"),
   settings: $("settingsPage")
 };
-
-
-/* =========================
-   START
-========================= */
-
-document.addEventListener("DOMContentLoaded", () => {
-
-  loadTheme();
-  setupNavigation();
-  setupInputs();
-  setupSettings();
-  setupLibrary();
-  setupResult();
-  setupModal();
-  setupTouchProtection();
-
-  renderRecent();
-  renderLibrary();
-  updateLibraryCount();
-
-});
-
-
-/* =========================
-   NAVIGATION
-========================= */
-
 function showPage(name) {
-
-  Object.values(pages).forEach(page => {
-    if (!page) return;
-
-    page.classList.remove("active");
-    page.style.display = "none";
+  Object.values(pages).forEach((page) => {
+    if (page) page.classList.remove("active");
   });
-
-  const page = pages[name];
-
-  if (!page) return;
-
-  page.style.display = "block";
-
-  requestAnimationFrame(() => {
-    page.classList.add("active");
-  });
-
-  window.scrollTo(0, 0);
+  if (pages[name]) {
+    pages[name].classList.add("active");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 }
-
-
-function setupNavigation() {
-
-  $("homeBtn")?.addEventListener("click", () => {
-    showPage("home");
-  });
-
-  $("libraryBtn")?.addEventListener("click", () => {
-    renderLibrary();
-    showPage("library");
-  });
-
-  $("openLibraryBtn")?.addEventListener("click", () => {
-    renderLibrary();
-    showPage("library");
-  });
-
-  $("settingsBtn")?.addEventListener("click", () => {
-    updateLibraryCount();
-    showPage("settings");
-  });
-
-  $("scanBackBtn")?.addEventListener("click", () => {
-    showPage("home");
-  });
-
-  $("resultBackBtn")?.addEventListener("click", () => {
-    showPage("home");
-  });
-
-  $("settingsBackBtn")?.addEventListener("click", () => {
-    showPage("home");
-  });
-
-  $("emptyScanBtn")?.addEventListener("click", () => {
-    $("galleryInput")?.click();
-  });
-
-}
-
-
+$("libraryBtn").addEventListener("click", () => {
+  renderLibrary();
+  showPage("library");
+});
+$("openLibraryBtn").addEventListener("click", () => {
+  renderLibrary();
+  showPage("library");
+});
+$("homeBtn").addEventListener("click", () => showPage("home"));
+$("settingsBtn").addEventListener("click", () => showPage("settings"));
+$("settingsBackBtn").addEventListener("click", () => showPage("home"));
+$("scanBackBtn").addEventListener("click", () => showPage("home"));
+$("resultBackBtn").addEventListener("click", () => showPage("home"));
 /* =========================
-   INPUTS
+   FILE INPUT
 ========================= */
-
-function setupInputs() {
-
-  $("cameraBtn")?.addEventListener("click", () => {
-    $("cameraInput")?.click();
-  });
-
-  $("galleryBtn")?.addEventListener("click", () => {
-    $("galleryInput")?.click();
-  });
-
-  $("cameraInput")?.addEventListener("change", handleFile);
-  $("galleryInput")?.addEventListener("change", handleFile);
-
-
-  document.addEventListener("dragover", event => {
-    event.preventDefault();
-  });
-
-
-  document.addEventListener("drop", event => {
-
-    event.preventDefault();
-
-    const file =
-      event.dataTransfer?.files?.[0];
-
-    if (file) {
-      processFile(file);
-    }
-
-  });
-
-}
-
-
-function handleFile(event) {
-
-  const file =
-    event.target.files?.[0];
-
-  if (!file) return;
-
-  processFile(file);
-
+$("cameraBtn").addEventListener("click", () => {
+  $("cameraInput").click();
+});
+$("galleryBtn").addEventListener("click", () => {
+  $("galleryInput").click();
+});
+$("cameraInput").addEventListener("change", (event) => {
+  handleFile(event.target.files?.[0]);
   event.target.value = "";
-}
-
-
-/* =========================
-   IMAGE
-========================= */
-
-async function processFile(file) {
-
+});
+$("galleryInput").addEventListener("change", (event) => {
+  handleFile(event.target.files?.[0]);
+  event.target.value = "";
+});
+async function handleFile(file) {
+  if (!file) return;
   if (!file.type.startsWith("image/")) {
-
-    showToast("Wybierz zdjęcie samochodu.");
-
+    toast("Wybierz plik graficzny.");
     return;
   }
-
-
   if (file.size > 15 * 1024 * 1024) {
-
-    showToast(
-      "Zdjęcie jest za duże. Maksymalnie 15 MB."
-    );
-
+    toast("Zdjęcie jest za duże. Maksymalnie 15 MB.");
     return;
   }
-
-
   try {
-
-    showToast("Przygotowywanie zdjęcia...");
-
-    currentImage =
-      await prepareImage(file);
-
-    $("scanPreview").src =
-      currentImage;
-
+    currentImage = await optimizeImage(file);
+    $("scanPreview").src = currentImage;
     showPage("scan");
-
-    startScan();
-
+    await scanCar();
   } catch (error) {
-
     console.error(error);
-
-    showToast(
-      "Nie udało się przygotować zdjęcia."
-    );
-
+    toast("Nie udało się przygotować zdjęcia.");
+    showPage("home");
   }
-
 }
-
-
-function prepareImage(file) {
-
+/* =========================
+   IMAGE OPTIMIZATION
+========================= */
+function optimizeImage(file) {
   return new Promise((resolve, reject) => {
-
-    const reader =
-      new FileReader();
-
-
+    const reader = new FileReader();
     reader.onload = () => {
-
-      const img =
-        new Image();
-
-
+      const img = new Image();
       img.onload = () => {
-
-        const MAX = 1600;
-
-        let width =
-          img.naturalWidth;
-
-        let height =
-          img.naturalHeight;
-
-
-        if (
-          width > MAX ||
-          height > MAX
-        ) {
-
-          if (width > height) {
-
-            height =
-              Math.round(
-                height * MAX / width
-              );
-
-            width = MAX;
-
-          } else {
-
-            width =
-              Math.round(
-                width * MAX / height
-              );
-
-            height = MAX;
-
-          }
-
+        const maxSize = 1600;
+        let width = img.naturalWidth;
+        let height = img.naturalHeight;
+        if (width > maxSize || height > maxSize) {
+          const scale = Math.min(
+            maxSize / width,
+            maxSize / height
+          );
+          width = Math.round(width * scale);
+          height = Math.round(height * scale);
         }
-
-
-        const canvas =
-          document.createElement("canvas");
-
+        const canvas = document.createElement("canvas");
         canvas.width = width;
         canvas.height = height;
-
-
-        const ctx =
-          canvas.getContext("2d");
-
+        const ctx = canvas.getContext("2d");
         ctx.drawImage(
           img,
           0,
@@ -283,1221 +112,452 @@ function prepareImage(file) {
           width,
           height
         );
-
-
         resolve(
-          canvas.toDataURL(
-            "image/jpeg",
-            0.88
-          )
-        );
-
-      };
-
-
-      img.onerror = () => {
-        reject(
-          new Error(
-            "Nie można odczytać zdjęcia."
-          )
+          canvas.toDataURL("image/jpeg", 0.88)
         );
       };
-
-
-      img.src =
-        reader.result;
-
+      img.onerror = reject;
+      img.src = reader.result;
     };
-
-
-    reader.onerror = () => {
-      reject(
-        new Error(
-          "Błąd odczytu zdjęcia."
-        )
-      );
-    };
-
-
+    reader.onerror = reject;
     reader.readAsDataURL(file);
-
   });
-
 }
-
-
 /* =========================
-   AI SCAN
+   SCANNING
 ========================= */
-
-async function startScan() {
-
-  setProgress(
-    5,
-    "Przygotowywanie zdjęcia..."
-  );
-
+async function scanCar() {
+  setProgress(8, "Przygotowywanie zdjęcia...");
   setStep(1);
-
-  await delay(400);
-
-
-  setProgress(
-    20,
-    "Łączenie z AI..."
-  );
-
-  setStep(1);
-
-  await delay(400);
-
-
-  setProgress(
-    35,
-    "Wysyłanie zdjęcia..."
-  );
-
+  await delay(500);
+  setProgress(25, "Analizowanie obrazu...");
   setStep(2);
-
-
+  const controller = new AbortController();
+  const timeout = setTimeout(() => {
+    controller.abort();
+  }, 60000);
   try {
-
-    const controller =
-      new AbortController();
-
-
-    const timeout =
-      setTimeout(
-        () => controller.abort(),
-        60000
-      );
-
-
-    const response =
-      await fetch(
-        API_URL,
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
-
-          body: JSON.stringify({
-            image: currentImage
-          }),
-
-          signal: controller.signal
-        }
-      );
-
-
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        image: currentImage
+      }),
+      signal: controller.signal
+    });
     clearTimeout(timeout);
-
-
     let data;
-
     try {
-
-      data =
-        await response.json();
-
+      data = await response.json();
     } catch {
-
       throw new Error(
         "Worker zwrócił nieprawidłową odpowiedź."
       );
-
     }
-
-
-    console.log(
-      "CarScan Worker:",
-      data
-    );
-
-
-    if (!response.ok) {
-
-      throw new Error(
-        data?.error ||
-        "Worker zwrócił błąd."
-      );
-
-    }
-
-
-    if (!data.ok) {
-
+    console.log("Worker:", data);
+    if (!response.ok || !data.ok) {
       throw new Error(
         data.error ||
-        "AI nie zwróciło wyniku."
+        `Błąd serwera (${response.status})`
       );
-
     }
-
-
-    setProgress(
-      70,
-      "AI analizuje samochód..."
-    );
-
-    setStep(2);
-
-    await delay(500);
-
-
-    setProgress(
-      88,
-      "Rozpoznawanie szczegółów..."
-    );
-
+    setProgress(75, "Interpretowanie wyniku AI...");
     setStep(3);
-
     await delay(500);
-
-
-    currentResult =
-      normalizeResult(data);
-
-
-    setProgress(
-      100,
-      "Gotowe"
-    );
-
-    setStep(3);
-
+    setProgress(100, "Gotowe");
+    currentResult = normalizeResult(data);
+    saveToLibrary(currentResult);
+    renderResult(currentResult);
     await delay(300);
-
-
-    saveCar({
-      ...currentResult,
-      image: currentImage
-    });
-
-
-    renderResult();
-
     showPage("result");
-
-
-    navigator.vibrate?.(
-      [30, 40, 30]
-    );
-
-
   } catch (error) {
-
-    console.error(
-      "CarScan AI:",
-      error
-    );
-
-
-    let message =
-      "Nie udało się połączyć z AI.";
-
-
-    if (
-      error.name ===
-      "AbortError"
-    ) {
-
-      message =
-        "AI nie odpowiedziało w ciągu 60 sekund.";
-
-    } else if (
-      error.message
-    ) {
-
-      message =
-        error.message;
-
+    clearTimeout(timeout);
+    console.error("SCAN ERROR:", error);
+    let message = error.message || "Nieznany błąd.";
+    if (error.name === "AbortError") {
+      message = "Analiza trwała zbyt długo.";
     }
-
-
-    showToast(message);
-
-    await delay(600);
-
+    toast(message);
+    await delay(700);
     showPage("home");
-
   }
-
 }
-
-
+function setProgress(value, label) {
+  $("progressBar").style.width = `${value}%`;
+  $("progressPercent").textContent = `${value}%`;
+  $("progressLabel").textContent = label;
+}
+function setStep(number) {
+  ["step1", "step2", "step3"].forEach((id, index) => {
+    const el = $(id);
+    if (!el) return;
+    el.classList.toggle(
+      "active",
+      index < number
+    );
+  });
+}
 /* =========================
    RESULT
 ========================= */
-
 function normalizeResult(data) {
-
   return {
-
-    brand:
-      value(
-        data.brand,
-        "Nieznana"
-      ),
-
-    model:
-      value(
-        data.model,
-        "Nieznany"
-      ),
-
-    generation:
-      value(
-        data.generation,
-        "Nieokreślona"
-      ),
-
-    body:
-      value(
-        data.body,
-        "Nieokreślone"
-      ),
-
-    engine:
-      value(
-        data.engine,
-        "Nieokreślony"
-      ),
-
-    drive:
-      value(
-        data.drive,
-        "Nieokreślony"
-      ),
-
-    year:
-      value(
-        data.year,
-        "Nieokreślony"
-      ),
-
-    color:
-      value(
-        data.color,
-        "Nieokreślony"
-      ),
-
-    confidence:
-      clamp(
-        data.confidence,
-        0,
-        100
-      ),
-
-    identifiable:
-      Boolean(
-        data.identifiable
-      ),
-
-    notes:
-      value(
-        data.notes,
-        "Brak dodatkowych uwag."
-      )
-
+    id: crypto.randomUUID
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random()}`,
+    image: currentImage,
+    brand: clean(data.brand),
+    model: clean(data.model),
+    generation: clean(data.generation),
+    body: clean(data.body),
+    engine: clean(data.engine),
+    drive: clean(data.drive),
+    year: clean(data.year),
+    color: clean(data.color),
+    notes: clean(data.notes),
+    confidence: clamp(
+      Number(data.confidence) || 0,
+      0,
+      100
+    ),
+    identifiable: data.identifiable !== false,
+    createdAt: Date.now()
   };
-
 }
-
-
-function renderResult() {
-
+function clean(value) {
   if (
-    !currentResult ||
-    !currentImage
-  ) return;
-
-
-  $("resultImage").src =
-    currentImage;
-
-
-  $("confidenceBadge").textContent =
-    `${Math.round(
-      currentResult.confidence
-    )}%`;
-
-
-  $("resultTitle").textContent =
-    `${currentResult.brand} ${currentResult.model}`;
-
-
-  $("resultGeneration").textContent =
-    currentResult.generation;
-
-
-  $("resultBrand").textContent =
-    currentResult.brand;
-
-  $("resultModel").textContent =
-    currentResult.model;
-
-  $("resultBody").textContent =
-    currentResult.body;
-
-  $("resultYear").textContent =
-    currentResult.year;
-
-  $("resultEngine").textContent =
-    currentResult.engine;
-
-  $("resultDrive").textContent =
-    currentResult.drive;
-
-  $("resultColor").textContent =
-    currentResult.color;
-
-  $("resultNotes").textContent =
-    currentResult.notes;
-
-
-  if (
-    !currentResult.identifiable ||
-    currentResult.confidence < 50
+    value === null ||
+    value === undefined ||
+    value === ""
   ) {
-
-    $("notIdentified")
-      ?.classList
-      .remove("hidden");
-
-  } else {
-
-    $("notIdentified")
-      ?.classList
-      .add("hidden");
-
+    return "—";
   }
-
+  return String(value);
 }
-
-
-function setupResult() {
-
-  $("scanAgainBtn")?.addEventListener(
-    "click",
-    () => {
-      $("galleryInput")?.click();
-    }
+function clamp(value, min, max) {
+  return Math.min(
+    Math.max(value, min),
+    max
   );
-
-
-  $("resultLibraryBtn")?.addEventListener(
-    "click",
-    () => {
-      renderLibrary();
-      showPage("library");
-    }
-  );
-
 }
-
-
+function renderResult(car) {
+  $("resultImage").src = car.image;
+  $("confidenceBadge").textContent =
+    `${Math.round(car.confidence)}% pewności`;
+  const title =
+    car.brand !== "—" && car.model !== "—"
+      ? `${car.brand} ${car.model}`
+      : car.brand !== "—"
+        ? car.brand
+        : "Nie rozpoznano";
+  $("resultTitle").textContent = title;
+  $("resultGeneration").textContent =
+    car.generation !== "—"
+      ? car.generation
+      : "Brak pewnej informacji";
+  $("resultBrand").textContent = car.brand;
+  $("resultModel").textContent = car.model;
+  $("resultBody").textContent = car.body;
+  $("resultYear").textContent = car.year;
+  $("resultEngine").textContent = car.engine;
+  $("resultDrive").textContent = car.drive;
+  $("resultColor").textContent = car.color;
+  $("resultNotes").textContent = car.notes;
+  const uncertain =
+    car.identifiable === false ||
+    car.confidence < 50;
+  $("notIdentified").classList.toggle(
+    "hidden",
+    !uncertain
+  );
+}
 /* =========================
    LIBRARY
 ========================= */
-
-function getLibrary() {
-
-  try {
-
-    return JSON.parse(
-      localStorage.getItem(
-        STORAGE_KEY
-      ) || "[]"
-    );
-
-  } catch {
-
-    return [];
-
+function saveToLibrary(car) {
+  library.unshift(car);
+  if (library.length > 100) {
+    library = library.slice(0, 100);
   }
-
-}
-
-
-function saveCar(car) {
-
-  const library =
-    getLibrary();
-
-
-  library.unshift({
-    id:
-      `${Date.now()}-${Math.random()}`,
-
-    createdAt:
-      new Date().toISOString(),
-
-    ...car
-  });
-
-
-  try {
-
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(
-        library.slice(0, 100)
-      )
-    );
-
-  } catch {
-
-    showToast(
-      "Nie udało się zapisać auta."
-    );
-
-  }
-
-
-  updateLibraryCount();
-  renderRecent();
-
-}
-
-
-function renderLibrary() {
-
-  const grid =
-    $("libraryGrid");
-
-  const empty =
-    $("libraryEmpty");
-
-
-  if (!grid || !empty) return;
-
-
-  const query =
-    (
-      $("librarySearch")?.value ||
-      ""
-    )
-      .toLowerCase()
-      .trim();
-
-
-  const cars =
-    getLibrary()
-      .filter(car => {
-
-        const text =
-          [
-            car.brand,
-            car.model,
-            car.generation,
-            car.year,
-            car.color
-          ]
-            .join(" ")
-            .toLowerCase();
-
-        return text.includes(query);
-
-      });
-
-
-  grid.innerHTML = "";
-
-
-  if (!cars.length) {
-
-    empty.style.display =
-      "block";
-
-    return;
-
-  }
-
-
-  empty.style.display =
-    "none";
-
-
-  cars.forEach(car => {
-
-    const card =
-      document.createElement("article");
-
-    card.className =
-      "library-card";
-
-
-    card.innerHTML = `
-      <div class="library-card-image">
-
-        <img
-          src="${escapeHTML(car.image)}"
-          alt=""
-          loading="lazy"
-        >
-
-        <div class="library-confidence">
-          ${Math.round(car.confidence || 0)}%
-        </div>
-
-      </div>
-
-      <div class="library-card-body">
-
-        <strong>
-          ${escapeHTML(
-            `${car.brand} ${car.model}`
-          )}
-        </strong>
-
-        <span>
-          ${escapeHTML(
-            `${car.generation || "—"} · ${car.year || "—"}`
-          )}
-        </span>
-
-        <button
-          class="library-delete"
-          data-id="${car.id}"
-        >
-          USUŃ
-        </button>
-
-      </div>
-    `;
-
-
-    card.addEventListener(
-      "click",
-      event => {
-
-        if (
-          event.target.closest(
-            ".library-delete"
-          )
-        ) return;
-
-
-        currentImage =
-          car.image;
-
-        currentResult =
-          car;
-
-        renderResult();
-
-        showPage("result");
-
-      }
-    );
-
-
-    card
-      .querySelector(
-        ".library-delete"
-      )
-      .addEventListener(
-        "click",
-        event => {
-
-          event.stopPropagation();
-
-          deleteCar(car.id);
-
-        }
-      );
-
-
-    grid.appendChild(card);
-
-  });
-
-}
-
-
-function renderRecent() {
-
-  const container =
-    $("recentCars");
-
-  if (!container) return;
-
-
-  const cars =
-    getLibrary()
-      .slice(0, 4);
-
-
-  container.innerHTML = "";
-
-
-  if (!cars.length) {
-
-    container.innerHTML = `
-      <div style="
-        grid-column:1/-1;
-        color:var(--muted);
-        font-size:11px;
-        padding:20px 0;
-      ">
-        Twoje ostatnie rozpoznania pojawią się tutaj.
-      </div>
-    `;
-
-    return;
-
-  }
-
-
-  cars.forEach(car => {
-
-    const card =
-      document.createElement("article");
-
-    card.className =
-      "recent-card";
-
-
-    card.innerHTML = `
-      <img
-        src="${escapeHTML(car.image)}"
-        alt=""
-        loading="lazy"
-      >
-
-      <div class="recent-card-content">
-
-        <strong>
-          ${escapeHTML(
-            `${car.brand} ${car.model}`
-          )}
-        </strong>
-
-        <span>
-          ${escapeHTML(
-            car.generation || "—"
-          )}
-        </span>
-
-      </div>
-    `;
-
-
-    card.addEventListener(
-      "click",
-      () => {
-
-        currentImage =
-          car.image;
-
-        currentResult =
-          car;
-
-        renderResult();
-
-        showPage("result");
-
-      }
-    );
-
-
-    container.appendChild(card);
-
-  });
-
-}
-
-
-function deleteCar(id) {
-
-  const library =
-    getLibrary()
-      .filter(
-        car => car.id !== id
-      );
-
-
   localStorage.setItem(
-    STORAGE_KEY,
+    "carscan_library_v3",
     JSON.stringify(library)
   );
-
-
+  renderRecent();
+  updateLibraryEmpty();
+}
+function renderRecent() {
+  const container = $("recentCars");
+  if (!container) return;
+  const recent = library.slice(0, 4);
+  container.innerHTML = "";
+  recent.forEach((car) => {
+    container.appendChild(
+      createCarCard(car, false)
+    );
+  });
+  updateLibraryEmpty();
+}
+function renderLibrary() {
+  const container = $("libraryGrid");
+  const query =
+    $("librarySearch").value
+      .trim()
+      .toLowerCase();
+  container.innerHTML = "";
+  const filtered = library.filter((car) => {
+    const text = [
+      car.brand,
+      car.model,
+      car.generation,
+      car.year
+    ]
+      .join(" ")
+      .toLowerCase();
+    return text.includes(query);
+  });
+  filtered.forEach((car) => {
+    container.appendChild(
+      createCarCard(car, true)
+    );
+  });
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="empty-card visible" style="grid-column:1/-1">
+        <div class="empty-icon">◇</div>
+        <strong>Brak wyników</strong>
+        <span>Nie znaleziono samochodu w bibliotece.</span>
+      </div>
+    `;
+  }
+}
+function createCarCard(car, showDelete) {
+  const card = document.createElement("article");
+  card.className =
+    showDelete
+      ? "library-card"
+      : "recent-card";
+  card.innerHTML = `
+    <img
+      class="car-image"
+      src="${escapeAttribute(car.image)}"
+      alt=""
+    >
+    <div class="car-info">
+      <strong>
+        ${escapeHtml(car.brand)}
+        ${escapeHtml(car.model)}
+      </strong>
+      <span>
+        ${escapeHtml(car.generation)}
+      </span>
+    </div>
+    ${
+      showDelete
+        ? `<button class="delete-card" aria-label="Usuń">×</button>`
+        : ""
+    }
+  `;
+  card.querySelector(".car-image")
+    .addEventListener("click", () => {
+      openModal(car.image);
+    });
+  if (showDelete) {
+    card.querySelector(".delete-card")
+      .addEventListener("click", (event) => {
+        event.stopPropagation();
+        deleteCar(car.id);
+      });
+  }
+  return card;
+}
+function deleteCar(id) {
+  library = library.filter(
+    (car) => car.id !== id
+  );
+  localStorage.setItem(
+    "carscan_library_v3",
+    JSON.stringify(library)
+  );
   renderLibrary();
   renderRecent();
-  updateLibraryCount();
-
-  showToast(
-    "Usunięto samochód."
+  toast("Samochód usunięty.");
+}
+$("librarySearch").addEventListener(
+  "input",
+  renderLibrary
+);
+$("clearLibraryBtn").addEventListener(
+  "click",
+  () => {
+    if (library.length === 0) {
+      toast("Biblioteka jest już pusta.");
+      return;
+    }
+    const confirmed =
+      confirm(
+        "Czy na pewno chcesz usunąć wszystkie zapisane samochody?"
+      );
+    if (!confirmed) return;
+    library = [];
+    localStorage.removeItem(
+      "carscan_library_v3"
+    );
+    renderLibrary();
+    renderRecent();
+    toast("Biblioteka została wyczyszczona.");
+  }
+);
+function updateLibraryEmpty() {
+  const empty = $("libraryEmpty");
+  if (!empty) return;
+  empty.classList.toggle(
+    "visible",
+    library.length === 0
   );
-
 }
-
-
-function setupLibrary() {
-
-  $("librarySearch")
-    ?.addEventListener(
-      "input",
-      renderLibrary
-    );
-
-
-  $("clearLibraryBtn")
-    ?.addEventListener(
-      "click",
-      () => {
-
-        if (
-          !getLibrary().length
-        ) {
-
-          showToast(
-            "Biblioteka jest pusta."
-          );
-
-          return;
-        }
-
-
-        if (
-          confirm(
-            "Usunąć całą bibliotekę?"
-          )
-        ) {
-
-          localStorage.removeItem(
-            STORAGE_KEY
-          );
-
-          renderLibrary();
-          renderRecent();
-          updateLibraryCount();
-
-          showToast(
-            "Biblioteka wyczyszczona."
-          );
-
-        }
-
-      }
-    );
-
+/* =========================
+   ACTIONS
+========================= */
+$("scanAgainBtn").addEventListener(
+  "click",
+  () => {
+    $("cameraInput").click();
+  }
+);
+$("resultLibraryBtn").addEventListener(
+  "click",
+  () => {
+    renderLibrary();
+    showPage("library");
+  }
+);
+/* =========================
+   IMAGE MODAL
+========================= */
+$("resultImage").addEventListener(
+  "click",
+  () => {
+    if (currentResult?.image) {
+      openModal(currentResult.image);
+    }
+  }
+);
+function openModal(src) {
+  $("modalImage").src = src;
+  $("imageModal").classList.remove("hidden");
 }
-
-
-function updateLibraryCount() {
-
-  const element =
-    $("libraryCount");
-
-  if (!element) return;
-
-
-  const count =
-    getLibrary().length;
-
-
-  element.textContent =
-    `${count} ${
-      count === 1
-        ? "auto"
-        : count < 5
-          ? "auta"
-          : "aut"
-    }`;
-
+function closeModal() {
+  $("imageModal").classList.add("hidden");
+  $("modalImage").src = "";
 }
-
-
+$("closeModal").addEventListener(
+  "click",
+  closeModal
+);
+$("imageModal").addEventListener(
+  "click",
+  (event) => {
+    if (event.target === $("imageModal")) {
+      closeModal();
+    }
+  }
+);
 /* =========================
    THEME
 ========================= */
-
-function setupSettings() {
-
-  $("themeToggle")
-    ?.addEventListener(
-      "click",
-      () => {
-
-        document.body
-          .classList
-          .toggle("light");
-
-
-        const light =
-          document.body
-            .classList
-            .contains("light");
-
-
-        localStorage.setItem(
-          "carscan_theme",
-          light
-            ? "light"
-            : "dark"
-        );
-
-
-        updateThemeSwitch();
-
-      }
-    );
-
+const savedTheme =
+  localStorage.getItem("carscan_theme");
+if (savedTheme === "light") {
+  document.body.classList.add("light");
+  $("themeToggle").checked = false;
 }
-
-
-function loadTheme() {
-
-  if (
-    localStorage.getItem(
-      "carscan_theme"
-    ) === "light"
-  ) {
-
-    document.body
-      .classList
-      .add("light");
-
+$("themeToggle").addEventListener(
+  "change",
+  () => {
+    const light =
+      !$("themeToggle").checked;
+    document.body.classList.toggle(
+      "light",
+      light
+    );
+    localStorage.setItem(
+      "carscan_theme",
+      light ? "light" : "dark"
+    );
   }
-
-
-  updateThemeSwitch();
-
-}
-
-
-function updateThemeSwitch() {
-
-  $("themeToggle")
-    ?.classList
-    .toggle(
-      "active",
-      document.body.classList.contains(
-        "light"
-      )
-    );
-
-}
-
-
+);
 /* =========================
-   MODAL
+   TOUCH / DOUBLE TAP PROTECTION
 ========================= */
-
-function setupModal() {
-
-  $("resultImage")
-    ?.addEventListener(
-      "click",
-      () => {
-
-        if (!currentImage) return;
-
-        $("modalImage").src =
-          currentImage;
-
-        $("imageModal")
-          .classList
-          .remove("hidden");
-
-      }
-    );
-
-
-  $("closeModal")
-    ?.addEventListener(
-      "click",
-      closeModal
-    );
-
-
-  $("imageModal")
-    ?.addEventListener(
-      "click",
-      event => {
-
-        if (
-          event.target ===
-          $("imageModal")
-        ) {
-
-          closeModal();
-
-        }
-
-      }
-    );
-
-}
-
-
-function closeModal() {
-
-  $("imageModal")
-    ?.classList
-    .add("hidden");
-
-}
-
-
-/* =========================
-   TOUCH
-========================= */
-
-function setupTouchProtection() {
-
-  let lastTouch = 0;
-
-
-  document.addEventListener(
-    "touchend",
-    event => {
-
-      const now =
-        Date.now();
-
-
-      if (
-        now - lastTouch < 300
-      ) {
-
-        event.preventDefault();
-
-      }
-
-
-      lastTouch =
-        now;
-
-    },
-    {
-      passive: false
+let lastTouchEnd = 0;
+document.addEventListener(
+  "touchend",
+  (event) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
     }
-  );
-
-
-  [
-    "gesturestart",
-    "gesturechange",
-    "gestureend"
-  ].forEach(eventName => {
-
-    document.addEventListener(
-      eventName,
-      event => {
-        event.preventDefault();
-      },
-      {
-        passive: false
-      }
-    );
-
-  });
-
+    lastTouchEnd = now;
+  },
+  { passive: false }
+);
+document.addEventListener(
+  "gesturestart",
+  (event) => {
+    event.preventDefault();
+  },
+  { passive: false }
+);
+document.addEventListener(
+  "gesturechange",
+  (event) => {
+    event.preventDefault();
+  },
+  { passive: false }
+);
+document.addEventListener(
+  "gestureend",
+  (event) => {
+    event.preventDefault();
+  },
+  { passive: false }
+);
+/* =========================
+   TOAST
+========================= */
+let toastTimer;
+function toast(message) {
+  $("toastText").textContent = message;
+  $("toast").classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    $("toast").classList.remove("show");
+  }, 3200);
 }
-
-
 /* =========================
    HELPERS
 ========================= */
-
-function setProgress(
-  percent,
-  text
-) {
-
-  const bar =
-    $("progressBar");
-
-  const percentEl =
-    $("progressPercent");
-
-  const label =
-    $("progressLabel");
-
-
-  if (bar) {
-    bar.style.width =
-      `${percent}%`;
-  }
-
-  if (percentEl) {
-    percentEl.textContent =
-      `${percent}%`;
-  }
-
-  if (label) {
-    label.textContent =
-      text;
-  }
-
-}
-
-
-function setStep(number) {
-
-  document
-    .querySelectorAll(
-      ".progress-step"
-    )
-    .forEach(
-      step =>
-        step.classList.remove(
-          "active"
-        )
-    );
-
-
-  for (
-    let i = 1;
-    i <= number;
-    i++
-  ) {
-
-    $(`step${i}`)
-      ?.classList
-      .add("active");
-
-  }
-
-}
-
-
-function value(
-  value,
-  fallback
-) {
-
-  if (
-    value === undefined ||
-    value === null ||
-    String(value).trim() === ""
-  ) {
-
-    return fallback;
-
-  }
-
-  return String(value).trim();
-
-}
-
-
-function clamp(
-  value,
-  min,
-  max
-) {
-
-  const number =
-    Number(value);
-
-
-  if (
-    !Number.isFinite(number)
-  ) {
-
-    return min;
-
-  }
-
-
-  return Math.max(
-    min,
-    Math.min(max, number)
-  );
-
-}
-
-
 function delay(ms) {
-
   return new Promise(
-    resolve =>
-      setTimeout(
-        resolve,
-        ms
-      )
+    (resolve) => setTimeout(resolve, ms)
   );
-
 }
-
-
-function escapeHTML(value) {
-
-  return String(value ?? "")
+function escapeHtml(value) {
+  return String(value)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
-
 }
-
-
-function showToast(message) {
-
-  const toast =
-    $("toast");
-
-  const text =
-    $("toastText");
-
-
-  if (!toast || !text) return;
-
-
-  text.textContent =
-    message;
-
-
-  toast.classList.add(
-    "show"
-  );
-
-
-  clearTimeout(
-    window.__toastTimer
-  );
-
-
-  window.__toastTimer =
-    setTimeout(
-      () => {
-
-        toast.classList.remove(
-          "show"
-        );
-
-      },
-      3500
-    );
-
+function escapeAttribute(value) {
+  return escapeHtml(value);
 }
-
-
 /* =========================
-   NO CONTEXT MENU
+   START
 ========================= */
-
-document.addEventListener(
-  "contextmenu",
-  event => {
-
-    if (
-      event.target.tagName !==
-      "INPUT"
-    ) {
-
-      event.preventDefault();
-
-    }
-
-  }
-);
+renderRecent();
+updateLibraryEmpty();
