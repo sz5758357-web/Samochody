@@ -8,35 +8,97 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="app">
+<div id="toast" class="toast"></div>
+<!-- ================= AUTH ================= -->
+<section id="authScreen" class="auth-screen">
+    <div class="auth-card">
+        <div class="auth-logo">🚗</div>
+        <h1>CarScan <span>AI</span></h1>
+        <p class="auth-subtitle">
+            Rozpoznawaj samochody za pomocą AI
+        </p>
+        <!-- LOGIN -->
+        <div id="loginForm" class="auth-form">
+            <h2>Witaj ponownie</h2>
+            <p>Zaloguj się do swojego konta</p>
+            <label>Email</label>
+            <input id="loginEmail" type="email" placeholder="twoj@email.pl">
+            <label>Hasło</label>
+            <input id="loginPassword" type="password" placeholder="••••••••">
+            <button id="loginBtn" class="primary-btn full">
+                Zaloguj się
+            </button>
+            <p class="switch-text">
+                Nie masz konta?
+                <button id="showRegister">Utwórz konto</button>
+            </p>
+        </div>
+        <!-- REGISTER -->
+        <div id="registerForm" class="auth-form hidden">
+            <h2>Utwórz konto</h2>
+            <p>Zacznij korzystać z CarScan AI</p>
+            <label>Nick</label>
+            <input id="registerName" type="text" placeholder="Twój nick">
+            <label>Email</label>
+            <input id="registerEmail" type="email" placeholder="twoj@email.pl">
+            <label>Hasło</label>
+            <input id="registerPassword" type="password" placeholder="Minimum 6 znaków">
+            <label>Powtórz hasło</label>
+            <input id="registerPassword2" type="password" placeholder="Powtórz hasło">
+            <button id="registerBtn" class="primary-btn full">
+                Załóż konto
+            </button>
+            <p class="switch-text">
+                Masz już konto?
+                <button id="showLogin">Zaloguj się</button>
+            </p>
+        </div>
+    </div>
+</section>
+<!-- ================= APP ================= -->
+<div id="appScreen" class="app hidden">
     <header class="topbar">
         <div class="brand">
             <div class="brand-icon">🚗</div>
             <div>
                 <h1>CarScan <span>AI</span></h1>
-                <p>Rozpoznawanie samochodów</p>
+                <p id="welcomeText">Witaj!</p>
             </div>
         </div>
-        <button id="themeBtn" class="icon-btn" title="Zmień motyw">☀️</button>
+        <button id="themeBtn" class="icon-btn">
+            ☀️
+        </button>
     </header>
-    <main>
+    <!-- ================= HOME ================= -->
+    <main id="homePage" class="page">
         <section class="hero">
-            <div class="badge">⚡ AI CAR IDENTIFIER</div>
-            <h2>Co to za samochód?</h2>
+            <div class="badge">
+                ⚡ AI CAR IDENTIFIER
+            </div>
+            <h2>
+                Co to za<br>
+                samochód?
+            </h2>
             <p>
-                Zrób zdjęcie samochodu lub wybierz je z galerii,
-                a CarScan AI spróbuje go rozpoznać.
+                Zrób zdjęcie auta lub wybierz je z galerii.
+                CarScan AI przygotuje identyfikację.
             </p>
         </section>
         <section class="scanner">
             <div id="dropZone" class="drop-zone">
                 <div id="previewContainer" class="preview-container hidden">
-                    <img id="preview" alt="Podgląd samochodu">
-                    <button id="removeBtn" class="remove-btn">×</button>
+                    <img id="preview" alt="Podgląd">
+                    <button id="removeBtn" class="remove-btn">
+                        ×
+                    </button>
                 </div>
                 <div id="uploadContent" class="upload-content">
-                    <div class="camera-circle">📷</div>
-                    <h3>Dodaj zdjęcie samochodu</h3>
+                    <div class="camera-circle">
+                        📷
+                    </div>
+                    <h3>
+                        Dodaj zdjęcie samochodu
+                    </h3>
                     <p>
                         JPG, PNG lub WEBP
                     </p>
@@ -45,11 +107,11 @@
                             📸 Zrób zdjęcie
                         </button>
                         <button id="galleryBtn" class="secondary-btn">
-                            🖼️ Wybierz z galerii
+                            🖼️ Galeria
                         </button>
                     </div>
                     <p class="drag-text">
-                        Możesz też przeciągnąć zdjęcie tutaj
+                        Możesz też przeciągnąć zdjęcie
                     </p>
                 </div>
                 <input
@@ -67,30 +129,39 @@
                 >
             </div>
             <button id="scanBtn" class="scan-btn hidden">
-                <span>🔍</span>
-                Rozpoznaj samochód
+                🔍 Rozpoznaj samochód
             </button>
         </section>
+        <!-- LOADING -->
         <section id="loading" class="loading hidden">
             <div class="loader"></div>
-            <h3>Analizuję zdjęcie...</h3>
-            <p>AI szuka najlepszego dopasowania.</p>
+            <h3>
+                Analizuję zdjęcie...
+            </h3>
+            <p>
+                AI szuka najlepszego dopasowania.
+            </p>
             <div class="progress">
                 <div id="progressBar"></div>
             </div>
         </section>
+        <!-- RESULT -->
         <section id="result" class="result hidden">
             <div class="result-header">
                 <div>
-                    <span class="result-label">ROZPOZNANO</span>
-                    <h2 id="carName">—</h2>
+                    <span class="result-label">
+                        ROZPOZNANO
+                    </span>
+                    <h2 id="carName">
+                        —
+                    </h2>
                 </div>
                 <div id="confidence" class="confidence">
-                    0%
+                    AI
                 </div>
             </div>
             <div class="result-image">
-                <img id="resultImage" alt="Rozpoznany samochód">
+                <img id="resultImage" alt="Samochód">
             </div>
             <div class="spec-grid">
                 <div class="spec-card">
@@ -118,38 +189,105 @@
                     <strong id="engine">—</strong>
                 </div>
             </div>
-            <button id="newScanBtn" class="primary-btn full">
-                🔄 Skanuj kolejne auto
-            </button>
-        </section>
-        <section class="features">
-            <h2>Co potrafi CarScan AI?</h2>
-            <div class="feature-grid">
-                <div class="feature">
-                    <div>📸</div>
-                    <h3>Aparat</h3>
-                    <p>Zrób zdjęcie auta bezpośrednio na telefonie.</p>
-                </div>
-                <div class="feature">
-                    <div>🖼️</div>
-                    <h3>Galeria</h3>
-                    <p>Wybierz dowolne zdjęcie zapisane na urządzeniu.</p>
-                </div>
-                <div class="feature">
-                    <div>🤖</div>
-                    <h3>AI</h3>
-                    <p>Przygotowane pod prawdziwe rozpoznawanie samochodów.</p>
-                </div>
-                <div class="feature">
-                    <div>📊</div>
-                    <h3>Wyniki</h3>
-                    <p>Najważniejsze informacje pokazane w czytelny sposób.</p>
-                </div>
+            <div class="result-actions">
+                <button id="favoriteBtn" class="secondary-btn">
+                    ⭐ Dodaj do ulubionych
+                </button>
+                <button id="newScanBtn" class="primary-btn">
+                    🔄 Nowy skan
+                </button>
             </div>
         </section>
     </main>
+    <!-- ================= HISTORY ================= -->
+    <main id="historyPage" class="page hidden">
+        <div class="page-title">
+            <span>🕘</span>
+            <div>
+                <h2>Historia</h2>
+                <p>Twoje ostatnie skany</p>
+            </div>
+        </div>
+        <div id="historyList" class="history-list"></div>
+        <div id="emptyHistory" class="empty-state">
+            <div>🚗</div>
+            <h3>Brak skanów</h3>
+            <p>Rozpoznane samochody pojawią się tutaj.</p>
+        </div>
+    </main>
+    <!-- ================= FAVORITES ================= -->
+    <main id="favoritesPage" class="page hidden">
+        <div class="page-title">
+            <span>⭐</span>
+            <div>
+                <h2>Ulubione</h2>
+                <p>Zapisane samochody</p>
+            </div>
+        </div>
+        <div id="favoritesList" class="favorites-list"></div>
+        <div id="emptyFavorites" class="empty-state">
+            <div>⭐</div>
+            <h3>Brak ulubionych</h3>
+            <p>Dodaj samochód do ulubionych po skanowaniu.</p>
+        </div>
+    </main>
+    <!-- ================= PROFILE ================= -->
+    <main id="profilePage" class="page hidden">
+        <div class="profile-card">
+            <div id="profileAvatar" class="profile-avatar">
+                S
+            </div>
+            <h2 id="profileName">
+                Użytkownik
+            </h2>
+            <p id="profileEmail">
+                —
+            </p>
+        </div>
+        <div class="settings-card">
+            <button id="logoutBtn" class="setting danger">
+                <span>🚪</span>
+                <div>
+                    <strong>Wyloguj się</strong>
+                    <small>Opuść swoje konto</small>
+                </div>
+                <b>›</b>
+            </button>
+            <button id="clearHistoryBtn" class="setting">
+                <span>🗑️</span>
+                <div>
+                    <strong>Wyczyść historię</strong>
+                    <small>Usuń zapisane skany</small>
+                </div>
+                <b>›</b>
+            </button>
+        </div>
+    </main>
+    <!-- ================= BOTTOM NAV ================= -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-page="homePage">
+            <span>🏠</span>
+            <small>Start</small>
+        </button>
+        <button class="nav-item" data-page="historyPage">
+            <span>🕘</span>
+            <small>Historia</small>
+        </button>
+        <button class="nav-item scan-nav" data-page="homePage">
+            <span>📸</span>
+            <small>Skanuj</small>
+        </button>
+        <button class="nav-item" data-page="favoritesPage">
+            <span>⭐</span>
+            <small>Ulubione</small>
+        </button>
+        <button class="nav-item" data-page="profilePage">
+            <span>👤</span>
+            <small>Profil</small>
+        </button>
+    </nav>
     <footer>
-        <p>CarScan AI • Rozpoznawanie samochodów</p>
+        CarScan AI • Rozpoznawanie samochodów
     </footer>
 </div>
 <script src="script.js"></script>
