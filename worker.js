@@ -1,400 +1,375 @@
-export default {
-  async fetch(request, env) {
-
-    const corsHeaders = {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type"
-    };
-
-
-    if (request.method === "OPTIONS") {
-
-      return new Response(null, {
-        status: 204,
-        headers: corsHeaders
-      });
-
-    }
-
-
-    if (request.method !== "POST") {
-
-      return json(
-        {
-          error: "Użyj metody POST."
-        },
-        405,
-        corsHeaders
-      );
-
-    }
-
-
-    try {
-
-      const body =
-        await request.json();
-
-
-      if (!body.image) {
-
-        return json(
-          {
-            error: "Brak zdjęcia."
-          },
-          400,
-          corsHeaders
-        );
-
-      }
-
-
-      if (
-        typeof body.image !== "string" ||
-        !body.image.startsWith("data:image/")
-      ) {
-
-        return json(
-          {
-            error: "Nieprawidłowy format zdjęcia."
-          },
-          400,
-          corsHeaders
-        );
-
-      }
-
-
-      const response =
-        await fetch(
-          "https://api.openai.com/v1/responses",
-          {
-            method: "POST",
-
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization":
-                `Bearer ${env.OPENAI_API_KEY}`
-            },
-
-            body: JSON.stringify({
-
-              model: "gpt-5",
-
-              temperature: 0,
-
-              input: [
-                {
-                  role: "system",
-
-                  content: [
-                    {
-                      type: "input_text",
-
-                      text: `
-Jesteś specjalistą od identyfikacji samochodów.
-
-Twoim zadaniem jest rozpoznać samochód ze zdjęcia.
-
-BARDZO WAŻNE:
-
-1. Nie zgaduj, jeśli zdjęcie nie daje wystarczających informacji.
-2. Nie wymyślaj generacji, silnika ani rocznika.
-3. Jeśli nie da się określić konkretnej wartości, wpisz "Nieznane".
-4. Najpierw określ, czy na zdjęciu rzeczywiście znajduje się samochód.
-5. Zwróć uwagę na:
-   - reflektory
-   - grill
-   - kształt nadwozia
-   - tylne światła
-   - zderzaki
-   - proporcje
-   - felgi
-   - charakterystyczne elementy modelu
-   - emblematy
-   - oznaczenia
-6. Oddziel pewność rozpoznania marki od pewności modelu w swoim wewnętrznym rozumowaniu.
-7. Pole confidence ma oznaczać ogólną pewność całego rozpoznania.
-8. Jeżeli model i generacja są bardzo podobne do innych aut, obniż confidence.
-9. Jeśli zdjęcie pokazuje tylko fragment samochodu albo jest bardzo słabe, ustaw identifiable=false.
-10. Nie podawaj losowego modelu tylko po to, aby odpowiedź wyglądała kompletnie.
-
-Odpowiedź musi być wyłącznie zgodna ze zdefiniowanym JSON schema.
-`
-                    }
-                  ]
-                },
-
-                {
-                  role: "user",
-
-                  content: [
-                    {
-                      type: "input_text",
-
-                      text: `
-Rozpoznaj samochód ze zdjęcia.
-
-Potrzebuję:
-marka,
-model,
-generacja,
-nadwozie,
-silnik,
-napęd,
-przybliżony rocznik,
-kolor,
-confidence 0-100,
-identifiable,
-krótkie notes.
-
-Jeśli czegoś nie można wiarygodnie określić, wpisz "Nieznane".
-`
-                    },
-
-                    {
-                      type: "input_image",
-
-                      image_url: body.image,
-
-                      detail: "high"
-                    }
-                  ]
-                }
-              ],
-
-
-              text: {
-
-                format: {
-
-                  type: "json_schema",
-
-                  name: "car_identification",
-
-                  strict: true,
-
-                  schema: {
-
-                    type: "object",
-
-                    additionalProperties: false,
-
-                    properties: {
-
-                      brand: {
-                        type: "string"
-                      },
-
-                      model: {
-                        type: "string"
-                      },
-
-                      generation: {
-                        type: "string"
-                      },
-
-                      body: {
-                        type: "string"
-                      },
-
-                      engine: {
-                        type: "string"
-                      },
-
-                      drive: {
-                        type: "string"
-                      },
-
-                      year: {
-                        type: "string"
-                      },
-
-                      color: {
-                        type: "string"
-                      },
-
-                      confidence: {
-                        type: "number"
-                      },
-
-                      identifiable: {
-                        type: "boolean"
-                      },
-
-                      notes: {
-                        type: "string"
-                      }
-
-                    },
-
-                    required: [
-                      "brand",
-                      "model",
-                      "generation",
-                      "body",
-                      "engine",
-                      "drive",
-                      "year",
-                      "color",
-                      "confidence",
-                      "identifiable",
-                      "notes"
-                    ]
-
-                  }
-
-                }
-
-              }
-
-            })
-
-          }
-        );
-
-
-      if (!response.ok) {
-
-        const errorText =
-          await response.text();
-
-        console.error(
-          "OpenAI error:",
-          errorText
-        );
-
-
-        return json(
-          {
-            error:
-              "AI zwróciło błąd. Spróbuj ponownie."
-          },
-          502,
-          corsHeaders
-        );
-
-      }
-
-
-      const data =
-        await response.json();
-
-
-      const text =
-        data.output_text;
-
-
-      if (!text) {
-
-        return json(
-          {
-            error:
-              "AI nie zwróciło wyniku."
-          },
-          502,
-          corsHeaders
-        );
-
-      }
-
-
-      let result;
-
-
-      try {
-
-        result =
-          JSON.parse(text);
-
-      } catch {
-
-        return json(
-          {
-            error:
-              "Nie udało się odczytać wyniku AI."
-          },
-          502,
-          corsHeaders
-        );
-
-      }
-
-
-      result.confidence =
-        Math.max(
-          0,
-          Math.min(
-            100,
-            Number(result.confidence) || 0
-          )
-        );
-
-
-      /*
-        Dodatkowe zabezpieczenie:
-        jeżeli AI samo mówi, że nie jest
-        identyfikowalne, nie pozwalamy
-        frontendowi udawać pewnego wyniku.
-      */
-
-      if (!result.identifiable) {
-
-        result.confidence =
-          Math.min(
-            result.confidence,
-            35
-          );
-
-      }
-
-
-      return json(
-        result,
-        200,
-        corsHeaders
-      );
-
-
-    } catch (error) {
-
-      console.error(error);
-
-
-      return json(
-        {
-          error:
-            "Wystąpił błąd serwera."
-        },
-        500,
-        corsHeaders
-      );
-
-    }
-
-  }
+const MODEL = "@cf/meta/llama-3.2-11b-vision-instruct";
+
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Content-Type": "application/json; charset=utf-8",
 };
 
-
-function json(
-  data,
-  status,
-  corsHeaders
-) {
-
-  return new Response(
-    JSON.stringify(data),
-    {
-      status,
-
-      headers: {
-        "Content-Type":
-          "application/json; charset=utf-8",
-
-        ...corsHeaders
-      }
-    }
-  );
-
+function json(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: CORS_HEADERS,
+  });
 }
+
+function clean(value, fallback = "Nieznane") {
+  if (value === null || value === undefined) return fallback;
+
+  const text = String(value)
+    .replace(/```json/gi, "")
+    .replace(/```/g, "")
+    .trim();
+
+  return text || fallback;
+}
+
+function clampConfidence(value) {
+  const number = Number(value);
+
+  if (!Number.isFinite(number)) return 0;
+
+  return Math.max(0, Math.min(100, Math.round(number)));
+}
+
+function extractJSON(text) {
+  if (!text) return null;
+
+  let cleaned = String(text)
+    .replace(/```json/gi, "")
+    .replace(/```/g, "")
+    .trim();
+
+  try {
+    return JSON.parse(cleaned);
+  } catch {}
+
+  const start = cleaned.indexOf("{");
+  const end = cleaned.lastIndexOf("}");
+
+  if (start !== -1 && end > start) {
+    try {
+      return JSON.parse(cleaned.slice(start, end + 1));
+    } catch {}
+  }
+
+  return null;
+}
+
+function normalizeResult(data) {
+  if (!data || typeof data !== "object") {
+    return {
+      ok: true,
+      identifiable: false,
+      confidence: 0,
+      brand: "Nie rozpoznano",
+      model: "Nie udało się rozpoznać auta",
+      generation: "Nieznana",
+      body: "Nieznane",
+      engine: "Nieznany",
+      drive: "Nieznany",
+      year: "Nieznany",
+      color: "Nieznany",
+      notes:
+        "AI nie ma wystarczającej pewności, aby wiarygodnie zidentyfikować samochód.",
+    };
+  }
+
+  const confidence = clampConfidence(data.confidence);
+
+  const identifiable =
+    data.identifiable === true ||
+    (confidence >= 55 &&
+      clean(data.brand, "") !== "" &&
+      clean(data.model, "") !== "");
+
+  if (!identifiable || confidence < 45) {
+    return {
+      ok: true,
+      identifiable: false,
+      confidence,
+      brand: "Nie rozpoznano",
+      model: "Nie udało się wiarygodnie rozpoznać auta",
+      generation: "Nieznana",
+      body: "Nieznane",
+      engine: "Nieznany",
+      drive: "Nieznany",
+      year: "Nieznany",
+      color: clean(data.color),
+      notes:
+        clean(
+          data.notes,
+          "Zdjęcie nie daje wystarczającej pewności. Spróbuj zrobić wyraźniejsze zdjęcie całego samochodu."
+        ),
+    };
+  }
+
+  return {
+    ok: true,
+    identifiable: true,
+    confidence,
+
+    brand: clean(data.brand),
+    model: clean(data.model),
+    generation: clean(data.generation),
+    body: clean(data.body),
+    engine: clean(data.engine),
+    drive: clean(data.drive),
+    year: clean(data.year),
+    color: clean(data.color),
+
+    notes: clean(
+      data.notes,
+      "Rozpoznanie zostało wykonane na podstawie wyglądu samochodu."
+    ),
+  };
+}
+
+function extractModelResponse(response) {
+  if (!response) return "";
+
+  if (typeof response === "string") return response;
+
+  if (typeof response.response === "string") {
+    return response.response;
+  }
+
+  if (typeof response.result === "string") {
+    return response.result;
+  }
+
+  if (typeof response.text === "string") {
+    return response.text;
+  }
+
+  if (response.result && typeof response.result.response === "string") {
+    return response.result.response;
+  }
+
+  return JSON.stringify(response);
+}
+
+export default {
+  async fetch(request, env) {
+    // CORS
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        status: 204,
+        headers: CORS_HEADERS,
+      });
+    }
+
+    // Health check
+    if (request.method === "GET") {
+      return json({
+        ok: true,
+        service: "CarScan AI",
+        ai: "Cloudflare Workers AI",
+        model: MODEL,
+        status: "ready",
+      });
+    }
+
+    if (request.method !== "POST") {
+      return json(
+        {
+          ok: false,
+          error: "Method not allowed",
+        },
+        405
+      );
+    }
+
+    if (!env || !env.AI) {
+      return json(
+        {
+          ok: false,
+          error:
+            "Brak bindingu AI. W Cloudflare Worker → Settings → Bindings dodaj Workers AI z nazwą AI.",
+        },
+        500
+      );
+    }
+
+    let body;
+
+    try {
+      body = await request.json();
+    } catch {
+      return json(
+        {
+          ok: false,
+          error: "Nieprawidłowy JSON.",
+        },
+        400
+      );
+    }
+
+    let image = body?.image;
+
+    if (!image || typeof image !== "string") {
+      return json(
+        {
+          ok: false,
+          error: "Nie przesłano zdjęcia.",
+        },
+        400
+      );
+    }
+
+    // Akceptujemy zarówno:
+    // data:image/jpeg;base64,...
+    // jak i samo base64.
+    if (!image.startsWith("data:image/")) {
+      image = `data:image/jpeg;base64,${image}`;
+    }
+
+    // Ograniczenie rozmiaru requestu
+    if (image.length > 15_000_000) {
+      return json(
+        {
+          ok: false,
+          error:
+            "Zdjęcie jest za duże. Spróbuj użyć mniejszego zdjęcia.",
+        },
+        413
+      );
+    }
+
+    const systemPrompt = `
+Jesteś specjalistą od rozpoznawania samochodów ze zdjęć.
+
+Twoim zadaniem jest rozpoznać samochód widoczny na przesłanym zdjęciu.
+
+BARDZO WAŻNE:
+- Nie zgaduj, jeśli samochód nie jest wystarczająco widoczny.
+- Nie wymyślaj marki ani modelu.
+- Jeśli zdjęcie pokazuje tylko fragment auta, słabe ujęcie albo nie można odróżnić kilku podobnych modeli, ustaw identifiable na false.
+- Confidence ma oznaczać rzeczywistą pewność rozpoznania.
+- Nie podawaj fałszywie dokładnego rocznika.
+- Jeśli rocznika nie da się ustalić, wpisz "Nieznany".
+- Jeśli silnika nie można określić ze zdjęcia, wpisz "Nieznany".
+- Jeśli napędu nie można określić, wpisz "Nieznany".
+- Kolor podaj tylko wtedy, gdy rzeczywiście jest widoczny.
+- Odpowiadaj WYŁĄCZNIE poprawnym JSON-em.
+- Bez markdown.
+- Bez komentarzy poza JSON-em.
+
+Zwróć dokładnie taki obiekt:
+
+{
+  "identifiable": true,
+  "confidence": 0,
+  "brand": "",
+  "model": "",
+  "generation": "",
+  "body": "",
+  "engine": "",
+  "drive": "",
+  "year": "",
+  "color": "",
+  "notes": ""
+}
+
+confidence musi być liczbą od 0 do 100.
+
+Jeżeli nie jesteś pewien:
+{
+  "identifiable": false,
+  "confidence": 0,
+  "brand": "",
+  "model": "",
+  "generation": "",
+  "body": "",
+  "engine": "",
+  "drive": "",
+  "year": "",
+  "color": "",
+  "notes": "Nie można wiarygodnie rozpoznać samochodu na podstawie tego zdjęcia."
+}
+`;
+
+    const userPrompt = `
+Przeanalizuj przesłane zdjęcie samochodu.
+
+Spróbuj ustalić:
+1. markę,
+2. model,
+3. generację,
+4. typ nadwozia,
+5. możliwy silnik,
+6. napęd,
+7. przybliżony rok lub zakres lat,
+8. kolor.
+
+Najważniejsze jest WIARYGODNE rozpoznanie. Jeśli nie masz wystarczającej pewności, odmów identyfikacji zamiast zgadywać.
+`;
+
+    try {
+      /*
+       * Cloudflare Workers AI:
+       * Llama 3.2 11B Vision przyjmuje wiadomość tekstową
+       * oraz obraz jako parametr "image".
+       */
+      const response = await env.AI.run(MODEL, {
+        messages: [
+          {
+            role: "system",
+            content: systemPrompt,
+          },
+          {
+            role: "user",
+            content: userPrompt,
+          },
+        ],
+
+        image,
+
+        max_tokens: 700,
+        temperature: 0.1,
+        top_p: 0.9,
+      });
+
+      const raw = extractModelResponse(response);
+
+      const parsed = extractJSON(raw);
+
+      if (!parsed) {
+        return json({
+          ok: true,
+          identifiable: false,
+          confidence: 0,
+          brand: "Nie rozpoznano",
+          model: "AI nie zwróciło pewnego rozpoznania",
+          generation: "Nieznana",
+          body: "Nieznane",
+          engine: "Nieznany",
+          drive: "Nieznany",
+          year: "Nieznany",
+          color: "Nieznany",
+          notes:
+            "AI nie zwróciło poprawnego rozpoznania. Spróbuj zrobić wyraźniejsze zdjęcie samochodu.",
+        });
+      }
+
+      return json(normalizeResult(parsed));
+    } catch (error) {
+      console.error("Workers AI error:", error);
+
+      const message =
+        error instanceof Error
+          ? error.message
+          : String(error);
+
+      return json(
+        {
+          ok: false,
+          error: "Błąd Workers AI.",
+          details: message,
+        },
+        500
+      );
+    }
+  },
+};
