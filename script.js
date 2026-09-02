@@ -1,209 +1,155 @@
-"use strict";
+/* =========================================================
+   CARSCAN AI
+   Frontend v2.0
+========================================================= */
 
-/*
-  ==========================================
-  CARSCAN AI 2.0
-  ==========================================
+const API_URL =
+  "https://carscan-ai.sz5758357.workers.dev";
 
-  WAŻNE:
-  Wpisz tutaj adres swojego backendu.
+const STORAGE_KEY =
+  "carscan_library_v3";
 
-  Przykład:
-  https://carscan-ai-api.twojanazwa.workers.dev
-
-  NIE WKLEJAJ TUTAJ KLUCZA OPENAI.
-*/
-
-const API_URL = "https://carscan-ai.sz5758357.workers.dev";
-
-const STORAGE_KEY = "carscan_library_v2";
-const THEME_KEY = "carscan_theme_v2";
-
-let currentImage = "";
+let currentImage = null;
 let currentResult = null;
+let currentFile = null;
+
+let scanTimer = null;
+let toastTimer = null;
 
 
-/* =========================
-   ELEMENTY
-========================= */
+/* =========================================================
+   ELEMENTS
+========================================================= */
 
-const $ = (selector) => document.querySelector(selector);
+const $ = (id) => document.getElementById(id);
 
-const pages = document.querySelectorAll(".page");
-const navItems = document.querySelectorAll(".nav-item");
-
-const cameraInput = $("#cameraInput");
-const galleryInput = $("#galleryInput");
-
-const scanImage = $("#scanImage");
-const resultImage = $("#resultImage");
-
-const progressBar = $("#progressBar");
-const scanProgressText = $("#scanProgressText");
-const scanStatus = $("#scanStatus");
-
-const confidenceText = $("#confidenceText");
-const confidenceBar = $("#confidenceBar");
-
-const libraryGrid = $("#libraryGrid");
-const emptyLibrary = $("#emptyLibrary");
-const libraryCount = $("#libraryCount");
-
-const toast = $("#toast");
-const toastText = $("#toastText");
-
-const imageModal = $("#imageModal");
-const modalImage = $("#modalImage");
+const pages = {
+  home: $("homePage"),
+  scan: $("scanPage"),
+  result: $("resultPage"),
+  library: $("libraryPage"),
+  settings: $("settingsPage")
+};
 
 
-/* =========================
+/* =========================================================
    INIT
-========================= */
+========================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
 
   loadTheme();
-  renderLibrary();
 
   setupNavigation();
-  setupScanner();
-  setupLibrary();
+  setupInputs();
   setupSettings();
+  setupLibrary();
+  setupResult();
   setupModal();
+  setupTouchProtection();
 
-  updateLibraryCount();
+  renderRecent();
+  renderLibrary();
 
 });
 
 
-/* =========================
-   NAWIGACJA
-========================= */
+/* =========================================================
+   NAVIGATION
+========================================================= */
 
-function setupNavigation() {
+function showPage(name) {
 
-  navItems.forEach(button => {
-
-    button.addEventListener("click", () => {
-
-      const pageId = button.dataset.page;
-
-      showPage(pageId);
-
-    });
-
+  Object.values(pages).forEach(page => {
+    page.classList.remove("active");
+    page.style.display = "none";
   });
 
-}
+  const page = pages[name];
 
+  if (!page) return;
 
-function showPage(pageId) {
+  page.style.display = "block";
 
-  pages.forEach(page => {
-
-    page.classList.toggle(
-      "active",
-      page.id === pageId
-    );
-
-  });
-
-
-  navItems.forEach(item => {
-
-    item.classList.toggle(
-      "active",
-      item.dataset.page === pageId
-    );
-
+  requestAnimationFrame(() => {
+    page.classList.add("active");
   });
 
   window.scrollTo({
     top: 0,
-    behavior: "smooth"
+    behavior: "instant"
+  });
+}
+
+
+function setupNavigation() {
+
+  $("homeBtn").addEventListener("click", () => {
+    showPage("home");
+  });
+
+  $("libraryBtn").addEventListener("click", () => {
+    renderLibrary();
+    showPage("library");
+  });
+
+  $("openLibraryBtn").addEventListener("click", () => {
+    renderLibrary();
+    showPage("library");
+  });
+
+  $("settingsBtn").addEventListener("click", () => {
+    updateLibraryCount();
+    showPage("settings");
+  });
+
+  $("scanBackBtn").addEventListener("click", () => {
+    showPage("home");
+  });
+
+  $("resultBackBtn").addEventListener("click", () => {
+    showPage("home");
+  });
+
+  $("settingsBackBtn").addEventListener("click", () => {
+    showPage("home");
+  });
+
+  $("emptyScanBtn").addEventListener("click", () => {
+    openGallery();
   });
 
 }
 
 
-/* =========================
-   SKANER
-========================= */
+/* =========================================================
+   INPUTS
+========================================================= */
 
-function setupScanner() {
+function setupInputs() {
 
-  $("#cameraBtn").addEventListener(
-    "click",
-    () => cameraInput.click()
-  );
-
-  $("#galleryBtn").addEventListener(
-    "click",
-    () => galleryInput.click()
-  );
-
-
-  cameraInput.addEventListener(
-    "change",
-    handleFile
-  );
-
-  galleryInput.addEventListener(
-    "change",
-    handleFile
-  );
-
-
-  $("#againBtn").addEventListener(
-    "click",
-    () => {
-      showPage("homePage");
-    }
-  );
-
-
-  $("#emptyScanBtn").addEventListener(
-    "click",
-    () => {
-      showPage("homePage");
-    }
-  );
-
-
-  const dropZone = $("#dropZone");
-
-
-  ["dragenter", "dragover"].forEach(eventName => {
-
-    dropZone.addEventListener(eventName, event => {
-
-      event.preventDefault();
-
-      dropZone.style.transform = "scale(1.015)";
-      dropZone.style.borderColor = "rgba(109,124,255,.5)";
-
-    });
-
+  $("cameraBtn").addEventListener("click", () => {
+    $("cameraInput").click();
   });
 
-
-  ["dragleave", "drop"].forEach(eventName => {
-
-    dropZone.addEventListener(eventName, event => {
-
-      event.preventDefault();
-
-      dropZone.style.transform = "";
-      dropZone.style.borderColor = "";
-
-    });
-
+  $("galleryBtn").addEventListener("click", () => {
+    $("galleryInput").click();
   });
 
+  $("cameraInput").addEventListener("change", handleFile);
 
-  dropZone.addEventListener("drop", event => {
+  $("galleryInput").addEventListener("change", handleFile);
 
-    const file = event.dataTransfer.files[0];
+
+  document.addEventListener("dragover", event => {
+    event.preventDefault();
+  });
+
+  document.addEventListener("drop", event => {
+
+    event.preventDefault();
+
+    const file = event.dataTransfer?.files?.[0];
 
     if (file) {
       processFile(file);
@@ -214,9 +160,10 @@ function setupScanner() {
 }
 
 
-/* =========================
-   PLIK
-========================= */
+function openGallery() {
+  $("galleryInput").click();
+}
+
 
 function handleFile(event) {
 
@@ -227,11 +174,14 @@ function handleFile(event) {
   processFile(file);
 
   event.target.value = "";
-
 }
 
 
-function processFile(file) {
+/* =========================================================
+   FILE PROCESSING
+========================================================= */
+
+async function processFile(file) {
 
   if (!file.type.startsWith("image/")) {
 
@@ -240,7 +190,6 @@ function processFile(file) {
     return;
   }
 
-
   if (file.size > 15 * 1024 * 1024) {
 
     showToast("Zdjęcie jest za duże. Maksymalnie 15 MB.");
@@ -248,296 +197,642 @@ function processFile(file) {
     return;
   }
 
+  currentFile = file;
 
-  const reader = new FileReader();
+  try {
 
+    showToast("Przygotowuję zdjęcie...");
 
-  reader.onload = () => {
+    currentImage = await prepareImage(file);
 
-    currentImage = reader.result;
+    $("scanPreview").src = currentImage;
 
-    scanImage.src = currentImage;
+    showPage("scan");
 
-    resultImage.src = currentImage;
+    startScan();
 
-    showPage("scanPage");
+  } catch (error) {
 
-    runAI();
+    console.error(error);
 
-  };
+    showToast("Nie udało się przygotować zdjęcia.");
 
-
-  reader.onerror = () => {
-
-    showToast("Nie udało się odczytać zdjęcia.");
-
-  };
-
-
-  reader.readAsDataURL(file);
+  }
 
 }
 
 
-/* =========================
-   AI
-========================= */
+/* =========================================================
+   IMAGE OPTIMIZATION
+========================================================= */
 
-async function runAI() {
+function prepareImage(file) {
 
-  setProgress(8, "Przygotowywanie zdjęcia...");
+  return new Promise((resolve, reject) => {
 
-  await sleep(350);
+    const reader = new FileReader();
 
-  setProgress(20, "Analizowanie kształtu samochodu...");
+    reader.onload = () => {
 
-  await sleep(450);
+      const img = new Image();
 
-  setProgress(34, "Rozpoznawanie marki...");
+      img.onload = () => {
 
-  await sleep(450);
+        const MAX_SIZE = 1600;
 
-  setProgress(48, "Porównywanie modelu...");
+        let width = img.naturalWidth;
+        let height = img.naturalHeight;
 
-  await sleep(450);
+        if (width > MAX_SIZE || height > MAX_SIZE) {
 
-  setProgress(61, "Sprawdzanie generacji...");
+          if (width > height) {
 
-  await sleep(400);
+            height =
+              Math.round(
+                height * MAX_SIZE / width
+              );
 
-  setProgress(74, "Analizowanie szczegółów...");
+            width = MAX_SIZE;
+
+          } else {
+
+            width =
+              Math.round(
+                width * MAX_SIZE / height
+              );
+
+            height = MAX_SIZE;
+
+          }
+
+        }
+
+        const canvas =
+          document.createElement("canvas");
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx =
+          canvas.getContext("2d", {
+            alpha: false
+          });
+
+        ctx.drawImage(
+          img,
+          0,
+          0,
+          width,
+          height
+        );
+
+        const dataUrl =
+          canvas.toDataURL(
+            "image/jpeg",
+            .88
+          );
+
+        resolve(dataUrl);
+
+      };
+
+      img.onerror = () => {
+        reject(
+          new Error("Nie można odczytać zdjęcia.")
+        );
+      };
+
+      img.src = reader.result;
+
+    };
+
+    reader.onerror = () => {
+      reject(
+        new Error("Błąd odczytu pliku.")
+      );
+    };
+
+    reader.readAsDataURL(file);
+
+  });
+
+}
+
+
+/* =========================================================
+   SCANNING
+========================================================= */
+
+async function startScan() {
+
+  stopScanTimer();
+
+  setProgress(4, "Przygotowywanie zdjęcia...");
+
+  setStep(1);
+
+  await delay(500);
+
+  setProgress(22, "Przesyłanie zdjęcia...");
+
+  setStep(1);
+
+  await delay(600);
+
+  setProgress(40, "AI analizuje samochód...");
+
+  setStep(2);
+
+  await delay(500);
+
+  setProgress(57, "Porównywanie cech auta...");
+
+  setStep(2);
+
+  const fakeProgress =
+    setInterval(() => {
+
+      const current =
+        Number(
+          $("progressPercent").textContent
+            .replace("%", "")
+        );
+
+      if (current < 82) {
+
+        setProgress(
+          current + 2,
+          "Analiza obrazu..."
+        );
+
+      }
+
+    }, 350);
+
 
   try {
 
-    const response = await fetch(
-      API_URL,
-      {
+    const controller =
+      new AbortController();
+
+    const timeout =
+      setTimeout(
+        () => controller.abort(),
+        45000
+      );
+
+
+    const response =
+      await fetch(API_URL, {
+
         method: "POST",
+
         headers: {
           "Content-Type": "application/json"
         },
+
         body: JSON.stringify({
           image: currentImage
-        })
-      }
-    );
+        }),
+
+        signal: controller.signal
+
+      });
 
 
-    if (!response.ok) {
+    clearTimeout(timeout);
 
-      let message = "Błąd serwera AI.";
+    clearInterval(fakeProgress);
 
-      try {
-        const errorData = await response.json();
 
-        if (errorData.error) {
-          message = errorData.error;
-        }
+    let data = null;
 
-      } catch {}
+    try {
 
-      throw new Error(message);
+      data = await response.json();
+
+    } catch {
+
+      throw new Error(
+        "Worker zwrócił nieprawidłową odpowiedź."
+      );
+
+    }
+
+
+    if (!response.ok || !data?.ok) {
+
+      console.error(
+        "Worker error:",
+        data
+      );
+
+      throw new Error(
+        data?.error ||
+        "AI nie mogło przeanalizować zdjęcia."
+      );
 
     }
 
 
     setProgress(
-      88,
-      "Weryfikowanie wyniku..."
+      90,
+      "Finalizowanie rozpoznania..."
     );
 
+    setStep(3);
 
-    const data = await response.json();
+    await delay(500);
 
 
-    await sleep(500);
+    currentResult =
+      normalizeResult(data);
+
 
     setProgress(
       100,
       "Gotowe"
     );
 
+    setStep(3);
 
-    await sleep(350);
+    await delay(350);
 
-    currentResult = normalizeResult(data);
 
-    showResult(currentResult);
+    saveCar({
+      ...currentResult,
+      image: currentImage
+    });
 
-    saveToLibrary(currentResult);
+
+    renderResult();
+
+    showPage("result");
+
+    navigator.vibrate?.(
+      [30, 40, 30]
+    );
+
 
   } catch (error) {
 
-    console.error(error);
+    clearInterval(fakeProgress);
 
-    setProgress(
-      100,
-      "Nie udało się zakończyć analizy"
+    console.error(
+      "CarScan AI error:",
+      error
     );
 
+    let message =
+      "Nie udało się rozpoznać samochodu.";
 
-    showToast(
-      error.message ||
-      "Nie udało się połączyć z AI."
-    );
+    if (
+      error?.name === "AbortError"
+    ) {
+
+      message =
+        "AI nie odpowiedziało w ciągu 45 sekund.";
+
+    } else if (
+      error?.message
+    ) {
+
+      message =
+        error.message;
+    }
+
+
+    showToast(message);
+
+    await delay(500);
+
+    showPage("home");
 
   }
 
 }
 
 
+function stopScanTimer() {
+
+  if (scanTimer) {
+
+    clearInterval(scanTimer);
+
+    scanTimer = null;
+
+  }
+
+}
+
+
+function setProgress(percent, label) {
+
+  const safe =
+    Math.max(
+      0,
+      Math.min(100, percent)
+    );
+
+  $("progressBar").style.width =
+    `${safe}%`;
+
+  $("progressPercent").textContent =
+    `${Math.round(safe)}%`;
+
+  $("progressLabel").textContent =
+    label;
+
+}
+
+
+function setStep(number) {
+
+  document
+    .querySelectorAll(".progress-step")
+    .forEach(step => {
+      step.classList.remove("active");
+    });
+
+  for (
+    let i = 1;
+    i <= number;
+    i++
+  ) {
+
+    $(`step${i}`)
+      ?.classList.add("active");
+
+  }
+
+}
+
+
+/* =========================================================
+   RESULT NORMALIZATION
+========================================================= */
+
 function normalizeResult(data) {
 
   return {
 
-    brand: clean(data.brand),
-    model: clean(data.model),
-    generation: clean(data.generation),
-    body: clean(data.body),
-    engine: clean(data.engine),
-    drive: clean(data.drive),
-    year: clean(data.year),
-    color: clean(data.color),
+    brand:
+      cleanValue(
+        data.brand,
+        "Nieznana"
+      ),
 
-    confidence: clamp(
-      Number(data.confidence) || 0,
-      0,
-      100
-    ),
+    model:
+      cleanValue(
+        data.model,
+        "Nieznany"
+      ),
 
-    identifiable: data.identifiable !== false,
+    generation:
+      cleanValue(
+        data.generation,
+        "Nieokreślona"
+      ),
 
-    notes: clean(data.notes)
+    body:
+      cleanValue(
+        data.body,
+        "Nieokreślone"
+      ),
+
+    engine:
+      cleanValue(
+        data.engine,
+        "Nieokreślony"
+      ),
+
+    drive:
+      cleanValue(
+        data.drive,
+        "Nieokreślony"
+      ),
+
+    year:
+      cleanValue(
+        data.year,
+        "Nieokreślony"
+      ),
+
+    color:
+      cleanValue(
+        data.color,
+        "Nieokreślony"
+      ),
+
+    confidence:
+      clampNumber(
+        data.confidence,
+        0,
+        100
+      ),
+
+    identifiable:
+      Boolean(
+        data.identifiable
+      ),
+
+    notes:
+      cleanValue(
+        data.notes,
+        "Brak dodatkowych uwag."
+      )
 
   };
 
 }
 
 
-function clean(value) {
+function cleanValue(value, fallback) {
 
   if (
-    value === undefined ||
     value === null ||
-    value === ""
+    value === undefined
   ) {
-    return "Nieznane";
+    return fallback;
   }
 
-  return String(value)
-    .trim()
-    .slice(0, 150);
+  const text =
+    String(value).trim();
 
+  return text || fallback;
 }
 
 
-function clamp(value, min, max) {
+function clampNumber(value, min, max) {
 
-  return Math.min(
-    Math.max(value, min),
-    max
+  const number =
+    Number(value);
+
+  if (!Number.isFinite(number)) {
+    return min;
+  }
+
+  return Math.max(
+    min,
+    Math.min(max, number)
   );
 
 }
 
 
-/* =========================
-   WYNIK
-========================= */
+/* =========================================================
+   RESULT UI
+========================================================= */
 
-function showResult(result) {
+function setupResult() {
 
-  $("#resultBrand").textContent = result.brand;
-  $("#resultModel").textContent = result.model;
+  $("scanAgainBtn")
+    .addEventListener(
+      "click",
+      () => {
+        openGallery();
+      }
+    );
 
-  $("#resultGeneration").textContent =
-    result.generation;
+  $("resultLibraryBtn")
+    .addEventListener(
+      "click",
+      () => {
+        renderLibrary();
+        showPage("library");
+      }
+    );
 
-  $("#resultBody").textContent =
-    result.body;
-
-  $("#resultEngine").textContent =
-    result.engine;
-
-  $("#resultDrive").textContent =
-    result.drive;
-
-  $("#resultYear").textContent =
-    result.year;
-
-  $("#resultColor").textContent =
-    result.color;
+}
 
 
-  confidenceText.textContent =
-    `${result.confidence}%`;
+function renderResult() {
+
+  if (
+    !currentResult ||
+    !currentImage
+  ) {
+    return;
+  }
 
 
-  setTimeout(() => {
-
-    confidenceBar.style.width =
-      `${result.confidence}%`;
-
-  }, 100);
+  $("resultImage").src =
+    currentImage;
 
 
-  const uncertainBox = $("#uncertainBox");
+  $("confidenceBadge").textContent =
+    `${Math.round(currentResult.confidence)}%`;
+
+
+  const title =
+    [
+      currentResult.brand,
+      currentResult.model
+    ]
+      .filter(isUsefulValue)
+      .join(" ");
+
+
+  $("resultTitle").textContent =
+    title || "Nieznany samochód";
+
+
+  $("resultGeneration").textContent =
+    currentResult.generation;
+
+
+  $("resultBrand").textContent =
+    currentResult.brand;
+
+  $("resultModel").textContent =
+    currentResult.model;
+
+  $("resultBody").textContent =
+    currentResult.body;
+
+  $("resultYear").textContent =
+    currentResult.year;
+
+  $("resultEngine").textContent =
+    currentResult.engine;
+
+  $("resultDrive").textContent =
+    currentResult.drive;
+
+  $("resultColor").textContent =
+    currentResult.color;
+
+  $("resultNotes").textContent =
+    currentResult.notes;
 
 
   if (
-    !result.identifiable ||
-    result.confidence < 60
+    currentResult.identifiable === false ||
+    currentResult.confidence < 50
   ) {
 
-    uncertainBox.classList.remove(
-      "hidden"
-    );
+    $("notIdentified")
+      .classList.remove("hidden");
+
+    $("uncertainText").textContent =
+      currentResult.notes ||
+      "Zdjęcie nie pozwala na wystarczająco pewne rozpoznanie.";
 
   } else {
 
-    uncertainBox.classList.add(
-      "hidden"
-    );
+    $("notIdentified")
+      .classList.add("hidden");
 
-  }
-
-
-  showPage("resultPage");
-
-  if (navigator.vibrate) {
-    navigator.vibrate(40);
   }
 
 }
 
 
-function setProgress(percent, text) {
+function isUsefulValue(value) {
 
-  progressBar.style.width =
-    `${percent}%`;
+  if (!value) return false;
 
-  scanProgressText.textContent =
-    `${percent}%`;
+  const normalized =
+    String(value)
+      .trim()
+      .toLowerCase();
 
-  scanStatus.textContent =
-    text;
+  return ![
+    "nieznana",
+    "nieznany",
+    "nieokreślona",
+    "nieokreślone",
+    "nieokreślony"
+  ].includes(normalized);
 
 }
 
 
-/* =========================
-   BIBLIOTEKA
-========================= */
+/* =========================================================
+   LIBRARY
+========================================================= */
 
 function getLibrary() {
 
   try {
 
-    return JSON.parse(
-      localStorage.getItem(STORAGE_KEY)
-    ) || [];
+    const data =
+      localStorage.getItem(
+        STORAGE_KEY
+      );
 
-  } catch {
+    if (!data) return [];
+
+    const parsed =
+      JSON.parse(data);
+
+    return Array.isArray(parsed)
+      ? parsed
+      : [];
+
+  } catch (error) {
+
+    console.error(error);
 
     return [];
 
@@ -546,27 +841,23 @@ function getLibrary() {
 }
 
 
-function saveToLibrary(result) {
+function saveCar(car) {
 
-  if (!result) return;
-
-
-  const library = getLibrary();
+  const library =
+    getLibrary();
 
 
   const item = {
 
     id:
-      Date.now().toString(36) +
-      Math.random().toString(36).slice(2),
+      crypto.randomUUID
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random()}`,
 
     createdAt:
       new Date().toISOString(),
 
-    image:
-      currentImage,
-
-    ...result
+    ...car
 
   };
 
@@ -574,14 +865,8 @@ function saveToLibrary(result) {
   library.unshift(item);
 
 
-  /*
-    Maksymalnie 50 zapisów.
-    Dzięki temu localStorage nie zostanie
-    zapchany po wielu dużych zdjęciach.
-  */
-
   const limited =
-    library.slice(0, 50);
+    library.slice(0, 100);
 
 
   try {
@@ -591,297 +876,419 @@ function saveToLibrary(result) {
       JSON.stringify(limited)
     );
 
-    renderLibrary();
+  } catch (error) {
 
-    updateLibraryCount();
-
-  } catch {
-
-    /*
-      Jeśli pamięć przeglądarki jest pełna,
-      usuwamy najstarsze wpisy.
-    */
-
-    const smaller =
-      library.slice(0, 15);
-
-    try {
-
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(smaller)
-      );
-
-    } catch {
-
-      console.warn(
-        "Biblioteka jest pełna."
-      );
-
-    }
-
-  }
-
-}
-
-
-function renderLibrary() {
-
-  const library = getLibrary();
-
-  const query =
-    ($("#librarySearch")?.value || "")
-      .trim()
-      .toLowerCase();
-
-
-  const filtered =
-    library.filter(item => {
-
-      const text = [
-
-        item.brand,
-        item.model,
-        item.generation,
-        item.body
-
-      ].join(" ").toLowerCase();
-
-      return text.includes(query);
-
-    });
-
-
-  libraryGrid.innerHTML = "";
-
-
-  if (filtered.length === 0) {
-
-    emptyLibrary.classList.remove(
-      "hidden"
+    console.error(
+      "LocalStorage error:",
+      error
     );
 
-    return;
+    showToast(
+      "Auto rozpoznane, ale biblioteka jest pełna."
+    );
 
   }
 
 
-  emptyLibrary.classList.add(
-    "hidden"
-  );
-
-
-  filtered.forEach((item, index) => {
-
-    const article =
-      document.createElement("article");
-
-    article.className =
-      "library-item";
-
-    article.style.animationDelay =
-      `${index * 40}ms`;
-
-
-    const imageWrap =
-      document.createElement("div");
-
-    imageWrap.className =
-      "library-image";
-
-
-    const image =
-      document.createElement("img");
-
-    image.src =
-      item.image;
-
-    image.alt =
-      `${item.brand} ${item.model}`;
-
-
-    const deleteBtn =
-      document.createElement("button");
-
-    deleteBtn.className =
-      "delete-library";
-
-    deleteBtn.textContent =
-      "×";
-
-
-    deleteBtn.addEventListener(
-      "click",
-      event => {
-
-        event.stopPropagation();
-
-        deleteLibraryItem(item.id);
-
-      }
-    );
-
-
-    imageWrap.appendChild(image);
-    imageWrap.appendChild(deleteBtn);
-
-
-    const info =
-      document.createElement("div");
-
-    info.className =
-      "library-info";
-
-
-    const brand =
-      document.createElement("div");
-
-    brand.className =
-      "library-brand";
-
-    brand.textContent =
-      item.brand;
-
-
-    const model =
-      document.createElement("div");
-
-    model.className =
-      "library-model";
-
-    model.textContent =
-      item.model;
-
-
-    const meta =
-      document.createElement("div");
-
-    meta.className =
-      "library-meta";
-
-    meta.textContent =
-      `${item.generation} • ${item.confidence}% pewności`;
-
-
-    info.appendChild(brand);
-    info.appendChild(model);
-    info.appendChild(meta);
-
-
-    article.appendChild(imageWrap);
-    article.appendChild(info);
-
-
-    article.addEventListener(
-      "click",
-      () => openLibraryItem(item)
-    );
-
-
-    libraryGrid.appendChild(article);
-
-  });
+  updateLibraryCount();
 
 }
 
 
-function openLibraryItem(item) {
+function deleteCar(id) {
 
-  currentImage =
-    item.image;
-
-  currentResult =
-    item;
-
-  resultImage.src =
-    item.image;
-
-  showResult(item);
-
-}
-
-
-function deleteLibraryItem(id) {
-
-  const updated =
-    getLibrary().filter(
-      item => item.id !== id
-    );
+  const library =
+    getLibrary()
+      .filter(car => car.id !== id);
 
 
   localStorage.setItem(
     STORAGE_KEY,
-    JSON.stringify(updated)
+    JSON.stringify(library)
   );
 
 
   renderLibrary();
+  renderRecent();
   updateLibraryCount();
 
-  showToast("Usunięto z Biblioteki.");
+  showToast("Usunięto z biblioteki.");
+
+}
+
+
+function clearLibrary() {
+
+  const library =
+    getLibrary();
+
+  if (!library.length) {
+
+    showToast(
+      "Biblioteka jest już pusta."
+    );
+
+    return;
+  }
+
+
+  const confirmed =
+    confirm(
+      "Usunąć wszystkie rozpoznane samochody?"
+    );
+
+  if (!confirmed) return;
+
+
+  localStorage.removeItem(
+    STORAGE_KEY
+  );
+
+
+  renderLibrary();
+  renderRecent();
+  updateLibraryCount();
+
+  showToast(
+    "Biblioteka została wyczyszczona."
+  );
 
 }
 
 
 function setupLibrary() {
 
-  $("#librarySearch").addEventListener(
-    "input",
-    renderLibrary
-  );
+  $("clearLibraryBtn")
+    .addEventListener(
+      "click",
+      clearLibrary
+    );
 
 
-  $("#clearLibraryBtn").addEventListener(
-    "click",
-    () => {
+  $("librarySearch")
+    .addEventListener(
+      "input",
+      renderLibrary
+    );
 
-      const library = getLibrary();
+}
 
-      if (!library.length) {
 
-        showToast(
-          "Biblioteka jest już pusta."
-        );
+function renderLibrary() {
 
-        return;
+  const grid =
+    $("libraryGrid");
+
+  const empty =
+    $("libraryEmpty");
+
+
+  if (!grid || !empty) {
+    return;
+  }
+
+
+  const query =
+    (
+      $("librarySearch")?.value ||
+      ""
+    )
+      .trim()
+      .toLowerCase();
+
+
+  const library =
+    getLibrary();
+
+
+  const filtered =
+    library.filter(car => {
+
+      const text =
+        [
+          car.brand,
+          car.model,
+          car.generation,
+          car.body,
+          car.year,
+          car.color
+        ]
+          .join(" ")
+          .toLowerCase();
+
+      return text.includes(query);
+
+    });
+
+
+  grid.innerHTML = "";
+
+
+  if (!filtered.length) {
+
+    empty.style.display =
+      "block";
+
+    if (query) {
+
+      empty.querySelector("h3")
+        .textContent =
+        "Brak wyników";
+
+      empty.querySelector("p")
+        .textContent =
+        "Nie znaleziono samochodu pasującego do wyszukiwania.";
+
+    } else {
+
+      empty.querySelector("h3")
+        .textContent =
+        "Biblioteka jest pusta";
+
+      empty.querySelector("p")
+        .textContent =
+        "Rozpoznane samochody będą automatycznie pojawiać się tutaj.";
+
+    }
+
+    return;
+
+  }
+
+
+  empty.style.display =
+    "none";
+
+
+  filtered.forEach(car => {
+
+    const card =
+      document.createElement("article");
+
+    card.className =
+      "library-card";
+
+
+    const image =
+      document.createElement("div");
+
+    image.className =
+      "library-card-image";
+
+
+    const img =
+      document.createElement("img");
+
+    img.src =
+      car.image;
+
+    img.alt =
+      `${car.brand} ${car.model}`;
+
+    img.loading =
+      "lazy";
+
+
+    const confidence =
+      document.createElement("div");
+
+    confidence.className =
+      "library-confidence";
+
+    confidence.textContent =
+      `${Math.round(car.confidence || 0)}%`;
+
+
+    image.appendChild(img);
+    image.appendChild(confidence);
+
+
+    const body =
+      document.createElement("div");
+
+    body.className =
+      "library-card-body";
+
+
+    const title =
+      document.createElement("strong");
+
+    title.textContent =
+      `${car.brand} ${car.model}`;
+
+
+    const subtitle =
+      document.createElement("span");
+
+    subtitle.textContent =
+      `${car.generation || "Generacja nieznana"} · ${car.year || "—"}`;
+
+
+    const deleteButton =
+      document.createElement("button");
+
+    deleteButton.className =
+      "library-delete";
+
+    deleteButton.textContent =
+      "USUŃ";
+
+    deleteButton.addEventListener(
+      "click",
+      event => {
+
+        event.stopPropagation();
+
+        deleteCar(car.id);
+
       }
+    );
 
 
-      const confirmed =
-        confirm(
-          "Usunąć wszystkie samochody z Biblioteki?"
-        );
+    body.appendChild(title);
+    body.appendChild(subtitle);
+    body.appendChild(deleteButton);
 
 
-      if (!confirmed) return;
+    card.appendChild(image);
+    card.appendChild(body);
 
 
-      localStorage.removeItem(
-        STORAGE_KEY
-      );
+    card.addEventListener(
+      "click",
+      event => {
+
+        if (
+          event.target.closest(
+            ".library-delete"
+          )
+        ) {
+          return;
+        }
+
+        currentImage =
+          car.image;
+
+        currentResult =
+          car;
+
+        renderResult();
+
+        showPage("result");
+
+      }
+    );
 
 
-      renderLibrary();
-      updateLibraryCount();
+    grid.appendChild(card);
 
-      showToast(
-        "Biblioteka została wyczyszczona."
-      );
+  });
 
-    }
-  );
+}
 
 
-  $("#saveLibraryBtn").addEventListener(
-    "click",
-    () => {
+function renderRecent() {
 
-      showToast(
-        "Samochód jest już w Bibliotece."
-      );
+  const container =
+    $("recentCars");
 
-    }
-  );
+  if (!container) return;
+
+
+  const library =
+    getLibrary().slice(0, 4);
+
+
+  container.innerHTML = "";
+
+
+  if (!library.length) {
+
+    container.innerHTML = `
+      <div style="
+        grid-column:1/-1;
+        padding:20px 0;
+        color:var(--muted);
+        font-size:11px;
+      ">
+        Twoje ostatnie rozpoznania pojawią się tutaj.
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  library.forEach(car => {
+
+    const card =
+      document.createElement("article");
+
+    card.className =
+      "recent-card";
+
+
+    const img =
+      document.createElement("img");
+
+    img.src =
+      car.image;
+
+    img.alt =
+      `${car.brand} ${car.model}`;
+
+
+    const content =
+      document.createElement("div");
+
+    content.className =
+      "recent-card-content";
+
+
+    const title =
+      document.createElement("strong");
+
+    title.textContent =
+      `${car.brand} ${car.model}`;
+
+
+    const subtitle =
+      document.createElement("span");
+
+    subtitle.textContent =
+      car.generation || "Generacja nieznana";
+
+
+    content.appendChild(title);
+    content.appendChild(subtitle);
+
+
+    card.appendChild(img);
+    card.appendChild(content);
+
+
+    card.addEventListener(
+      "click",
+      () => {
+
+        currentImage =
+          car.image;
+
+        currentResult =
+          car;
+
+        renderResult();
+
+        showPage("result");
+
+      }
+    );
+
+
+    container.appendChild(card);
+
+  });
 
 }
 
@@ -891,27 +1298,45 @@ function updateLibraryCount() {
   const count =
     getLibrary().length;
 
-  libraryCount.textContent =
-    count > 99 ? "99+" : count;
+  const element =
+    $("libraryCount");
+
+  if (!element) return;
+
+
+  element.textContent =
+    `${count} ${polishCars(count)}`;
 
 }
 
 
-/* =========================
-   USTAWIENIA
-========================= */
+function polishCars(count) {
+
+  if (count === 1) return "auto";
+
+  if (
+    count >= 2 &&
+    count <= 4
+  ) {
+    return "auta";
+  }
+
+  return "aut";
+
+}
+
+
+/* =========================================================
+   THEME
+========================================================= */
 
 function setupSettings() {
 
-  $("#themeBtn").addEventListener(
-    "click",
-    toggleTheme
-  );
-
-  $("#themeSetting").addEventListener(
-    "click",
-    toggleTheme
-  );
+  $("themeToggle")
+    .addEventListener(
+      "click",
+      toggleTheme
+    );
 
 }
 
@@ -919,272 +1344,271 @@ function setupSettings() {
 function loadTheme() {
 
   const theme =
-    localStorage.getItem(THEME_KEY) ||
-    "dark";
+    localStorage.getItem(
+      "carscan_theme"
+    );
 
 
-  document.body.classList.toggle(
-    "light",
-    theme === "light"
-  );
+  if (theme === "light") {
+
+    document.body
+      .classList
+      .add("light");
+
+  }
 
 
-  updateThemeText();
+  updateThemeSwitch();
 
 }
 
 
 function toggleTheme() {
 
+  document.body
+    .classList
+    .toggle("light");
+
+
   const isLight =
-    document.body.classList.toggle(
-      "light"
-    );
+    document.body
+      .classList
+      .contains("light");
 
 
   localStorage.setItem(
-    THEME_KEY,
-    isLight ? "light" : "dark"
+    "carscan_theme",
+    isLight
+      ? "light"
+      : "dark"
   );
 
 
-  updateThemeText();
+  updateThemeSwitch();
 
 }
 
 
-function updateThemeText() {
+function updateThemeSwitch() {
 
-  const isLight =
+  const toggle =
+    $("themeToggle");
+
+  if (!toggle) return;
+
+
+  toggle.classList.toggle(
+    "active",
     document.body.classList.contains(
       "light"
-    );
-
-
-  $("#themeValue").textContent =
-    isLight ? "Jasny" : "Ciemny";
+    )
+  );
 
 }
 
 
-/* =========================
-   KOPIOWANIE
-========================= */
-
-$("#copyBtn").addEventListener(
-  "click",
-  async () => {
-
-    if (!currentResult) return;
-
-
-    const text = `CarScan AI
-
-Marka: ${currentResult.brand}
-Model: ${currentResult.model}
-Generacja: ${currentResult.generation}
-Nadwozie: ${currentResult.body}
-Silnik: ${currentResult.engine}
-Napęd: ${currentResult.drive}
-Rocznik: ${currentResult.year}
-Kolor: ${currentResult.color}
-Pewność AI: ${currentResult.confidence}%`;
-
-
-    try {
-
-      await navigator.clipboard.writeText(
-        text
-      );
-
-      showToast(
-        "Informacje skopiowane."
-      );
-
-    } catch {
-
-      showToast(
-        "Nie udało się skopiować."
-      );
-
-    }
-
-  }
-);
-
-
-/* =========================
-   UDOSTĘPNIANIE
-========================= */
-
-$("#shareBtn").addEventListener(
-  "click",
-  async () => {
-
-    if (!currentResult) return;
-
-
-    const text =
-      `CarScan AI rozpoznał: ${currentResult.brand} ${currentResult.model} — ${currentResult.confidence}% pewności.`;
-
-
-    if (navigator.share) {
-
-      try {
-
-        await navigator.share({
-          title: "CarScan AI",
-          text
-        });
-
-      } catch {}
-
-    } else {
-
-      try {
-
-        await navigator.clipboard.writeText(
-          text
-        );
-
-        showToast(
-          "Wynik skopiowany."
-        );
-
-      } catch {
-
-        showToast(
-          "Udostępnianie nie jest dostępne."
-        );
-
-      }
-
-    }
-
-  }
-);
-
-
-/* =========================
-   MODAL ZDJĘCIA
-========================= */
+/* =========================================================
+   MODAL
+========================================================= */
 
 function setupModal() {
 
-  $("#imageZoomBtn").addEventListener(
-    "click",
-    () => {
+  $("resultImage")
+    .addEventListener(
+      "click",
+      () => {
 
-      if (!currentImage) return;
+        if (!currentImage) return;
 
-      modalImage.src =
-        currentImage;
+        $("modalImage").src =
+          currentImage;
 
-      imageModal.classList.remove(
-        "hidden"
-      );
+        $("imageModal")
+          .classList
+          .remove("hidden");
 
-    }
-  );
-
-
-  $("#closeModal").addEventListener(
-    "click",
-    closeModal
-  );
-
-
-  imageModal.addEventListener(
-    "click",
-    event => {
-
-      if (
-        event.target === imageModal
-      ) {
-        closeModal();
       }
+    );
 
-    }
-  );
+
+  $("closeModal")
+    .addEventListener(
+      "click",
+      closeModal
+    );
+
+
+  $("imageModal")
+    .addEventListener(
+      "click",
+      event => {
+
+        if (
+          event.target ===
+          $("imageModal")
+        ) {
+          closeModal();
+        }
+
+      }
+    );
 
 }
 
 
 function closeModal() {
 
-  imageModal.classList.add(
-    "hidden"
-  );
+  $("imageModal")
+    .classList
+    .add("hidden");
 
 }
 
 
-/* =========================
-   DOUBLE TAP ZOOM
-========================= */
+/* =========================================================
+   TOUCH / ZOOM PROTECTION
+========================================================= */
 
-let lastTouchEnd = 0;
+function setupTouchProtection() {
 
-document.addEventListener(
-  "touchend",
-  event => {
-
-    const now =
-      Date.now();
+  let lastTouchEnd = 0;
 
 
-    if (
-      now - lastTouchEnd <= 300
-    ) {
+  document.addEventListener(
+    "touchend",
+    event => {
 
-      event.preventDefault();
+      const now =
+        Date.now();
 
+
+      if (
+        now - lastTouchEnd <= 300
+      ) {
+
+        event.preventDefault();
+
+      }
+
+
+      lastTouchEnd =
+        now;
+
+    },
+    {
+      passive: false
     }
+  );
 
 
-    lastTouchEnd = now;
+  document.addEventListener(
+    "gesturestart",
+    event => {
+      event.preventDefault();
+    },
+    {
+      passive: false
+    }
+  );
 
-  },
-  {
-    passive: false
-  }
-);
+
+  document.addEventListener(
+    "gesturechange",
+    event => {
+      event.preventDefault();
+    },
+    {
+      passive: false
+    }
+  );
 
 
-/* =========================
-   POMOCNICZE
-========================= */
-
-function sleep(ms) {
-
-  return new Promise(
-    resolve => setTimeout(resolve, ms)
+  document.addEventListener(
+    "gestureend",
+    event => {
+      event.preventDefault();
+    },
+    {
+      passive: false
+    }
   );
 
 }
 
 
-let toastTimer;
+/* =========================================================
+   TOAST
+========================================================= */
 
 function showToast(message) {
 
-  clearTimeout(toastTimer);
+  const toast =
+    $("toast");
 
-  toastText.textContent =
+  const text =
+    $("toastText");
+
+
+  text.textContent =
     message;
+
 
   toast.classList.add(
     "show"
   );
 
 
+  clearTimeout(
+    toastTimer
+  );
+
+
   toastTimer =
-    setTimeout(() => {
+    setTimeout(
+      () => {
 
-      toast.classList.remove(
-        "show"
-      );
+        toast.classList.remove(
+          "show"
+        );
 
-    }, 2400);
+      },
+      3000
+    );
 
 }
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function delay(ms) {
+
+  return new Promise(
+    resolve =>
+      setTimeout(
+        resolve,
+        ms
+      )
+  );
+
+}
+
+
+/* =========================================================
+   PREVENT CONTEXT MENU ON LONG PRESS
+========================================================= */
+
+document.addEventListener(
+  "contextmenu",
+  event => {
+
+    if (
+      event.target.tagName !==
+      "INPUT"
+    ) {
+      event.preventDefault();
+    }
+
+  }
+);
