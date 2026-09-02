@@ -8,7 +8,7 @@
     content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
   >
 
-  <meta name="theme-color" content="#08090d">
+  <meta name="theme-color" content="#0b0c0e">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
@@ -16,6 +16,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet"
@@ -26,443 +27,521 @@
 
 <body>
 
-<div id="app">
+  <div id="app">
 
-  <!-- HEADER -->
-  <header class="topbar">
-    <div class="brand">
-      <div class="brand-icon">C</div>
-      <div>
-        <strong>CarScan</strong>
-        <span>AI</span>
-      </div>
-    </div>
+    <!-- HEADER -->
+    <header class="topbar">
 
-    <button class="icon-btn" id="themeBtn" aria-label="Motyw">
-      ◐
-    </button>
-  </header>
+      <button class="brand" id="homeBtn" aria-label="Strona główna">
+        <span class="brand-mark">
+          <span></span>
+        </span>
 
+        <span class="brand-text">
+          <strong>CarScan</strong>
+          <small>AI</small>
+        </span>
+      </button>
 
-  <!-- HOME -->
-  <main id="homePage" class="page active">
+      <div class="top-actions">
 
-    <section class="hero">
-      <div class="hero-badge">
-        <span class="pulse"></span>
-        AI CAR RECOGNITION
-      </div>
-
-      <h1>Rozpoznaj<br><span>swój samochód.</span></h1>
-
-      <p>
-        Zrób zdjęcie lub wybierz je z galerii.
-        CarScan AI spróbuje określić markę, model,
-        generację i wersję.
-      </p>
-    </section>
-
-
-    <!-- SCANNER -->
-    <section class="scanner-card" id="dropZone">
-
-      <div class="scanner-glow"></div>
-
-      <div class="scanner-icon">
-        <div class="camera-lens"></div>
-      </div>
-
-      <h2>Zeskanuj samochód</h2>
-
-      <p>
-        Najlepiej użyć wyraźnego zdjęcia całego auta.
-      </p>
-
-      <div class="scanner-buttons">
-
-        <button class="primary-btn" id="cameraBtn">
-          <span>⌾</span>
-          Zrób zdjęcie
+        <button class="icon-button" id="libraryBtn" aria-label="Biblioteka">
+          <svg viewBox="0 0 24 24">
+            <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z"/>
+            <path d="M4 5.5v16M8 7h8M8 11h8M8 15h5"/>
+          </svg>
         </button>
 
-        <button class="secondary-btn" id="galleryBtn">
-          <span>▣</span>
-          Galeria
+        <button class="icon-button" id="settingsBtn" aria-label="Ustawienia">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 8.5A3.5 3.5 0 1 0 12 15.5A3.5 3.5 0 0 0 12 8.5Z"/>
+            <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.9 1.9-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.04 1.56V20h-2.68v-.09a1.7 1.7 0 0 0-1.04-1.56 1.7 1.7 0 0 0-1.88.34l-.06.06-1.9-1.9.06-.06A1.7 1.7 0 0 0 7.78 15a1.7 1.7 0 0 0-1.56-1.04H6V11.3h.22A1.7 1.7 0 0 0 7.78 10a1.7 1.7 0 0 0-.34-1.88l-.06-.06 1.9-1.9.06.06a1.7 1.7 0 0 0 1.88.34 1.7 1.7 0 0 0 1.04-1.56V4h2.68v.09a1.7 1.7 0 0 0 1.04 1.56 1.7 1.7 0 0 0 1.88-.34l.06-.06 1.9 1.9-.06.06A1.7 1.7 0 0 0 19.4 10a1.7 1.7 0 0 0 1.56 1.04H21v2.68h-.04A1.7 1.7 0 0 0 19.4 15Z"/>
+          </svg>
         </button>
 
       </div>
+    </header>
 
-      <div class="drop-info">
-        lub przeciągnij zdjęcie tutaj
-      </div>
+
+    <!-- HOME -->
+    <main id="homePage" class="page active">
+
+      <section class="hero">
+
+        <div class="eyebrow">
+          <span class="status-dot"></span>
+          AI CAR IDENTIFICATION
+        </div>
+
+        <h1>
+          Rozpoznaj<br>
+          <span>samochód.</span>
+        </h1>
+
+        <p>
+          Zrób zdjęcie lub wybierz je z galerii.
+          CarScan AI przeanalizuje wygląd auta.
+        </p>
+
+      </section>
+
+
+      <section class="scanner-card">
+
+        <div class="scanner-visual">
+
+          <div class="scanner-grid"></div>
+
+          <div class="car-placeholder">
+            <svg viewBox="0 0 180 90">
+              <path
+                d="M27 55h126c5 0 8 4 8 9v6H19v-6c0-5 3-9 8-9Z"
+              />
+              <path
+                d="m38 55 12-23c2-4 5-6 10-6h51c5 0 8 2 11 6l15 23"
+              />
+              <path d="M57 31h58M67 31l-5 23M107 31l7 23"/>
+              <circle cx="45" cy="70" r="10"/>
+              <circle cx="135" cy="70" r="10"/>
+              <circle cx="45" cy="70" r="4"/>
+              <circle cx="135" cy="70" r="4"/>
+            </svg>
+          </div>
+
+          <div class="scan-line"></div>
+
+          <div class="scanner-corner top-left"></div>
+          <div class="scanner-corner top-right"></div>
+          <div class="scanner-corner bottom-left"></div>
+          <div class="scanner-corner bottom-right"></div>
+
+        </div>
+
+
+        <div class="scanner-content">
+
+          <h2>Gotowy do skanowania?</h2>
+
+          <p>
+            Najlepsze rezultaty uzyskasz, gdy samochód będzie
+            dobrze widoczny i oświetlony.
+          </p>
+
+          <div class="scan-buttons">
+
+            <button class="primary-button" id="cameraBtn">
+              <svg viewBox="0 0 24 24">
+                <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H9l1.5-2h3L15 5h2.5A2.5 2.5 0 0 1 20 7.5v10a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5v-10Z"/>
+                <circle cx="12" cy="12.5" r="3.5"/>
+              </svg>
+
+              Aparat
+            </button>
+
+            <button class="secondary-button" id="galleryBtn">
+              <svg viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="16" rx="2"/>
+                <circle cx="8.5" cy="9" r="1.5"/>
+                <path d="m4 17 5-5 3 3 2-2 6 6"/>
+              </svg>
+
+              Galeria
+            </button>
+
+          </div>
+
+        </div>
+
+      </section>
+
 
       <input
-        id="cameraInput"
         type="file"
+        id="cameraInput"
         accept="image/*"
         capture="environment"
         hidden
       >
 
       <input
-        id="galleryInput"
         type="file"
+        id="galleryInput"
         accept="image/*"
         hidden
       >
 
-    </section>
+
+      <section id="recentSection" class="recent-section">
+
+        <div class="section-heading">
+          <div>
+            <span>OSTATNIE</span>
+            <h3>Twoja biblioteka</h3>
+          </div>
+
+          <button id="openLibraryBtn" class="text-button">
+            Zobacz wszystko
+          </button>
+        </div>
+
+        <div id="recentCars" class="recent-cars"></div>
+
+      </section>
+
+    </main>
 
 
-    <!-- FEATURES -->
-    <section class="features">
+    <!-- SCAN -->
+    <main id="scanPage" class="page">
 
-      <div class="feature">
-        <div class="feature-icon">AI</div>
-        <strong>Analiza AI</strong>
-        <span>Wizualne rozpoznawanie auta</span>
+      <div class="page-header">
+
+        <button class="back-button" id="scanBackBtn">
+          <svg viewBox="0 0 24 24">
+            <path d="m15 18-6-6 6-6"/>
+          </svg>
+        </button>
+
+        <div>
+          <span>ANALIZA</span>
+          <h2>Skanowanie</h2>
+        </div>
+
       </div>
 
-      <div class="feature">
-        <div class="feature-icon">360</div>
-        <strong>Więcej danych</strong>
-        <span>Model, generacja i nadwozie</span>
+
+      <div class="scan-preview-card">
+
+        <img id="scanPreview" alt="Zdjęcie samochodu">
+
+        <div class="preview-overlay">
+          <div class="analyzing-badge">
+            <span class="loader-dot"></span>
+            AI analizuje zdjęcie
+          </div>
+        </div>
+
       </div>
 
-      <div class="feature">
-        <div class="feature-icon">▣</div>
-        <strong>Biblioteka</strong>
-        <span>Twoje zeskanowane auta</span>
+
+      <div class="progress-card">
+
+        <div class="progress-top">
+          <span id="progressLabel">Przygotowywanie...</span>
+          <strong id="progressPercent">0%</strong>
+        </div>
+
+        <div class="progress-track">
+          <div id="progressBar"></div>
+        </div>
+
+        <div class="progress-steps">
+
+          <div class="progress-step" id="step1">
+            <span>01</span>
+            <p>Zdjęcie</p>
+          </div>
+
+          <div class="progress-step" id="step2">
+            <span>02</span>
+            <p>Analiza</p>
+          </div>
+
+          <div class="progress-step" id="step3">
+            <span>03</span>
+            <p>Rozpoznanie</p>
+          </div>
+
+        </div>
+
       </div>
 
-    </section>
-
-  </main>
+    </main>
 
 
-  <!-- SCAN -->
-  <main id="scanPage" class="page">
+    <!-- RESULT -->
+    <main id="resultPage" class="page">
 
-    <div class="page-title">
-      <span>Skanowanie</span>
-      <h1>Analizujemy auto</h1>
-    </div>
+      <div class="page-header">
 
-    <section class="scan-preview">
+        <button class="back-button" id="resultBackBtn">
+          <svg viewBox="0 0 24 24">
+            <path d="m15 18-6-6 6-6"/>
+          </svg>
+        </button>
 
-      <img id="scanImage" alt="Zdjęcie samochodu">
+        <div>
+          <span>WYNIK ANALIZY</span>
+          <h2>Rozpoznany samochód</h2>
+        </div>
 
-      <div class="scan-overlay">
-        <div class="scan-corner tl"></div>
-        <div class="scan-corner tr"></div>
-        <div class="scan-corner bl"></div>
-        <div class="scan-corner br"></div>
-
-        <div class="scan-line"></div>
       </div>
 
-    </section>
 
-    <section class="ai-status">
+      <div class="result-photo-card">
 
-      <div class="ai-orb">
-        <span></span>
-      </div>
-
-      <div>
-        <strong id="scanStatus">Przygotowywanie obrazu...</strong>
-        <span id="scanProgressText">0%</span>
-      </div>
-
-      <div class="progress">
-        <div id="progressBar"></div>
-      </div>
-
-    </section>
-
-  </main>
-
-
-  <!-- RESULT -->
-  <main id="resultPage" class="page">
-
-    <div class="page-title">
-      <span>Wynik AI</span>
-      <h1>Rozpoznanie</h1>
-    </div>
-
-    <section class="result-card">
-
-      <div class="result-image-wrap">
         <img id="resultImage" alt="Rozpoznany samochód">
 
-        <button id="imageZoomBtn" class="image-action">
-          ⛶
-        </button>
+        <div id="confidenceBadge" class="confidence-badge">
+          0%
+        </div>
+
       </div>
 
-      <div class="confidence">
+
+      <div id="notIdentified" class="uncertain-card hidden">
+
+        <div class="uncertain-icon">?</div>
+
         <div>
-          <span>Pewność AI</span>
-          <strong id="confidenceText">--%</strong>
-        </div>
-
-        <div class="confidence-bar">
-          <div id="confidenceBar"></div>
-        </div>
-      </div>
-
-
-      <div id="uncertainBox" class="uncertain-box hidden">
-        <strong>AI nie jest całkowicie pewne</strong>
-        <span>
-          Zdjęcie może nie pozwalać na jednoznaczne
-          określenie modelu. Nie będziemy zgadywać.
-        </span>
-      </div>
-
-
-      <div class="car-title">
-        <span id="resultBrand">---</span>
-        <h2 id="resultModel">---</h2>
-      </div>
-
-
-      <div class="spec-grid">
-
-        <div class="spec">
-          <span>Generacja</span>
-          <strong id="resultGeneration">---</strong>
-        </div>
-
-        <div class="spec">
-          <span>Nadwozie</span>
-          <strong id="resultBody">---</strong>
-        </div>
-
-        <div class="spec">
-          <span>Silnik</span>
-          <strong id="resultEngine">---</strong>
-        </div>
-
-        <div class="spec">
-          <span>Napęd</span>
-          <strong id="resultDrive">---</strong>
-        </div>
-
-        <div class="spec">
-          <span>Rocznik</span>
-          <strong id="resultYear">---</strong>
-        </div>
-
-        <div class="spec">
-          <span>Kolor</span>
-          <strong id="resultColor">---</strong>
+          <strong>Nie mam wystarczającej pewności</strong>
+          <p id="uncertainText">
+            Zdjęcie nie pozwala wiarygodnie określić samochodu.
+          </p>
         </div>
 
       </div>
+
+
+      <section class="identity-card">
+
+        <div class="identity-label">ROZPOZNANIE</div>
+
+        <h1 id="resultTitle">—</h1>
+
+        <p id="resultGeneration">—</p>
+
+      </section>
+
+
+      <section class="specs-grid">
+
+        <div class="spec-card">
+          <span>MARKA</span>
+          <strong id="resultBrand">—</strong>
+        </div>
+
+        <div class="spec-card">
+          <span>MODEL</span>
+          <strong id="resultModel">—</strong>
+        </div>
+
+        <div class="spec-card">
+          <span>NADWOZIE</span>
+          <strong id="resultBody">—</strong>
+        </div>
+
+        <div class="spec-card">
+          <span>ROK</span>
+          <strong id="resultYear">—</strong>
+        </div>
+
+        <div class="spec-card">
+          <span>SILNIK</span>
+          <strong id="resultEngine">—</strong>
+        </div>
+
+        <div class="spec-card">
+          <span>NAPĘD</span>
+          <strong id="resultDrive">—</strong>
+        </div>
+
+        <div class="spec-card wide">
+          <span>KOLOR</span>
+          <strong id="resultColor">—</strong>
+        </div>
+
+      </section>
+
+
+      <section class="notes-card">
+
+        <span>UWAGI AI</span>
+
+        <p id="resultNotes">
+          Brak dodatkowych uwag.
+        </p>
+
+      </section>
 
 
       <div class="result-actions">
 
-        <button class="primary-btn" id="copyBtn">
-          Kopiuj informacje
+        <button class="primary-button" id="scanAgainBtn">
+          Skanuj ponownie
         </button>
 
-        <button class="secondary-btn" id="shareBtn">
-          Udostępnij
+        <button class="secondary-button" id="resultLibraryBtn">
+          Otwórz bibliotekę
         </button>
 
       </div>
 
-      <button class="library-btn" id="saveLibraryBtn">
-        + Zapisano w Bibliotece
-      </button>
-
-      <button class="again-btn" id="againBtn">
-        ↻ Zeskanuj następne auto
-      </button>
-
-    </section>
-
-  </main>
+    </main>
 
 
-  <!-- LIBRARY -->
-  <main id="libraryPage" class="page">
+    <!-- LIBRARY -->
+    <main id="libraryPage" class="page">
 
-    <div class="page-title">
-      <span>Twoje samochody</span>
-      <h1>Biblioteka</h1>
-    </div>
+      <div class="page-header library-header">
 
-    <div class="library-toolbar">
+        <div>
+          <span>CARSCAN AI</span>
+          <h2>Biblioteka</h2>
+        </div>
 
-      <div class="search-box">
-        <span>⌕</span>
-        <input
-          id="librarySearch"
-          type="search"
-          placeholder="Szukaj marki lub modelu..."
-        >
+        <button id="clearLibraryBtn" class="small-danger">
+          Wyczyść
+        </button>
+
       </div>
 
-      <button id="clearLibraryBtn" class="small-btn">
-        Wyczyść
-      </button>
 
-    </div>
+      <div class="library-tools">
 
-    <div id="libraryGrid" class="library-grid"></div>
+        <div class="search-box">
 
-    <div id="emptyLibrary" class="empty-state">
+          <svg viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="6.5"/>
+            <path d="m16 16 5 5"/>
+          </svg>
 
-      <div class="empty-icon">▣</div>
+          <input
+            id="librarySearch"
+            type="search"
+            placeholder="Szukaj auta..."
+            autocomplete="off"
+          >
 
-      <h2>Biblioteka jest pusta</h2>
+        </div>
 
-      <p>
-        Rozpoznane samochody będą tutaj
-        zapisywane automatycznie.
-      </p>
-
-      <button class="primary-btn" id="emptyScanBtn">
-        Zeskanuj pierwsze auto
-      </button>
-
-    </div>
-
-  </main>
-
-
-  <!-- SETTINGS -->
-  <main id="settingsPage" class="page">
-
-    <div class="page-title">
-      <span>Personalizacja</span>
-      <h1>Ustawienia</h1>
-    </div>
-
-
-    <section class="settings-card">
-
-      <div class="settings-section-title">
-        WYGLĄD
       </div>
 
-      <button class="setting-row" id="themeSetting">
 
-        <div class="setting-left">
-          <div class="setting-icon">◐</div>
+      <div id="libraryEmpty" class="empty-state">
+
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M4 6h16v14H4z"/>
+            <path d="M8 6V4h8v2M8 11h8M8 15h5"/>
+          </svg>
+        </div>
+
+        <h3>Biblioteka jest pusta</h3>
+
+        <p>
+          Rozpoznane samochody będą automatycznie
+          pojawiać się tutaj.
+        </p>
+
+        <button id="emptyScanBtn" class="primary-button">
+          Rozpoznaj samochód
+        </button>
+
+      </div>
+
+
+      <div id="libraryGrid" class="library-grid"></div>
+
+    </main>
+
+
+    <!-- SETTINGS -->
+    <main id="settingsPage" class="page">
+
+      <div class="page-header">
+
+        <button class="back-button" id="settingsBackBtn">
+          <svg viewBox="0 0 24 24">
+            <path d="m15 18-6-6 6-6"/>
+          </svg>
+        </button>
+
+        <div>
+          <span>CARSCAN AI</span>
+          <h2>Ustawienia</h2>
+        </div>
+
+      </div>
+
+
+      <section class="settings-card">
+
+        <div class="settings-title">
+          <span>WYGLĄD</span>
+          <h3>Interfejs</h3>
+        </div>
+
+
+        <div class="setting-row">
+
+          <div class="setting-icon">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="4"/>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"/>
+            </svg>
+          </div>
+
+          <div class="setting-info">
+            <strong>Tryb jasny</strong>
+            <span>Przełącz wygląd aplikacji</span>
+          </div>
+
+          <button id="themeToggle" class="switch">
+            <span></span>
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <section class="settings-card">
+
+        <div class="settings-title">
+          <span>INFORMACJE</span>
+          <h3>CarScan AI</h3>
+        </div>
+
+        <div class="info-list">
 
           <div>
-            <strong>Motyw</strong>
-            <span id="themeValue">Ciemny</span>
+            <span>Wersja</span>
+            <strong>2.0</strong>
           </div>
-        </div>
-
-        <span class="chevron">›</span>
-
-      </button>
-
-
-      <div class="settings-section-title">
-        SKANOWANIE
-      </div>
-
-      <div class="setting-row">
-
-        <div class="setting-left">
-          <div class="setting-icon">AI</div>
 
           <div>
-            <strong>Dokładna analiza</strong>
-            <span>Priorytet dla dokładności</span>
+            <span>Silnik AI</span>
+            <strong>OpenAI Vision</strong>
           </div>
-        </div>
-
-        <div class="toggle active">
-          <div></div>
-        </div>
-
-      </div>
-
-
-      <div class="setting-row">
-
-        <div class="setting-left">
-          <div class="setting-icon">▣</div>
 
           <div>
-            <strong>Automatyczna biblioteka</strong>
-            <span>Zapisuj wyniki po skanowaniu</span>
+            <span>Biblioteka</span>
+            <strong id="libraryCount">0 aut</strong>
           </div>
+
         </div>
 
-        <div class="toggle active">
-          <div></div>
-        </div>
+      </section>
 
+
+      <div class="settings-footer">
+        CarScan AI · Rozpoznawanie samochodów
       </div>
 
+    </main>
 
-      <div class="settings-section-title">
-        APLIKACJA
-      </div>
-
-      <div class="setting-row">
-
-        <div class="setting-left">
-          <div class="setting-icon">i</div>
-
-          <div>
-            <strong>CarScan AI</strong>
-            <span>Wersja 2.0</span>
-          </div>
-        </div>
-
-      </div>
-
-    </section>
-
-  </main>
-
-
-  <!-- BOTTOM NAV -->
-  <nav class="bottom-nav">
-
-    <button class="nav-item active" data-page="homePage">
-      <span>⌂</span>
-      <small>Start</small>
-    </button>
-
-    <button class="nav-item" data-page="scanPage">
-      <span>◎</span>
-      <small>Skanuj</small>
-    </button>
-
-    <button class="nav-item" data-page="libraryPage">
-      <span>▣</span>
-      <small>Biblioteka</small>
-      <b id="libraryCount">0</b>
-    </button>
-
-    <button class="nav-item" data-page="settingsPage">
-      <span>⚙</span>
-      <small>Ustawienia</small>
-    </button>
-
-  </nav>
+  </div>
 
 
   <!-- IMAGE MODAL -->
   <div id="imageModal" class="modal hidden">
 
-    <button id="closeModal" class="close-modal">
+    <button id="closeModal" class="modal-close">
       ×
     </button>
 
-    <img id="modalImage" alt="Powiększone zdjęcie">
+    <img id="modalImage" alt="Podgląd zdjęcia">
 
   </div>
 
@@ -472,9 +551,8 @@
     <span id="toastText"></span>
   </div>
 
-</div>
 
-<script src="script.js"></script>
+  <script src="script.js"></script>
 
 </body>
 </html>
