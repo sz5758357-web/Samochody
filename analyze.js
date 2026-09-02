@@ -1,72 +1,95 @@
 export default async function handler(req, res) {
+
+    if (req.method !== "POST") {
+        return res.status(405).json({
+            error: "Method not allowed"
+        });
+    }
+
     try {
-        if (req.method !== "POST") {
-            return res.status(405).json({
-                error: "Dozwolona jest tylko metoda POST."
-            });
-        }
 
-        const { image } = req.body || {};
+        const body = req.body || {};
 
-        if (!image || typeof image !== "string") {
+        const image = body.image;
+
+        if (!image) {
             return res.status(400).json({
-                error: "Serwer nie otrzymał zdjęcia."
+                error: "Nie otrzymano zdjęcia."
             });
         }
 
-        // Sprawdzamy prawidłowy data URL obrazu
-        const imageMatch = image.match(
-            /^data:image\/(jpeg|jpg|png|webp);base64,[A-Za-z0-9+/=\s]+$/
-        );
-
-        if (!imageMatch) {
+        if (
+            typeof image !== "string" ||
+            !image.startsWith("data:image/")
+        ) {
             return res.status(400).json({
-                error: "Nieprawidłowy format zdjęcia.",
-                received: image.substring(0, 40)
+                error: "Nieprawidłowy format zdjęcia."
             });
         }
 
-        const apiKey = process.env.OPENAI_API_KEY;
+        const apiKey =
+            process.env.OPENAI_API_KEY;
 
         if (!apiKey) {
             return res.status(500).json({
-                error: "Brakuje zmiennej OPENAI_API_KEY w Vercel."
+                error:
+                    "Brak OPENAI_API_KEY w Vercel."
             });
         }
 
-        const response = await fetch(
-            "https://api.openai.com/v1/responses",
-            {
-                method: "POST",
 
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${apiKey}`
-                },
+        /* =========================
+           OPENAI
+        ========================= */
 
-                body: JSON.stringify({
-                    model: "gpt-5.6-luna",
+        const openaiResponse =
+            await fetch(
+                "https://api.openai.com/v1/responses",
+                {
+                    method: "POST",
 
-                    input: [
-                        {
-                            role: "user",
+                    headers: {
+                        "Content-Type":
+                            "application/json",
 
-                            content: [
-                                {
-                                    type: "input_text",
+                        "Authorization":
+                            `Bearer ${apiKey}`
+                    },
 
-                                    text: `
-Jesteś profesjonalnym systemem CarScan AI.
+                    body: JSON.stringify({
 
-Twoim zadaniem jest rozpoznawanie samochodów ze zdjęć.
+                        model:
+                            "gpt-5.6-luna",
 
-NAJWAŻNIEJSZE:
-Najpierw ustal, czy na zdjęciu naprawdę znajduje się samochód.
+                        input: [
 
-Jeżeli nie ma samochodu, NIE ZGADUJ.
+                            {
+                                role: "user",
 
-Dla zdjęcia podłogi, ściany, pokoju, człowieka,
-zwierzęcia, roweru, motocykla, przedmiotu itd. zwróć:
+                                content: [
+
+                                    {
+                                        type:
+                                            "input_text",
+
+                                        text: `
+Jesteś CarScan AI.
+
+Masz rozpoznawać samochody
+na przesłanych zdjęciach.
+
+NAJWAŻNIEJSZA ZASADA:
+
+Najpierw sprawdź, czy zdjęcie
+naprawdę przedstawia samochód.
+
+Jeżeli NIE przedstawia samochodu,
+NIE WOLNO zgadywać marki ani modelu.
+
+Dla podłogi, ściany, pokoju,
+człowieka, zwierzęcia, roweru,
+motocykla, przypadkowego przedmiotu
+itp. zwróć:
 
 {
   "is_car": false,
@@ -79,22 +102,27 @@ zwierzęcia, roweru, motocykla, przedmiotu itd. zwróć:
   "reason": "Na zdjęciu nie ma samochodu."
 }
 
-Jeżeli samochód jest widoczny, rozpoznaj:
+Jeżeli jest samochód:
 
-- markę
-- model
-- generację
-- przybliżony zakres roczników
-- pełną nazwę
+Rozpoznaj możliwie dokładnie:
+
+1. markę
+2. model
+3. generację
+4. przybliżony rok lub zakres lat
+5. pełną nazwę
 
 Nie zgaduj na siłę.
 
-Jeżeli nie można wiarygodnie określić modelu,
-zwróć null.
+Jeżeli nie można wiarygodnie określić
+konkretnego modelu albo generacji,
+użyj null.
 
-confidence musi być liczbą od 0 do 1.
+confidence ma być liczbą od 0 do 1.
 
-Zwróć WYŁĄCZNIE JSON:
+Zwróć WYŁĄCZNIE poprawny JSON.
+
+Przykład samochodu:
 
 {
   "is_car": true,
@@ -104,109 +132,218 @@ Zwróć WYŁĄCZNIE JSON:
   "year": "2021–2024",
   "name": "BMW M3 G80",
   "confidence": 0.94,
-  "reason": "krótkie uzasadnienie"
+  "reason": "Charakterystyczne elementy nadwozia."
 }
 `
-                                },
+                                    },
 
-                                {
-                                    type: "input_image",
-                                    image_url: image,
-                                    detail: "high"
+                                    {
+                                        type:
+                                            "input_image",
+
+                                        image_url:
+                                            image
+                                    }
+
+                                ]
+                            }
+
+                        ],
+
+                        text: {
+
+                            format: {
+
+                                type:
+                                    "json_schema",
+
+                                name:
+                                    "carscan_result",
+
+                                strict:
+                                    true,
+
+                                schema: {
+
+                                    type:
+                                        "object",
+
+                                    properties: {
+
+                                        is_car: {
+                                            type:
+                                                "boolean"
+                                        },
+
+                                        brand: {
+                                            type:
+                                                [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                        },
+
+                                        model: {
+                                            type:
+                                                [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                        },
+
+                                        generation: {
+                                            type:
+                                                [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                        },
+
+                                        year: {
+                                            type:
+                                                [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                        },
+
+                                        name: {
+                                            type:
+                                                [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                        },
+
+                                        confidence: {
+                                            type:
+                                                "number"
+                                        },
+
+                                        reason: {
+                                            type:
+                                                "string"
+                                        }
+
+                                    },
+
+                                    required: [
+                                        "is_car",
+                                        "brand",
+                                        "model",
+                                        "generation",
+                                        "year",
+                                        "name",
+                                        "confidence",
+                                        "reason"
+                                    ],
+
+                                    additionalProperties:
+                                        false
                                 }
-                            ]
+                            }
                         }
-                    ]
-                })
-            }
-        );
-
-        const responseText = await response.text();
-
-        // Jeżeli OpenAI zwróciło błąd,
-        // pokazujemy jego prawdziwą treść.
-        if (!response.ok) {
-            console.error(
-                "OPENAI ERROR:",
-                response.status,
-                responseText
+                    })
+                }
             );
 
-            let errorMessage = "OpenAI zwróciło błąd.";
+
+        /* =========================
+           BŁĄD OPENAI
+        ========================= */
+
+        const raw =
+            await openaiResponse.text();
+
+        if (!openaiResponse.ok) {
+
+            console.error(
+                "OPENAI ERROR:",
+                raw
+            );
+
+            let message =
+                "Błąd OpenAI API.";
 
             try {
-                const errorJson = JSON.parse(responseText);
 
-                errorMessage =
-                    errorJson?.error?.message ||
-                    errorJson?.error?.code ||
-                    errorMessage;
+                const error =
+                    JSON.parse(raw);
+
+                message =
+                    error?.error?.message ||
+                    message;
 
             } catch {}
 
             return res.status(500).json({
-                error: errorMessage,
-                openai_status: response.status
+                error: message
             });
         }
+
+
+        /* =========================
+           ODPOWIEDŹ
+        ========================= */
 
         let result;
 
         try {
-            result = JSON.parse(responseText);
+
+            result =
+                JSON.parse(raw);
+
         } catch {
+
             return res.status(500).json({
-                error: "OpenAI zwróciło nieprawidłową odpowiedź."
+                error:
+                    "OpenAI zwróciło nieprawidłową odpowiedź."
             });
         }
+
 
         const outputText =
-            result.output_text || "";
+            result.output_text;
 
         if (!outputText) {
+
             return res.status(500).json({
-                error: "AI nie zwróciło tekstowego wyniku."
+                error:
+                    "AI nie zwróciło wyniku."
             });
         }
 
-        let carData;
+
+        let data;
 
         try {
-            carData = JSON.parse(outputText);
+
+            data =
+                JSON.parse(outputText);
+
         } catch {
-            const match =
-                outputText.match(/\{[\s\S]*\}/);
 
-            if (!match) {
-                return res.status(500).json({
-                    error: "Nie udało się odczytać wyniku AI.",
-                    raw: outputText.substring(0, 500)
-                });
-            }
-
-            try {
-                carData = JSON.parse(match[0]);
-            } catch {
-                return res.status(500).json({
-                    error: "AI zwróciło niepoprawny JSON."
-                });
-            }
-        }
-
-        if (typeof carData.is_car !== "boolean") {
             return res.status(500).json({
-                error: "AI nie zwróciło pola is_car."
+                error:
+                    "Nie można odczytać wyniku AI."
             });
         }
 
-        return res.status(200).json(carData);
+
+        return res.status(200).json(data);
+
 
     } catch (error) {
 
-        console.error("SERVER ERROR:", error);
+        console.error(
+            "SERVER ERROR:",
+            error
+        );
 
         return res.status(500).json({
-            error: error?.message || "Nieznany błąd serwera."
+            error:
+                error?.message ||
+                "Nieznany błąd serwera."
         });
     }
 }
