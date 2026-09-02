@@ -1,25 +1,14 @@
-/* =========================================================
-   CARSCAN AI
-   Frontend v2.0
-========================================================= */
+const API_URL = "https://carscan-ai.sz5758357.workers.dev";
 
-const API_URL =
-  "https://carscan-ai.sz5758357.workers.dev";
-
-const STORAGE_KEY =
-  "carscan_library_v3";
+const STORAGE_KEY = "carscan_library_v3";
 
 let currentImage = null;
 let currentResult = null;
-let currentFile = null;
-
-let scanTimer = null;
-let toastTimer = null;
 
 
-/* =========================================================
+/* =========================
    ELEMENTS
-========================================================= */
+========================= */
 
 const $ = (id) => document.getElementById(id);
 
@@ -32,14 +21,13 @@ const pages = {
 };
 
 
-/* =========================================================
-   INIT
-========================================================= */
+/* =========================
+   START
+========================= */
 
 document.addEventListener("DOMContentLoaded", () => {
 
   loadTheme();
-
   setupNavigation();
   setupInputs();
   setupSettings();
@@ -50,17 +38,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   renderRecent();
   renderLibrary();
+  updateLibraryCount();
 
 });
 
 
-/* =========================================================
+/* =========================
    NAVIGATION
-========================================================= */
+========================= */
 
 function showPage(name) {
 
   Object.values(pages).forEach(page => {
+    if (!page) return;
+
     page.classList.remove("active");
     page.style.display = "none";
   });
@@ -75,81 +66,79 @@ function showPage(name) {
     page.classList.add("active");
   });
 
-  window.scrollTo({
-    top: 0,
-    behavior: "instant"
-  });
+  window.scrollTo(0, 0);
 }
 
 
 function setupNavigation() {
 
-  $("homeBtn").addEventListener("click", () => {
+  $("homeBtn")?.addEventListener("click", () => {
     showPage("home");
   });
 
-  $("libraryBtn").addEventListener("click", () => {
+  $("libraryBtn")?.addEventListener("click", () => {
     renderLibrary();
     showPage("library");
   });
 
-  $("openLibraryBtn").addEventListener("click", () => {
+  $("openLibraryBtn")?.addEventListener("click", () => {
     renderLibrary();
     showPage("library");
   });
 
-  $("settingsBtn").addEventListener("click", () => {
+  $("settingsBtn")?.addEventListener("click", () => {
     updateLibraryCount();
     showPage("settings");
   });
 
-  $("scanBackBtn").addEventListener("click", () => {
+  $("scanBackBtn")?.addEventListener("click", () => {
     showPage("home");
   });
 
-  $("resultBackBtn").addEventListener("click", () => {
+  $("resultBackBtn")?.addEventListener("click", () => {
     showPage("home");
   });
 
-  $("settingsBackBtn").addEventListener("click", () => {
+  $("settingsBackBtn")?.addEventListener("click", () => {
     showPage("home");
   });
 
-  $("emptyScanBtn").addEventListener("click", () => {
-    openGallery();
+  $("emptyScanBtn")?.addEventListener("click", () => {
+    $("galleryInput")?.click();
   });
 
 }
 
 
-/* =========================================================
+/* =========================
    INPUTS
-========================================================= */
+========================= */
 
 function setupInputs() {
 
-  $("cameraBtn").addEventListener("click", () => {
-    $("cameraInput").click();
+  $("cameraBtn")?.addEventListener("click", () => {
+    $("cameraInput")?.click();
   });
 
-  $("galleryBtn").addEventListener("click", () => {
-    $("galleryInput").click();
+  $("galleryBtn")?.addEventListener("click", () => {
+    $("galleryInput")?.click();
   });
 
-  $("cameraInput").addEventListener("change", handleFile);
-
-  $("galleryInput").addEventListener("change", handleFile);
+  $("cameraInput")?.addEventListener("change", handleFile);
+  $("galleryInput")?.addEventListener("change", handleFile);
 
 
   document.addEventListener("dragover", event => {
     event.preventDefault();
   });
 
+
   document.addEventListener("drop", event => {
 
     event.preventDefault();
 
-    const file = event.dataTransfer?.files?.[0];
+    const file =
+      event.dataTransfer?.files?.[0];
 
     if (file) {
       processFile(file);
@@ -160,14 +149,10 @@ function setupInputs() {
 }
 
 
-function openGallery() {
-  $("galleryInput").click();
-}
-
-
 function handleFile(event) {
 
-  const file = event.target.files?.[0];
+  const file =
+    event.target.files?.[0];
 
   if (!file) return;
 
@@ -177,35 +162,39 @@ function handleFile(event) {
 }
 
 
-/* =========================================================
-   FILE PROCESSING
-========================================================= */
+/* =========================
+   IMAGE
+========================= */
 
 async function processFile(file) {
 
   if (!file.type.startsWith("image/")) {
 
-    showToast("Wybierz plik graficzny.");
+    showToast("Wybierz zdjęcie samochodu.");
 
     return;
   }
+
 
   if (file.size > 15 * 1024 * 1024) {
 
-    showToast("Zdjęcie jest za duże. Maksymalnie 15 MB.");
+    showToast(
+      "Zdjęcie jest za duże. Maksymalnie 15 MB."
+    );
 
     return;
   }
 
-  currentFile = file;
 
   try {
 
-    showToast("Przygotowuję zdjęcie...");
+    showToast("Przygotowywanie zdjęcia...");
 
-    currentImage = await prepareImage(file);
+    currentImage =
+      await prepareImage(file);
 
-    $("scanPreview").src = currentImage;
+    $("scanPreview").src =
+      currentImage;
 
     showPage("scan");
 
@@ -215,57 +204,67 @@ async function processFile(file) {
 
     console.error(error);
 
-    showToast("Nie udało się przygotować zdjęcia.");
+    showToast(
+      "Nie udało się przygotować zdjęcia."
+    );
 
   }
 
 }
 
 
-/* =========================================================
-   IMAGE OPTIMIZATION
-========================================================= */
-
 function prepareImage(file) {
 
   return new Promise((resolve, reject) => {
 
-    const reader = new FileReader();
+    const reader =
+      new FileReader();
+
 
     reader.onload = () => {
 
-      const img = new Image();
+      const img =
+        new Image();
+
 
       img.onload = () => {
 
-        const MAX_SIZE = 1600;
+        const MAX = 1600;
 
-        let width = img.naturalWidth;
-        let height = img.naturalHeight;
+        let width =
+          img.naturalWidth;
 
-        if (width > MAX_SIZE || height > MAX_SIZE) {
+        let height =
+          img.naturalHeight;
+
+
+        if (
+          width > MAX ||
+          height > MAX
+        ) {
 
           if (width > height) {
 
             height =
               Math.round(
-                height * MAX_SIZE / width
+                height * MAX / width
               );
 
-            width = MAX_SIZE;
+            width = MAX;
 
           } else {
 
             width =
               Math.round(
-                width * MAX_SIZE / height
+                width * MAX / height
               );
 
-            height = MAX_SIZE;
+            height = MAX;
 
           }
 
         }
+
 
         const canvas =
           document.createElement("canvas");
@@ -273,10 +272,9 @@ function prepareImage(file) {
         canvas.width = width;
         canvas.height = height;
 
+
         const ctx =
-          canvas.getContext("2d", {
-            alpha: false
-          });
+          canvas.getContext("2d");
 
         ctx.drawImage(
           img,
@@ -286,31 +284,40 @@ function prepareImage(file) {
           height
         );
 
-        const dataUrl =
+
+        resolve(
           canvas.toDataURL(
             "image/jpeg",
-            .88
-          );
-
-        resolve(dataUrl);
+            0.88
+          )
+        );
 
       };
+
 
       img.onerror = () => {
         reject(
-          new Error("Nie można odczytać zdjęcia.")
+          new Error(
+            "Nie można odczytać zdjęcia."
+          )
         );
       };
 
-      img.src = reader.result;
+
+      img.src =
+        reader.result;
 
     };
+
 
     reader.onerror = () => {
       reject(
-        new Error("Błąd odczytu pliku.")
+        new Error(
+          "Błąd odczytu zdjęcia."
+        )
       );
     };
+
 
     reader.readAsDataURL(file);
 
@@ -319,55 +326,38 @@ function prepareImage(file) {
 }
 
 
-/* =========================================================
-   SCANNING
-========================================================= */
+/* =========================
+   AI SCAN
+========================= */
 
 async function startScan() {
 
-  stopScanTimer();
-
-  setProgress(4, "Przygotowywanie zdjęcia...");
-
-  setStep(1);
-
-  await delay(500);
-
-  setProgress(22, "Przesyłanie zdjęcia...");
+  setProgress(
+    5,
+    "Przygotowywanie zdjęcia..."
+  );
 
   setStep(1);
 
-  await delay(600);
+  await delay(400);
 
-  setProgress(40, "AI analizuje samochód...");
+
+  setProgress(
+    20,
+    "Łączenie z AI..."
+  );
+
+  setStep(1);
+
+  await delay(400);
+
+
+  setProgress(
+    35,
+    "Wysyłanie zdjęcia..."
+  );
 
   setStep(2);
-
-  await delay(500);
-
-  setProgress(57, "Porównywanie cech auta...");
-
-  setStep(2);
-
-  const fakeProgress =
-    setInterval(() => {
-
-      const current =
-        Number(
-          $("progressPercent").textContent
-            .replace("%", "")
-        );
-
-      if (current < 82) {
-
-        setProgress(
-          current + 2,
-          "Analiza obrazu..."
-        );
-
-      }
-
-    }, 350);
 
 
   try {
@@ -375,41 +365,43 @@ async function startScan() {
     const controller =
       new AbortController();
 
+
     const timeout =
       setTimeout(
         () => controller.abort(),
-        45000
+        60000
       );
 
 
     const response =
-      await fetch(API_URL, {
+      await fetch(
+        API_URL,
+        {
+          method: "POST",
 
-        method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
 
-        headers: {
-          "Content-Type": "application/json"
-        },
+          body: JSON.stringify({
+            image: currentImage
+          }),
 
-        body: JSON.stringify({
-          image: currentImage
-        }),
-
-        signal: controller.signal
-
-      });
+          signal: controller.signal
+        }
+      );
 
 
     clearTimeout(timeout);
 
-    clearInterval(fakeProgress);
 
-
-    let data = null;
+    let data;
 
     try {
 
-      data = await response.json();
+      data =
+        await response.json();
 
     } catch {
 
@@ -420,24 +412,45 @@ async function startScan() {
     }
 
 
-    if (!response.ok || !data?.ok) {
+    console.log(
+      "CarScan Worker:",
+      data
+    );
 
-      console.error(
-        "Worker error:",
-        data
-      );
+
+    if (!response.ok) {
 
       throw new Error(
         data?.error ||
-        "AI nie mogło przeanalizować zdjęcia."
+        "Worker zwrócił błąd."
+      );
+
+    }
+
+
+    if (!data.ok) {
+
+      throw new Error(
+        data.error ||
+        "AI nie zwróciło wyniku."
       );
 
     }
 
 
     setProgress(
-      90,
-      "Finalizowanie rozpoznania..."
+      70,
+      "AI analizuje samochód..."
+    );
+
+    setStep(2);
+
+    await delay(500);
+
+
+    setProgress(
+      88,
+      "Rozpoznawanie szczegółów..."
     );
 
     setStep(3);
@@ -456,7 +469,7 @@ async function startScan() {
 
     setStep(3);
 
-    await delay(350);
+    await delay(300);
 
 
     saveCar({
@@ -469,6 +482,7 @@ async function startScan() {
 
     showPage("result");
 
+
     navigator.vibrate?.(
       [30, 40, 30]
     );
@@ -476,35 +490,37 @@ async function startScan() {
 
   } catch (error) {
 
-    clearInterval(fakeProgress);
-
     console.error(
-      "CarScan AI error:",
+      "CarScan AI:",
       error
     );
 
+
     let message =
-      "Nie udało się rozpoznać samochodu.";
+      "Nie udało się połączyć z AI.";
+
 
     if (
-      error?.name === "AbortError"
+      error.name ===
+      "AbortError"
     ) {
 
       message =
-        "AI nie odpowiedziało w ciągu 45 sekund.";
+        "AI nie odpowiedziało w ciągu 60 sekund.";
 
     } else if (
-      error?.message
+      error.message
     ) {
 
       message =
         error.message;
+
     }
 
 
     showToast(message);
 
-    await delay(500);
+    await delay(600);
 
     showPage("home");
 
@@ -513,119 +529,64 @@ async function startScan() {
 }
 
 
-function stopScanTimer() {
-
-  if (scanTimer) {
-
-    clearInterval(scanTimer);
-
-    scanTimer = null;
-
-  }
-
-}
-
-
-function setProgress(percent, label) {
-
-  const safe =
-    Math.max(
-      0,
-      Math.min(100, percent)
-    );
-
-  $("progressBar").style.width =
-    `${safe}%`;
-
-  $("progressPercent").textContent =
-    `${Math.round(safe)}%`;
-
-  $("progressLabel").textContent =
-    label;
-
-}
-
-
-function setStep(number) {
-
-  document
-    .querySelectorAll(".progress-step")
-    .forEach(step => {
-      step.classList.remove("active");
-    });
-
-  for (
-    let i = 1;
-    i <= number;
-    i++
-  ) {
-
-    $(`step${i}`)
-      ?.classList.add("active");
-
-  }
-
-}
-
-
-/* =========================================================
-   RESULT NORMALIZATION
-========================================================= */
+/* =========================
+   RESULT
+========================= */
 
 function normalizeResult(data) {
 
   return {
 
     brand:
-      cleanValue(
+      value(
         data.brand,
         "Nieznana"
       ),
 
     model:
-      cleanValue(
+      value(
         data.model,
         "Nieznany"
       ),
 
     generation:
-      cleanValue(
+      value(
         data.generation,
         "Nieokreślona"
       ),
 
     body:
-      cleanValue(
+      value(
         data.body,
         "Nieokreślone"
       ),
 
     engine:
-      cleanValue(
+      value(
         data.engine,
         "Nieokreślony"
       ),
 
     drive:
-      cleanValue(
+      value(
         data.drive,
         "Nieokreślony"
       ),
 
     year:
-      cleanValue(
+      value(
         data.year,
         "Nieokreślony"
       ),
 
     color:
-      cleanValue(
+      value(
         data.color,
         "Nieokreślony"
       ),
 
     confidence:
-      clampNumber(
+      clamp(
         data.confidence,
         0,
         100
@@ -637,7 +598,7 @@ function normalizeResult(data) {
       ),
 
     notes:
-      cleanValue(
+      value(
         data.notes,
         "Brak dodatkowych uwag."
       )
@@ -647,73 +608,12 @@ function normalizeResult(data) {
 }
 
 
-function cleanValue(value, fallback) {
-
-  if (
-    value === null ||
-    value === undefined
-  ) {
-    return fallback;
-  }
-
-  const text =
-    String(value).trim();
-
-  return text || fallback;
-}
-
-
-function clampNumber(value, min, max) {
-
-  const number =
-    Number(value);
-
-  if (!Number.isFinite(number)) {
-    return min;
-  }
-
-  return Math.max(
-    min,
-    Math.min(max, number)
-  );
-
-}
-
-
-/* =========================================================
-   RESULT UI
-========================================================= */
-
-function setupResult() {
-
-  $("scanAgainBtn")
-    .addEventListener(
-      "click",
-      () => {
-        openGallery();
-      }
-    );
-
-  $("resultLibraryBtn")
-    .addEventListener(
-      "click",
-      () => {
-        renderLibrary();
-        showPage("library");
-      }
-    );
-
-}
-
-
 function renderResult() {
 
   if (
     !currentResult ||
     !currentImage
-  ) {
-    return;
-  }
+  ) return;
 
 
   $("resultImage").src =
@@ -721,20 +621,13 @@ function renderResult() {
 
 
   $("confidenceBadge").textContent =
-    `${Math.round(currentResult.confidence)}%`;
-
-
-  const title =
-    [
-      currentResult.brand,
-      currentResult.model
-    ]
-      .filter(isUsefulValue)
-      .join(" ");
+    `${Math.round(
+      currentResult.confidence
+    )}%`;
 
 
   $("resultTitle").textContent =
-    title || "Nieznany samochód";
+    `${currentResult.brand} ${currentResult.model}`;
 
 
   $("resultGeneration").textContent =
@@ -767,72 +660,61 @@ function renderResult() {
 
 
   if (
-    currentResult.identifiable === false ||
+    !currentResult.identifiable ||
     currentResult.confidence < 50
   ) {
 
     $("notIdentified")
-      .classList.remove("hidden");
-
-    $("uncertainText").textContent =
-      currentResult.notes ||
-      "Zdjęcie nie pozwala na wystarczająco pewne rozpoznanie.";
+      ?.classList
+      .remove("hidden");
 
   } else {
 
     $("notIdentified")
-      .classList.add("hidden");
+      ?.classList
+      .add("hidden");
 
   }
 
 }
 
 
-function isUsefulValue(value) {
+function setupResult() {
 
-  if (!value) return false;
+  $("scanAgainBtn")?.addEventListener(
+    "click",
+    () => {
+      $("galleryInput")?.click();
+    }
+  );
 
-  const normalized =
-    String(value)
-      .trim()
-      .toLowerCase();
 
-  return ![
-    "nieznana",
-    "nieznany",
-    "nieokreślona",
-    "nieokreślone",
-    "nieokreślony"
-  ].includes(normalized);
+  $("resultLibraryBtn")?.addEventListener(
+    "click",
+    () => {
+      renderLibrary();
+      showPage("library");
+    }
+  );
 
 }
 
 
-/* =========================================================
+/* =========================
    LIBRARY
-========================================================= */
+========================= */
 
 function getLibrary() {
 
   try {
 
-    const data =
+    return JSON.parse(
       localStorage.getItem(
         STORAGE_KEY
-      );
+      ) || "[]"
+    );
 
-    if (!data) return [];
-
-    const parsed =
-      JSON.parse(data);
-
-    return Array.isArray(parsed)
-      ? parsed
-      : [];
-
-  } catch (error) {
-
-    console.error(error);
+  } catch {
 
     return [];
 
@@ -847,129 +729,37 @@ function saveCar(car) {
     getLibrary();
 
 
-  const item = {
-
+  library.unshift({
     id:
-      crypto.randomUUID
-        ? crypto.randomUUID()
-        : `${Date.now()}-${Math.random()}`,
+      `${Date.now()}-${Math.random()}`,
 
     createdAt:
       new Date().toISOString(),
 
     ...car
-
-  };
-
-
-  library.unshift(item);
-
-
-  const limited =
-    library.slice(0, 100);
+  });
 
 
   try {
 
     localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify(limited)
+      JSON.stringify(
+        library.slice(0, 100)
+      )
     );
 
-  } catch (error) {
-
-    console.error(
-      "LocalStorage error:",
-      error
-    );
+  } catch {
 
     showToast(
-      "Auto rozpoznane, ale biblioteka jest pełna."
+      "Nie udało się zapisać auta."
     );
 
   }
 
 
   updateLibraryCount();
-
-}
-
-
-function deleteCar(id) {
-
-  const library =
-    getLibrary()
-      .filter(car => car.id !== id);
-
-
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify(library)
-  );
-
-
-  renderLibrary();
   renderRecent();
-  updateLibraryCount();
-
-  showToast("Usunięto z biblioteki.");
-
-}
-
-
-function clearLibrary() {
-
-  const library =
-    getLibrary();
-
-  if (!library.length) {
-
-    showToast(
-      "Biblioteka jest już pusta."
-    );
-
-    return;
-  }
-
-
-  const confirmed =
-    confirm(
-      "Usunąć wszystkie rozpoznane samochody?"
-    );
-
-  if (!confirmed) return;
-
-
-  localStorage.removeItem(
-    STORAGE_KEY
-  );
-
-
-  renderLibrary();
-  renderRecent();
-  updateLibraryCount();
-
-  showToast(
-    "Biblioteka została wyczyszczona."
-  );
-
-}
-
-
-function setupLibrary() {
-
-  $("clearLibraryBtn")
-    .addEventListener(
-      "click",
-      clearLibrary
-    );
-
-
-  $("librarySearch")
-    .addEventListener(
-      "input",
-      renderLibrary
-    );
 
 }
 
@@ -983,9 +773,7 @@ function renderLibrary() {
     $("libraryEmpty");
 
 
-  if (!grid || !empty) {
-    return;
-  }
+  if (!grid || !empty) return;
 
 
   const query =
@@ -993,63 +781,37 @@ function renderLibrary() {
       $("librarySearch")?.value ||
       ""
     )
-      .trim()
-      .toLowerCase();
+      .toLowerCase()
+      .trim();
 
 
-  const library =
-    getLibrary();
+  const cars =
+    getLibrary()
+      .filter(car => {
 
+        const text =
+          [
+            car.brand,
+            car.model,
+            car.generation,
+            car.year,
+            car.color
+          ]
+            .join(" ")
+            .toLowerCase();
 
-  const filtered =
-    library.filter(car => {
+        return text.includes(query);
 
-      const text =
-        [
-          car.brand,
-          car.model,
-          car.generation,
-          car.body,
-          car.year,
-          car.color
-        ]
-          .join(" ")
-          .toLowerCase();
-
-      return text.includes(query);
-
-    });
+      });
 
 
   grid.innerHTML = "";
 
 
-  if (!filtered.length) {
+  if (!cars.length) {
 
     empty.style.display =
       "block";
-
-    if (query) {
-
-      empty.querySelector("h3")
-        .textContent =
-        "Brak wyników";
-
-      empty.querySelector("p")
-        .textContent =
-        "Nie znaleziono samochodu pasującego do wyszukiwania.";
-
-    } else {
-
-      empty.querySelector("h3")
-        .textContent =
-        "Biblioteka jest pusta";
-
-      empty.querySelector("p")
-        .textContent =
-        "Rozpoznane samochody będą automatycznie pojawiać się tutaj.";
-
-    }
 
     return;
 
@@ -1060,7 +822,7 @@ function renderLibrary() {
     "none";
 
 
-  filtered.forEach(car => {
+  cars.forEach(car => {
 
     const card =
       document.createElement("article");
@@ -1069,89 +831,44 @@ function renderLibrary() {
       "library-card";
 
 
-    const image =
-      document.createElement("div");
+    card.innerHTML = `
+      <div class="library-card-image">
 
-    image.className =
-      "library-card-image";
+        <img
+          src="${escapeHTML(car.image)}"
+          alt=""
+          loading="lazy"
+        >
 
+        <div class="library-confidence">
+          ${Math.round(car.confidence || 0)}%
+        </div>
 
-    const img =
-      document.createElement("img");
+      </div>
 
-    img.src =
-      car.image;
+      <div class="library-card-body">
 
-    img.alt =
-      `${car.brand} ${car.model}`;
+        <strong>
+          ${escapeHTML(
+            `${car.brand} ${car.model}`
+          )}
+        </strong>
 
-    img.loading =
-      "lazy";
+        <span>
+          ${escapeHTML(
+            `${car.generation || "—"} · ${car.year || "—"}`
+          )}
+        </span>
 
+        <button
+          class="library-delete"
+          data-id="${car.id}"
+        >
+          USUŃ
+        </button>
 
-    const confidence =
-      document.createElement("div");
-
-    confidence.className =
-      "library-confidence";
-
-    confidence.textContent =
-      `${Math.round(car.confidence || 0)}%`;
-
-
-    image.appendChild(img);
-    image.appendChild(confidence);
-
-
-    const body =
-      document.createElement("div");
-
-    body.className =
-      "library-card-body";
-
-
-    const title =
-      document.createElement("strong");
-
-    title.textContent =
-      `${car.brand} ${car.model}`;
-
-
-    const subtitle =
-      document.createElement("span");
-
-    subtitle.textContent =
-      `${car.generation || "Generacja nieznana"} · ${car.year || "—"}`;
-
-
-    const deleteButton =
-      document.createElement("button");
-
-    deleteButton.className =
-      "library-delete";
-
-    deleteButton.textContent =
-      "USUŃ";
-
-    deleteButton.addEventListener(
-      "click",
-      event => {
-
-        event.stopPropagation();
-
-        deleteCar(car.id);
-
-      }
-    );
-
-
-    body.appendChild(title);
-    body.appendChild(subtitle);
-    body.appendChild(deleteButton);
-
-
-    card.appendChild(image);
-    card.appendChild(body);
+      </div>
+    `;
 
 
     card.addEventListener(
@@ -1162,9 +879,8 @@ function renderLibrary() {
           event.target.closest(
             ".library-delete"
           )
-        ) {
-          return;
-        }
+        ) return;
+
 
         currentImage =
           car.image;
@@ -1178,6 +894,22 @@ function renderLibrary() {
 
       }
     );
+
+
+    card
+      .querySelector(
+        ".library-delete"
+      )
+      .addEventListener(
+        "click",
+        event => {
+
+          event.stopPropagation();
+
+          deleteCar(car.id);
+
+        }
+      );
 
 
     grid.appendChild(card);
@@ -1195,21 +927,22 @@ function renderRecent() {
   if (!container) return;
 
 
-  const library =
-    getLibrary().slice(0, 4);
+  const cars =
+    getLibrary()
+      .slice(0, 4);
 
 
   container.innerHTML = "";
 
 
-  if (!library.length) {
+  if (!cars.length) {
 
     container.innerHTML = `
       <div style="
         grid-column:1/-1;
-        padding:20px 0;
         color:var(--muted);
         font-size:11px;
+        padding:20px 0;
       ">
         Twoje ostatnie rozpoznania pojawią się tutaj.
       </div>
@@ -1220,7 +953,7 @@ function renderRecent() {
   }
 
 
-  library.forEach(car => {
+  cars.forEach(car => {
 
     const card =
       document.createElement("article");
@@ -1229,43 +962,29 @@ function renderRecent() {
       "recent-card";
 
 
-    const img =
-      document.createElement("img");
+    card.innerHTML = `
+      <img
+        src="${escapeHTML(car.image)}"
+        alt=""
+        loading="lazy"
+      >
 
-    img.src =
-      car.image;
+      <div class="recent-card-content">
 
-    img.alt =
-      `${car.brand} ${car.model}`;
+        <strong>
+          ${escapeHTML(
+            `${car.brand} ${car.model}`
+          )}
+        </strong>
 
+        <span>
+          ${escapeHTML(
+            car.generation || "—"
+          )}
+        </span>
 
-    const content =
-      document.createElement("div");
-
-    content.className =
-      "recent-card-content";
-
-
-    const title =
-      document.createElement("strong");
-
-    title.textContent =
-      `${car.brand} ${car.model}`;
-
-
-    const subtitle =
-      document.createElement("span");
-
-    subtitle.textContent =
-      car.generation || "Generacja nieznana";
-
-
-    content.appendChild(title);
-    content.appendChild(subtitle);
-
-
-    card.appendChild(img);
-    card.appendChild(content);
+      </div>
+    `;
 
 
     card.addEventListener(
@@ -1293,10 +1012,85 @@ function renderRecent() {
 }
 
 
-function updateLibraryCount() {
+function deleteCar(id) {
 
-  const count =
-    getLibrary().length;
+  const library =
+    getLibrary()
+      .filter(
+        car => car.id !== id
+      );
+
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(library)
+  );
+
+
+  renderLibrary();
+  renderRecent();
+  updateLibraryCount();
+
+  showToast(
+    "Usunięto samochód."
+  );
+
+}
+
+
+function setupLibrary() {
+
+  $("librarySearch")
+    ?.addEventListener(
+      "input",
+      renderLibrary
+    );
+
+
+  $("clearLibraryBtn")
+    ?.addEventListener(
+      "click",
+      () => {
+
+        if (
+          !getLibrary().length
+        ) {
+
+          showToast(
+            "Biblioteka jest pusta."
+          );
+
+          return;
+        }
+
+
+        if (
+          confirm(
+            "Usunąć całą bibliotekę?"
+          )
+        ) {
+
+          localStorage.removeItem(
+            STORAGE_KEY
+          );
+
+          renderLibrary();
+          renderRecent();
+          updateLibraryCount();
+
+          showToast(
+            "Biblioteka wyczyszczona."
+          );
+
+        }
+
+      }
+    );
+
+}
+
+
+function updateLibraryCount() {
 
   const element =
     $("libraryCount");
@@ -1304,38 +1098,55 @@ function updateLibraryCount() {
   if (!element) return;
 
 
+  const count =
+    getLibrary().length;
+
+
   element.textContent =
-    `${count} ${polishCars(count)}`;
+    `${count} ${
+      count === 1
+        ? "auto"
+        : count < 5
+          ? "auta"
+          : "aut"
+    }`;
 
 }
 
 
-function polishCars(count) {
-
-  if (count === 1) return "auto";
-
-  if (
-    count >= 2 &&
-    count <= 4
-  ) {
-    return "auta";
-  }
-
-  return "aut";
-
-}
-
-
-/* =========================================================
+/* =========================
    THEME
-========================================================= */
+========================= */
 
 function setupSettings() {
 
   $("themeToggle")
-    .addEventListener(
+    ?.addEventListener(
       "click",
-      toggleTheme
+      () => {
+
+        document.body
+          .classList
+          .toggle("light");
+
+
+        const light =
+          document.body
+            .classList
+            .contains("light");
+
+
+        localStorage.setItem(
+          "carscan_theme",
+          light
+            ? "light"
+            : "dark"
+        );
+
+
+        updateThemeSwitch();
+
+      }
     );
 
 }
@@ -1343,13 +1154,11 @@ function setupSettings() {
 
 function loadTheme() {
 
-  const theme =
+  if (
     localStorage.getItem(
       "carscan_theme"
-    );
-
-
-  if (theme === "light") {
+    ) === "light"
+  ) {
 
     document.body
       .classList
@@ -1363,58 +1172,28 @@ function loadTheme() {
 }
 
 
-function toggleTheme() {
-
-  document.body
-    .classList
-    .toggle("light");
-
-
-  const isLight =
-    document.body
-      .classList
-      .contains("light");
-
-
-  localStorage.setItem(
-    "carscan_theme",
-    isLight
-      ? "light"
-      : "dark"
-  );
-
-
-  updateThemeSwitch();
-
-}
-
-
 function updateThemeSwitch() {
 
-  const toggle =
-    $("themeToggle");
-
-  if (!toggle) return;
-
-
-  toggle.classList.toggle(
-    "active",
-    document.body.classList.contains(
-      "light"
-    )
-  );
+  $("themeToggle")
+    ?.classList
+    .toggle(
+      "active",
+      document.body.classList.contains(
+        "light"
+      )
+    );
 
 }
 
 
-/* =========================================================
+/* =========================
    MODAL
-========================================================= */
+========================= */
 
 function setupModal() {
 
   $("resultImage")
-    .addEventListener(
+    ?.addEventListener(
       "click",
       () => {
 
@@ -1432,14 +1211,14 @@ function setupModal() {
 
 
   $("closeModal")
-    .addEventListener(
+    ?.addEventListener(
       "click",
       closeModal
     );
 
 
   $("imageModal")
-    .addEventListener(
+    ?.addEventListener(
       "click",
       event => {
 
@@ -1447,7 +1226,9 @@ function setupModal() {
           event.target ===
           $("imageModal")
         ) {
+
           closeModal();
+
         }
 
       }
@@ -1459,19 +1240,19 @@ function setupModal() {
 function closeModal() {
 
   $("imageModal")
-    .classList
+    ?.classList
     .add("hidden");
 
 }
 
 
-/* =========================================================
-   TOUCH / ZOOM PROTECTION
-========================================================= */
+/* =========================
+   TOUCH
+========================= */
 
 function setupTouchProtection() {
 
-  let lastTouchEnd = 0;
+  let lastTouch = 0;
 
 
   document.addEventListener(
@@ -1483,7 +1264,7 @@ function setupTouchProtection() {
 
 
       if (
-        now - lastTouchEnd <= 300
+        now - lastTouch < 300
       ) {
 
         event.preventDefault();
@@ -1491,7 +1272,7 @@ function setupTouchProtection() {
       }
 
 
-      lastTouchEnd =
+      lastTouch =
         now;
 
     },
@@ -1501,86 +1282,139 @@ function setupTouchProtection() {
   );
 
 
-  document.addEventListener(
+  [
     "gesturestart",
-    event => {
-      event.preventDefault();
-    },
-    {
-      passive: false
-    }
-  );
-
-
-  document.addEventListener(
     "gesturechange",
-    event => {
-      event.preventDefault();
-    },
-    {
-      passive: false
-    }
-  );
+    "gestureend"
+  ].forEach(eventName => {
 
-
-  document.addEventListener(
-    "gestureend",
-    event => {
-      event.preventDefault();
-    },
-    {
-      passive: false
-    }
-  );
-
-}
-
-
-/* =========================================================
-   TOAST
-========================================================= */
-
-function showToast(message) {
-
-  const toast =
-    $("toast");
-
-  const text =
-    $("toastText");
-
-
-  text.textContent =
-    message;
-
-
-  toast.classList.add(
-    "show"
-  );
-
-
-  clearTimeout(
-    toastTimer
-  );
-
-
-  toastTimer =
-    setTimeout(
-      () => {
-
-        toast.classList.remove(
-          "show"
-        );
-
+    document.addEventListener(
+      eventName,
+      event => {
+        event.preventDefault();
       },
-      3000
+      {
+        passive: false
+      }
     );
 
+  });
+
 }
 
 
-/* =========================================================
+/* =========================
    HELPERS
-========================================================= */
+========================= */
+
+function setProgress(
+  percent,
+  text
+) {
+
+  const bar =
+    $("progressBar");
+
+  const percentEl =
+    $("progressPercent");
+
+  const label =
+    $("progressLabel");
+
+
+  if (bar) {
+    bar.style.width =
+      `${percent}%`;
+  }
+
+  if (percentEl) {
+    percentEl.textContent =
+      `${percent}%`;
+  }
+
+  if (label) {
+    label.textContent =
+      text;
+  }
+
+}
+
+
+function setStep(number) {
+
+  document
+    .querySelectorAll(
+      ".progress-step"
+    )
+    .forEach(
+      step =>
+        step.classList.remove(
+          "active"
+        )
+    );
+
+
+  for (
+    let i = 1;
+    i <= number;
+    i++
+  ) {
+
+    $(`step${i}`)
+      ?.classList
+      .add("active");
+
+  }
+
+}
+
+
+function value(
+  value,
+  fallback
+) {
+
+  if (
+    value === undefined ||
+    value === null ||
+    String(value).trim() === ""
+  ) {
+
+    return fallback;
+
+  }
+
+  return String(value).trim();
+
+}
+
+
+function clamp(
+  value,
+  min,
+  max
+) {
+
+  const number =
+    Number(value);
+
+
+  if (
+    !Number.isFinite(number)
+  ) {
+
+    return min;
+
+  }
+
+
+  return Math.max(
+    min,
+    Math.min(max, number)
+  );
+
+}
+
 
 function delay(ms) {
 
@@ -1595,9 +1429,62 @@ function delay(ms) {
 }
 
 
-/* =========================================================
-   PREVENT CONTEXT MENU ON LONG PRESS
-========================================================= */
+function escapeHTML(value) {
+
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+
+}
+
+
+function showToast(message) {
+
+  const toast =
+    $("toast");
+
+  const text =
+    $("toastText");
+
+
+  if (!toast || !text) return;
+
+
+  text.textContent =
+    message;
+
+
+  toast.classList.add(
+    "show"
+  );
+
+
+  clearTimeout(
+    window.__toastTimer
+  );
+
+
+  window.__toastTimer =
+    setTimeout(
+      () => {
+
+        toast.classList.remove(
+          "show"
+        );
+
+      },
+      3500
+    );
+
+}
+
+
+/* =========================
+   NO CONTEXT MENU
+========================= */
 
 document.addEventListener(
   "contextmenu",
@@ -1607,7 +1494,9 @@ document.addEventListener(
       event.target.tagName !==
       "INPUT"
     ) {
+
       event.preventDefault();
+
     }
 
   }
