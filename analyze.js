@@ -1,22 +1,28 @@
 export default async function handler(req, res) {
-    if (req.method !== "POST") {
-        return res.status(405).json({
-            error: "Method not allowed"
-        });
-    }
-
     try {
+        if (req.method !== "POST") {
+            return res.status(405).json({
+                error: "Dozwolona jest tylko metoda POST."
+            });
+        }
+
         const { image } = req.body || {};
 
         if (!image || typeof image !== "string") {
             return res.status(400).json({
-                error: "Brak zdjęcia"
+                error: "Serwer nie otrzymał zdjęcia."
             });
         }
 
-        if (!image.startsWith("data:image/")) {
+        // Sprawdzamy prawidłowy data URL obrazu
+        const imageMatch = image.match(
+            /^data:image\/(jpeg|jpg|png|webp);base64,[A-Za-z0-9+/=\s]+$/
+        );
+
+        if (!imageMatch) {
             return res.status(400).json({
-                error: "Nieprawidłowy format zdjęcia"
+                error: "Nieprawidłowy format zdjęcia.",
+                received: image.substring(0, 40)
             });
         }
 
@@ -24,7 +30,7 @@ export default async function handler(req, res) {
 
         if (!apiKey) {
             return res.status(500).json({
-                error: "Brak OPENAI_API_KEY na serwerze"
+                error: "Brakuje zmiennej OPENAI_API_KEY w Vercel."
             });
         }
 
@@ -50,14 +56,17 @@ export default async function handler(req, res) {
                                     type: "input_text",
 
                                     text: `
-Jesteś systemem CarScan do rozpoznawania samochodów.
+Jesteś profesjonalnym systemem CarScan AI.
 
-Najpierw dokładnie sprawdź zdjęcie.
+Twoim zadaniem jest rozpoznawanie samochodów ze zdjęć.
 
-WAŻNE:
-Jeżeli na zdjęciu NIE MA samochodu, nigdy nie zgaduj samochodu.
+NAJWAŻNIEJSZE:
+Najpierw ustal, czy na zdjęciu naprawdę znajduje się samochód.
 
-W takim przypadku zwróć:
+Jeżeli nie ma samochodu, NIE ZGADUJ.
+
+Dla zdjęcia podłogi, ściany, pokoju, człowieka,
+zwierzęcia, roweru, motocykla, przedmiotu itd. zwróć:
 
 {
   "is_car": false,
@@ -67,19 +76,25 @@ W takim przypadku zwróć:
   "year": null,
   "name": null,
   "confidence": 0,
-  "reason": "krótkie wyjaśnienie"
+  "reason": "Na zdjęciu nie ma samochodu."
 }
 
-Jeżeli na zdjęciu JEST samochód, rozpoznaj możliwie dokładnie:
+Jeżeli samochód jest widoczny, rozpoznaj:
 
-- producenta
+- markę
 - model
 - generację
-- wersję, jeżeli jest możliwa do rozpoznania
-- przybliżony rok lub zakres lat
-- pełną nazwę samochodu
+- przybliżony zakres roczników
+- pełną nazwę
 
-Przykład:
+Nie zgaduj na siłę.
+
+Jeżeli nie można wiarygodnie określić modelu,
+zwróć null.
+
+confidence musi być liczbą od 0 do 1.
+
+Zwróć WYŁĄCZNIE JSON:
 
 {
   "is_car": true,
@@ -89,22 +104,8 @@ Przykład:
   "year": "2021–2024",
   "name": "BMW M3 G80",
   "confidence": 0.94,
-  "reason": "Charakterystyczne reflektory, grill i proporcje nadwozia."
+  "reason": "krótkie uzasadnienie"
 }
-
-Nie zgaduj na siłę.
-
-Jeżeli nie da się określić dokładnego modelu albo generacji,
-wpisz null i odpowiednio zmniejsz confidence.
-
-Podłoga, ściana, budynek, człowiek, zwierzę, rower,
-motocykl, zabawka, przypadkowy przedmiot itd. NIE są samochodem.
-
-confidence musi być liczbą od 0 do 1.
-
-Zwróć WYŁĄCZNIE poprawny JSON.
-Bez markdownu.
-Bez dodatkowego tekstu.
 `
                                 },
 
@@ -120,50 +121,92 @@ Bez dodatkowego tekstu.
             }
         );
 
-        const raw = await response.text();
+        const responseText = await response.text();
 
+        // Jeżeli OpenAI zwróciło błąd,
+        // pokazujemy jego prawdziwą treść.
         if (!response.ok) {
-            console.error("OpenAI ERROR:", raw);
+            console.error(
+                "OPENAI ERROR:",
+                response.status,
+                responseText
+            );
 
-            return res.status(response.status).json({
-                error: "Błąd OpenAI API"
+            let errorMessage = "OpenAI zwróciło błąd.";
+
+            try {
+                const errorJson = JSON.parse(responseText);
+
+                errorMessage =
+                    errorJson?.error?.message ||
+                    errorJson?.error?.code ||
+                    errorMessage;
+
+            } catch {}
+
+            return res.status(500).json({
+                error: errorMessage,
+                openai_status: response.status
             });
         }
 
-        const result = JSON.parse(raw);
-
-        const output = result.output_text || "";
-
-        let data;
+        let result;
 
         try {
-            data = JSON.parse(output);
+            result = JSON.parse(responseText);
         } catch {
-            const match = output.match(/\{[\s\S]*\}/);
+            return res.status(500).json({
+                error: "OpenAI zwróciło nieprawidłową odpowiedź."
+            });
+        }
+
+        const outputText =
+            result.output_text || "";
+
+        if (!outputText) {
+            return res.status(500).json({
+                error: "AI nie zwróciło tekstowego wyniku."
+            });
+        }
+
+        let carData;
+
+        try {
+            carData = JSON.parse(outputText);
+        } catch {
+            const match =
+                outputText.match(/\{[\s\S]*\}/);
 
             if (!match) {
                 return res.status(500).json({
-                    error: "AI zwróciło nieprawidłową odpowiedź"
+                    error: "Nie udało się odczytać wyniku AI.",
+                    raw: outputText.substring(0, 500)
                 });
             }
 
-            data = JSON.parse(match[0]);
+            try {
+                carData = JSON.parse(match[0]);
+            } catch {
+                return res.status(500).json({
+                    error: "AI zwróciło niepoprawny JSON."
+                });
+            }
         }
 
-        if (typeof data.is_car !== "boolean") {
+        if (typeof carData.is_car !== "boolean") {
             return res.status(500).json({
-                error: "Nieprawidłowy wynik AI"
+                error: "AI nie zwróciło pola is_car."
             });
         }
 
-        return res.status(200).json(data);
+        return res.status(200).json(carData);
 
     } catch (error) {
 
         console.error("SERVER ERROR:", error);
 
         return res.status(500).json({
-            error: "Wewnętrzny błąd serwera"
+            error: error?.message || "Nieznany błąd serwera."
         });
     }
 }
